@@ -1,0 +1,13 @@
+root = true
+
+[*.py]
+profile = black
+max_line_length = 100
+indent_style = space
+indent_size = 4
+src_paths=src,tests
+insert_final_newline=true
+
+[*.yml]
+indent_style = space
+indent_size = 2

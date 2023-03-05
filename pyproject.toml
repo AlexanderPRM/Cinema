@@ -1,0 +1,16 @@
+[tool.black]
+line-length=100
+exclude = '''
+(
+  /(
+    | __pycache__
+    | venv
+  )/
+)
+'''
+
+[tool.isort]
+src_paths=["src", "tests"]
+profile="black"
+multi_line_output=1
+line_length=100
