@@ -38,7 +38,7 @@ services:
       - config.env
 
   etl:
-    build: ../etl
+    build: etl_movies
     restart: always
     env_file:
       - config.env
@@ -60,6 +60,7 @@ services:
       - 8000:8000
     env_file:
       - config.env
+    restart: always
 
 
 volumes:
