@@ -37,7 +37,7 @@ services:
     env_file:
       - config.env
 
-  etl:
+  etl_movies:
     build: etl_movies
     restart: always
     env_file:
@@ -46,13 +46,14 @@ services:
       - db
       - elastic
       - transfer
+
   redis:
     image: redis:7.0.9
     restart: always
     env_file:
       - config.env
     depends_on:
-      - etl
+      - etl_movies
   
   api:
     build: .
