@@ -1,3 +1,4 @@
+from psycopg2 import sql
 from utils.connect import postgres_connection
 
 
@@ -10,13 +11,13 @@ class Extract:
 
     def extract(self):
         with postgres_connection(self.dsn) as pg_conn, pg_conn.cursor() as cursor:
-            sql = f"""
+            stmt = sql.SQL("""
                     SELECT
                         p.id,
                         p.full_name
                     FROM content.person p
-                    """
-            cursor.execute(sql)
+                    """)
+            cursor.execute(stmt)
             while True:
                 rows = cursor.fetchmany(self.chunk_size)
                 if not rows:
