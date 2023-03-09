@@ -31,7 +31,7 @@ def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=10):
                         f"Успешное подключение к базе данных (попытка {retries})"
                     )
                     return conn
-                except Exception as error:
+                except Exception:
                     if sleep_time >= border_sleep_time:
                         logging.error(
                             f"Превышено максимальное время ожидания ({border_sleep_time} секунд)"

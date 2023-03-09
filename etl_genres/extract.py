@@ -1,6 +1,6 @@
 import datetime
-import psycopg2
 from collections.abc import Generator
+
 from state_script import *
 
 
@@ -31,7 +31,7 @@ def load_from_postgres(batch: Generator, cursor_pg, table):
             entries = cursor_pg.fetchmany(size)
         except:
             break
-        if len(entries) == 0 or entries == None:
+        if len(entries) == 0 or entries is None:
             # дата изменения последней отправленной в ETL записи, отличная от 1000-01-16 00:00:00 - гарантия того, что изменения были
             if str(last_modified) != "1000-01-16 00:00:00":
                 state.set_state(table, str(last_modified))

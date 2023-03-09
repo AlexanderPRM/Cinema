@@ -1,10 +1,12 @@
 import json
 import logging
-import requests
 from collections.abc import Generator  # используется для тайпингов
 from functools import wraps
-from state_script import *
+
+import requests
+
 from config import settings as env_settings
+from state_script import *
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -63,7 +65,7 @@ def load_to_etl():
     while json_body := (yield):
         state = State(JsonFileStorage("."))
         # Создаем индекс, если еще не создан
-        if state.get_state("index") == None:
+        if state.get_state("index") is None:
             create_index()
             state.set_state("index", "True")
         # Отправляем данны в ETL

@@ -1,15 +1,15 @@
-import psycopg2
-from psycopg2.extensions import connection as _connection
-from psycopg2.extras import DictCursor
-from backoff import backoff
-from time import sleep
-import psycopg2.extras
-from config import settings
 from contextlib import closing
+from time import sleep
 
+import psycopg2
+import psycopg2.extras
+from psycopg2.extras import DictCursor
+
+from backoff import backoff
+from config import settings
 from extract import load_from_postgres
-from transform import transform
 from load import load_to_etl
+from transform import transform
 
 
 @backoff(start_sleep_time=0.1, factor=2, border_sleep_time=3)

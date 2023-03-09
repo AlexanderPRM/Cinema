@@ -1,12 +1,9 @@
 import json
-import psycopg2
-from psycopg2.extras import DictCursor
-from psycopg2.extras import DictRow
 from collections.abc import Generator  # используется для тайпингов
-from typing import Tuple, Any
 from functools import wraps
+
+from psycopg2.extras import DictRow
 from pydantic import BaseModel
-from typing import Optional
 
 
 def coroutine(func):
