@@ -4,7 +4,7 @@ format = "%(asctime)s - %(name)s - %(message)s"
 
 
 def get_file_handler() -> logging.FileHandler:
-    file_handler = logging.FileHandler('main.log')
+    file_handler = logging.FileHandler("main.log")
     file_handler.setLevel(logging.WARNING)
     file_handler.setFormatter(logging.Formatter(format))
     return file_handler

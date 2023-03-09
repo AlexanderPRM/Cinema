@@ -11,21 +11,23 @@ class Extract:
 
     def extract(self):
         with postgres_connection(self.dsn) as pg_conn, pg_conn.cursor() as cursor:
-            stmt = sql.SQL("""
+            stmt = sql.SQL(
+                """
                     SELECT
                         p.id,
                         p.full_name
                     FROM content.person p
-                    """)
+                    """
+            )
             cursor.execute(stmt)
             while True:
                 rows = cursor.fetchmany(self.chunk_size)
                 if not rows:
-                    self.logger.info('Changes not found')
+                    self.logger.info("Changes not found")
                     break
-                self.logger.info(f'Extracted {len(rows)} lines')
+                self.logger.info(f"Extracted {len(rows)} lines")
                 for data in rows:
                     ids_list = self.state.get_state("stopped_uuid")
-                    ids_list.append(data['id'])
+                    ids_list.append(data["id"])
                     self.state.set_state("stopped_uuid", ids_list)
                 yield rows

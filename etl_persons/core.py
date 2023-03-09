@@ -18,30 +18,27 @@ from utils.log import get_logger
     max_tries=30,
 )
 def etl(logger: logging.Logger, extract: Extract, transform: Transform, state: State, load: Load):
-    sync = state.get_state('sync')
-    logger.info('Last sync: {0}'.format(sync))
+    sync = state.get_state("sync")
+    logger.info("Last sync: {0}".format(sync))
     start_timestamp = datetime.datetime.now()
 
     for extracted_part in extract.extract():
         data = transform.transform(extracted_part)
         load.load(data)
-        state.set_state('sync', str(start_timestamp))
-        state.set_state('stopped_uuid', [])
+        state.set_state("sync", str(start_timestamp))
+        state.set_state("stopped_uuid", [])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     config = Config()
     logger = get_logger(__name__)
-    state = State(JsonFileStorage(file_path='etl_persons/state_persons.json'))
+    state = State(JsonFileStorage(file_path="etl_persons/state_persons.json"))
     extract = Extract(
-        psql_dsn=config.dsn,
-        chunk_size=config.batch_size,
-        storage_state=state,
-        logger=logger
+        psql_dsn=config.dsn, chunk_size=config.batch_size, storage_state=state, logger=logger
     )
     transform = Transform()
     load = Load(dsn=config.es_url, logger=logger)
     while True:
         etl(logger, extract, transform, state, load)
-        logger.info('Sleep for 60 sec')
+        logger.info("Sleep for 60 sec")
         time.sleep(config.etl_timeout)
