@@ -5,7 +5,7 @@ from functools import wraps
 
 import requests
 from config import settings as env_settings
-from state_script import State, JsonFileStorage
+from state_script import JsonFileStorage, State
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -21,18 +21,18 @@ def coroutine(func):
 
 
 # функция для отправки cURL requests
-def elasticsearch_curl(uri='', json_body='', verb='get'):
+def elasticsearch_curl(uri="", json_body="", verb="get"):
     headers = {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
     }
     try:
-        if verb.lower() == 'get':
+        if verb.lower() == "get":
             resp = requests.get(uri, headers=headers, data=json_body)
-        elif verb.lower() == 'post':
+        elif verb.lower() == "post":
             resp = requests.post(uri, headers=headers, data=json_body)
-        elif verb.lower() == 'put':
+        elif verb.lower() == "put":
             resp = requests.put(uri, headers=headers, data=json_body)
-        elif verb.lower() == 'delete':
+        elif verb.lower() == "delete":
             resp = requests.delete(uri, headers=headers, data=json_body)
 
         try:
@@ -41,20 +41,20 @@ def elasticsearch_curl(uri='', json_body='', verb='get'):
             resp_text = resp.text
 
     except Exception as error:
-        logging.debug('\nelasticsearch_curl() error:', error)
+        logging.debug("\nelasticsearch_curl() error:", error)
         resp_text = error
 
-    logging.debug('resp_text:', resp_text)
+    logging.debug("resp_text:", resp_text)
     return resp_text
 
 
 def create_index():
-    with open('settings_index.json', mode='r') as settings_index:
+    with open("settings_index.json", mode="r") as settings_index:
         settings = json.load(settings_index)
 
     elasticsearch_curl(
         uri=env_settings.URI_LOAD_DATA,
-        verb='put',
+        verb="put",
         json_body=json.dumps(settings),
     )
 
@@ -62,15 +62,15 @@ def create_index():
 @coroutine
 def load_to_etl():
     while json_body := (yield):
-        state = State(JsonFileStorage('.'))
+        state = State(JsonFileStorage("."))
         # Создаем индекс, если еще не создан
-        if state.get_state('index') is None:
+        if state.get_state("index") is None:
             create_index()
-            state.set_state('index', 'True')
+            state.set_state("index", "True")
         # Отправляем данны в ETL
         print(json_body)
         elasticsearch_curl(
             uri=env_settings.URI,
-            verb='post',
+            verb="post",
             json_body=json_body,
         )

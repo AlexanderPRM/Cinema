@@ -22,12 +22,12 @@ class JsonFileStorage(BaseStorage):
     доставать данные из этого файла."""
 
     def __init__(self, file_path: Optional[str] = None):
-        self.file_path = 'state.json'
-        self.fname = '.data_file.json'
+        self.file_path = "state.json"
+        self.fname = ".data_file.json"
 
     def save_state(self, entry: dict):
         if not os.path.isfile(self.file_path):
-            with open(self.file_path, mode='w') as f:
+            with open(self.file_path, mode="w") as f:
                 f.write(json.dumps(entry, indent=2))
                 sleep(2)
         else:
@@ -42,13 +42,13 @@ class JsonFileStorage(BaseStorage):
                     pass
                 for key, value in entry.items():
                     dic[key] = value
-                with open(self.file_path, mode='w') as f:
+                with open(self.file_path, mode="w") as f:
                     f.write(json.dumps(dic, indent=2))
 
     def retrieve_state(self):
         if os.path.isfile(self.file_path):
             try:
-                with open(self.file_path, mode='r') as f:
+                with open(self.file_path, mode="r") as f:
                     state = json.load(f)
                     return state
             except BaseException:
