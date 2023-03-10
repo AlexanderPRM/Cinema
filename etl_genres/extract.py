@@ -1,7 +1,7 @@
 import datetime
 from collections.abc import Generator
 
-from state_script import *
+from state_script import State, JsonFileStorage
 
 
 def load_from_postgres(batch: Generator, cursor_pg, table):

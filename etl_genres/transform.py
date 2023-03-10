@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 def coroutine(func):
     @wraps(func)
-    def inner(*args: tuple[Any, ...], **kwargs: dict[str, Any]) -> Generator:
+    def inner(*args: tuple[str, ...], **kwargs: dict[str]) -> Generator:
         fn: Generator = func(*args, **kwargs)
         next(fn)
         return fn

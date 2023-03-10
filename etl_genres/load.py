@@ -5,14 +5,14 @@ from functools import wraps
 
 import requests
 from config import settings as env_settings
-from state_script import *
+from state_script import State, JsonFileStorage
 
 logging.basicConfig(level=logging.DEBUG)
 
 
 def coroutine(func):
     @wraps(func)
-    def inner(*args: tuple[Any, ...], **kwargs: dict[str, Any]) -> Generator:
+    def inner(*args: tuple[str, ...], **kwargs: dict[str]) -> Generator:
         fn: Generator = func(*args, **kwargs)
         next(fn)
         return fn
