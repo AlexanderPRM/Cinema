@@ -50,6 +50,18 @@ class Load:
                     "analyzer": "ru_en",
                     "fields": {"raw": {"type": "keyword"}},
                 },
+                "director": {
+                    "type": "text",
+                    "analyzer": "ru_en"
+                },
+                "actors": {
+                    "type": "text",
+                    "analyzer": "ru_en"
+                },
+                "writers": {
+                    "type": "text",
+                    "analyzer": "ru_en"
+                },
             },
         }
 

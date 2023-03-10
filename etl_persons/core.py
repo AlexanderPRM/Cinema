@@ -21,8 +21,9 @@ def etl(logger: logging.Logger, extract: Extract, transform: Transform, state: S
     sync = state.get_state("sync")
     logger.info("Last sync: {0}".format(sync))
     start_timestamp = datetime.datetime.now()
+    person_ids = state.get_state('stopped_uuid')
 
-    for extracted_part in extract.extract():
+    for extracted_part in extract.extract(sync, start_timestamp, person_ids):
         data = transform.transform(extracted_part)
         load.load(data)
         state.set_state("sync", str(start_timestamp))
@@ -32,7 +33,7 @@ def etl(logger: logging.Logger, extract: Extract, transform: Transform, state: S
 if __name__ == "__main__":
     config = Config()
     logger = get_logger(__name__)
-    state = State(JsonFileStorage(file_path="etl_persons/state_persons.json"))
+    state = State(JsonFileStorage(file_path="etl_persons/state.json"))
     extract = Extract(
         psql_dsn=config.dsn, chunk_size=config.batch_size, storage_state=state, logger=logger
     )
