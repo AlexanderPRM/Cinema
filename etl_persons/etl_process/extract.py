@@ -1,6 +1,7 @@
 import datetime
 
 from utils.connect import postgres_connection
+from utils.sql_statement import STMT
 
 
 class Extract:
@@ -17,20 +18,7 @@ class Extract:
         exclude_ids: list,
     ):
         with postgres_connection(self.dsn) as pg_conn, pg_conn.cursor() as cursor:
-            stmt = f"""
-                    SELECT
-                        p.id,
-                        p.full_name,
-                        string_agg(DISTINCT CASE WHEN pfw.role = 'director' THEN fw.title ELSE '' END, ',') AS director,
-                        string_agg(DISTINCT CASE WHEN pfw.role = 'actor' THEN fw.title ELSE '' END, ',') AS actors,
-                        string_agg(DISTINCT CASE WHEN pfw.role = 'writer' THEN fw.title ELSE '' END, ',') AS writers,
-                        MAX(p.updated_at) AS last_modified
-                    FROM
-                        content.person p
-                        LEFT JOIN content.person_film_work pfw ON p.id = pfw.person_id
-                        LEFT JOIN content.film_work fw ON pfw.film_work_id = fw.id
-                    GROUP BY p.id
-                    """
+            stmt = STMT
             if exclude_ids:
                 stmt += f"""
                 AND (p.id not in {tuple(exclude_ids)} OR
