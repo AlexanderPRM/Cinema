@@ -31,6 +31,7 @@ class FilmDetail(BaseModel):
 @router.get(
     "/{film_id}",
     response_model=FilmDetail,
+    response_description="Пример вернушегося фильма",
     summary="Фильм",
     description=("Получение одного фильма по ID"),
 )
@@ -58,7 +59,7 @@ async def film_details(
     response_description="Пример вернувшегося списка фильмов.",
     response_model_exclude=["description", "genre", "actors", "writers", "director"],
     summary="Список фильмов",
-    description="Список фильмов с пагинацией,"
+    description="Список фильмов с пагинацией, "
     "фильтрацией по жанрам и сортировкой по названию или рейтингу.",
 )
 async def films(
