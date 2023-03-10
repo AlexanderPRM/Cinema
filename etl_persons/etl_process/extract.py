@@ -10,10 +10,12 @@ class Extract:
         self.dsn = psql_dsn
         self.logger = logger
 
-    def extract(self,
-                extract_timestamp: datetime.datetime,
-                start_timestamp: datetime.datetime,
-                exclude_ids: list):
+    def extract(
+        self,
+        extract_timestamp: datetime.datetime,
+        start_timestamp: datetime.datetime,
+        exclude_ids: list,
+    ):
         with postgres_connection(self.dsn) as pg_conn, pg_conn.cursor() as cursor:
             stmt = f"""
                     SELECT
