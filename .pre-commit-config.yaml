@@ -1,6 +1,7 @@
 repos:
   - repo: https://github.com/psf/black
     rev: 23.1.0
+    additional_dependencies: [toml]
     hooks:
     - id: black
       exclude: venv
@@ -11,5 +12,6 @@ repos:
       - id: isort
   - repo: https://github.com/PyCQA/flake8
     rev: 6.0.0
+    additional_dependencies: [cfg]
     hooks:
       - id: flake8
