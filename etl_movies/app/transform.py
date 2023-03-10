@@ -13,7 +13,10 @@ class TransformToElasticView:
                 "_source": {
                     "id": movie.id.__str__(),
                     "imdb_rating": movie.rating,
-                    "genre": [genre for genre in movie.genres],
+                    "genre": [
+                        {"id": genre["genre_id"], "name": genre["genre_name"]}
+                        for genre in movie.genres
+                    ],
                     "title": movie.title,
                     "description": movie.description,
                     "director": [

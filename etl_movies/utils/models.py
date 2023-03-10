@@ -13,7 +13,7 @@ class Movie(BaseModel):
     created_at: datetime
     updated_at: datetime
     persons: list[dict]
-    genres: list[str]
+    genres: list[dict]
 
     class Config:
         validate_all = True
