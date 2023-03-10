@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 import uvicorn
 from elasticsearch import AsyncElasticsearch
@@ -36,18 +35,6 @@ async def shutdown():
     # Отключаемся от баз при выключении сервера
     await redis.redis.close()
     await elastic.es.close()
-
-
-@app.get(
-    "/api/v1/search/",
-    response_model=List,
-    summary="Поиск кинопроизведений",
-    description="Полнотекстовый поиск по кинопроизведениям",
-    response_description="Название и рейтинг фильма",
-    tags=["Полнотекстовый поиск"],
-)
-async def film_search():
-    ...
 
 
 # Подключаем роутер к серверу, указав префикс /v1/films
