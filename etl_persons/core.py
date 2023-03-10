@@ -21,7 +21,7 @@ def etl(logger: logging.Logger, extract: Extract, transform: Transform, state: S
     sync = state.get_state("sync")
     logger.info("Last sync: {0}".format(sync))
     start_timestamp = datetime.datetime.now()
-    person_ids = state.get_state('stopped_uuid')
+    person_ids = state.get_state("stopped_uuid")
 
     for extracted_part in extract.extract(sync, start_timestamp, person_ids):
         data = transform.transform(extracted_part)
