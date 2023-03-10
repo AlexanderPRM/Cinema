@@ -1,9 +1,9 @@
 import datetime
 import logging
 import time
+
 import backoff
 import elasticsearch
-
 from etl_process.extract import Extract
 from etl_process.load import Load
 from etl_process.transform import Transform
@@ -33,12 +33,12 @@ def etl(logger: logging.Logger, extract: Extract, transform: Transform, state: S
 if __name__ == "__main__":
     config = Config()
     logger = get_logger(__name__)
-    state = State(JsonFileStorage(file_path="etl_persons/state.json"))
+    state = State(JsonFileStorage(file_path="state.json"))
     extract = Extract(
         psql_dsn=config.dsn, chunk_size=config.batch_size, storage_state=state, logger=logger
     )
     transform = Transform()
-    load = Load(dsn=config.es_url, logger=logger)
+    load = Load(dsn=f"http://{config.es_host}:{config.es_port}", logger=logger)
     while True:
         etl(logger, extract, transform, state, load)
         logger.info("Sleep for 60 sec")

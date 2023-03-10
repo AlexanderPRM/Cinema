@@ -12,5 +12,5 @@ RUN pip install --upgrade pip --no-cache-dir \
 COPY . .
 
 RUN apt install -y netcat
-RUN chmod +x /opt/etl_persons/run_etl_persons.sh
-ENTRYPOINT [ "/opt/etl_persons/run_etl_persons.sh" ]
+RUN chmod +x /opt/etl_persons/run_etl.sh
+ENTRYPOINT [ "/opt/etl_persons/run_etl.sh" ]

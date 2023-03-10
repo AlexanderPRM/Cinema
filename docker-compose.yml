@@ -28,6 +28,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+    ports:
+      - 9200:9200
     environment:
       - "discovery.type=single-node"
     volumes:
@@ -37,6 +40,16 @@ services:
 
   etl_movies:
     build: etl_movies
+    restart: always
+    env_file:
+      - config.env
+    depends_on:
+      - db
+      - elastic
+      - transfer
+
+  etl_persons:
+    build: etl_persons
     restart: always
     env_file:
       - config.env
