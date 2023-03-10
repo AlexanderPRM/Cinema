@@ -38,6 +38,7 @@ class JsonFileStorage(BaseStorage):
 class State:
     def __init__(self, storage: BaseStorage):
         self.storage = storage
+        self.state = self.storage.retrieve_state()
 
     def set_state(self, key: str, value: Any) -> None:
         data = self.storage.retrieve_state()
@@ -45,5 +46,4 @@ class State:
         self.storage.save_state(data)
 
     def get_state(self, key: str) -> Any:
-        data = self.storage.retrieve_state()
-        return data.get(key, None)
+        return self.state.get(key, None)
