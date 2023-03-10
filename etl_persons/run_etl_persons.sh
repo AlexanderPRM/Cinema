@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+echo "Waiting for elastic..."
+
+while ! nc -z $ELASTIC_HOST $ELASTIC_PORT; do
+    sleep 0.1
+done
+
+python core.py
