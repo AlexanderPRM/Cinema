@@ -1,12 +1,12 @@
 from functools import lru_cache
-from typing import Optional
+from typing import List, Optional
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
 from redis.asyncio import Redis
 
 from db.elastic import get_elastic
-from db.redis import get_redis
+from db.redis_db import get_redis
 from models.film import Film
 
 FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
@@ -16,6 +16,37 @@ class FilmService:
     def __init__(self, redis: Redis, elastic: AsyncElasticsearch):
         self.redis = redis
         self.elastic = elastic
+
+    async def get_films(self, sort, genre, page_number, page_size) -> Optional[List[Film]]:
+        if sort[0] == "-":
+            sort = {sort[1:]: "desc"}
+        else:
+            sort = {sort: "asc"}
+        filter_query = (
+            {"match_all": {}}
+            if genre is None
+            else {
+                "nested": {
+                    "path": "genre",
+                    "query": {"bool": {"must": {"match": {"genre.id": genre}}}},
+                }
+            }
+        )
+        films = await self.elastic.search(
+            index="movies",
+            body={
+                "_source": ["id", "title", "imdb_rating"],
+                "sort": sort,
+                "from": page_number,
+                "size": page_size,
+                "query": filter_query,
+            },
+            size=20,
+            params={"filter_path": "hits.hits._source"},
+        )
+        if not films:
+            return None
+        return films["hits"]["hits"]
 
     # get_by_id возвращает объект фильма. Он опционален, так как фильм может отсутствовать в базе
     async def get_by_id(self, film_id: str) -> Optional[Film]:
@@ -42,7 +73,7 @@ class FilmService:
     async def _film_from_cache(self, film_id: str) -> Optional[Film]:
         # Пытаемся получить данные о фильме из кеша, используя команду get
         # https://redis.io/commands/get/
-        data = await self.redis.get(film_id)
+        data = self.redis.get(film_id)
         if not data:
             return None
 
@@ -55,7 +86,7 @@ class FilmService:
         # Выставляем время жизни кеша — 5 минут
         # https://redis.io/commands/set/
         # pydantic позволяет сериализовать модель в json
-        await self.redis.set(film.id, film.json(), FILM_CACHE_EXPIRE_IN_SECONDS)
+        self.redis.set(film.id, film.json(), FILM_CACHE_EXPIRE_IN_SECONDS)
 
 
 @lru_cache()
