@@ -50,9 +50,27 @@ class Load:
                     "analyzer": "ru_en",
                     "fields": {"raw": {"type": "keyword"}},
                 },
-                "director": {"type": "text", "analyzer": "ru_en"},
-                "actors": {"type": "text", "analyzer": "ru_en"},
-                "writers": {"type": "text", "analyzer": "ru_en"},
+                "director": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {"type": "keyword"},
+                        "title": {"type": "text", "analyzer": "ru_en"},
+                    },
+                },
+                "actor": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {"type": "keyword"},
+                        "title": {"type": "text", "analyzer": "ru_en"},
+                    },
+                },
+                "writer": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {"type": "keyword"},
+                        "title": {"type": "text", "analyzer": "ru_en"},
+                    },
+                },
             },
         }
 

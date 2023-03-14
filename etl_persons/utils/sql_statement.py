@@ -2,15 +2,33 @@ STMT = """
     SELECT
         p.id,
         p.full_name,
-        array_agg(
-            DISTINCT CASE WHEN pfw.role = 'director' THEN fw.id::varchar else '' end
-        ) AS director,
-        array_agg(
-            DISTINCT CASE WHEN pfw.role = 'actor' THEN fw.id::varchar else '' end
-        ) AS actors,
-        array_agg(
-            DISTINCT CASE WHEN pfw.role = 'writer' THEN fw.id::varchar else '' END
-        ) AS writers,
+        COALESCE (
+            json_agg(
+                DISTINCT jsonb_build_object(
+                    'id', fw.id,
+                    'title', fw.title
+                )
+            ) FILTER (WHERE pfw.role = 'director'),
+            '[]'
+        ) as director,
+        COALESCE (
+            json_agg(
+                DISTINCT jsonb_build_object(
+                    'id', fw.id,
+                    'title', fw.title
+                )
+            ) FILTER (WHERE pfw.role = 'actor'),
+            '[]'
+        ) as actors,
+        COALESCE (
+            json_agg(
+                DISTINCT jsonb_build_object(
+                    'id', fw.id,
+                    'title', fw.title
+                )
+            ) FILTER (WHERE pfw.role = 'writer'),
+            '[]'
+        ) as writers,
         MAX(p.updated_at) AS last_modified
     FROM
         content.person p
