@@ -18,7 +18,7 @@ class PersonService:
         self.elastic = elastic
 
     async def get_data_by_id(self, *args, **kwargs):
-        params, = args
+        (params,) = args
         person_id = params.get("person_id")
         person = await self._person_from_cache(person_id)
         if not person:
@@ -29,15 +29,15 @@ class PersonService:
         return person
 
     async def get_data_list(self, *args, **kwargs):
-        params, = args
+        (params,) = args
         try:
             docs = await self.elastic.search(
                 index=params.get("index"),
                 body={
                     "from": params.get("page_number"),
                     "size": params.get("page_size"),
-                    "query": {"match_all": {}}
-                }
+                    "query": {"match_all": {}},
+                },
             )
         except NotFoundError:
             return []
@@ -63,7 +63,7 @@ class PersonService:
 
 @lru_cache()
 def get_person_service(
-        redis: Redis = Depends(get_redis),
-        elastic: AsyncElasticsearch = Depends(get_elastic),
+    redis: Redis = Depends(get_redis),
+    elastic: AsyncElasticsearch = Depends(get_elastic),
 ) -> PersonService:
     return PersonService(redis, elastic)

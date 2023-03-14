@@ -18,7 +18,7 @@ class GenreService:
         self.elastic = elastic
 
     async def get_data_by_id(self, *args, **kwargs):
-        params, = args
+        (params,) = args
         genre_id = params.get("genre_id")
         genre = await self._genre_from_cache(genre_id)
         if not genre:
@@ -29,15 +29,15 @@ class GenreService:
         return genre
 
     async def get_data_list(self, *args, **kwargs):
-        params, = args
+        (params,) = args
         try:
             docs = await self.elastic.search(
                 index=params.get("index"),
                 body={
                     "from": params.get("page_number"),
                     "size": params.get("page_size"),
-                    "query": {"match_all": {}}
-                }
+                    "query": {"match_all": {}},
+                },
             )
         except NotFoundError:
             return []

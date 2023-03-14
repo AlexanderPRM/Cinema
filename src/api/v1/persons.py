@@ -1,8 +1,9 @@
 from http import HTTPStatus
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from services.persons import PersonService, get_person_service
 from models.film import Person, PersonList
+from services.persons import PersonService, get_person_service
 
 router = APIRouter()
 
@@ -11,18 +12,12 @@ router = APIRouter()
     "/{person_id}",
     response_model=Person,
     description="Получить информацию о персоне",
-    response_description="Подробная информация о персоне"
+    response_description="Подробная информация о персоне",
 )
 async def person_details(
-        request: Request,
-        person_id: str,
-        person_service: PersonService = Depends(get_person_service)
+    request: Request, person_id: str, person_service: PersonService = Depends(get_person_service)
 ) -> Person:
-    query_params = dict(
-        person_id=person_id,
-        request=request,
-        index="persons"
-    )
+    query_params = dict(person_id=person_id, request=request, index="persons")
     person = await person_service.get_data_by_id(query_params)
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
@@ -39,13 +34,13 @@ async def person_details(
     "/",
     response_model=list[PersonList],
     description="Список персон",
-    response_description="Список персон"
+    response_description="Список персон",
 )
 async def list_persons(
-        request: Request,
-        person_service: PersonService = Depends(get_person_service),
-        page_number=1,
-        page_size=20
+    request: Request,
+    person_service: PersonService = Depends(get_person_service),
+    page_number=1,
+    page_size=20,
 ) -> list[PersonList]:
     query_params = dict(
         request=request,
