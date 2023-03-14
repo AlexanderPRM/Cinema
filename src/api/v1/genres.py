@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from models.film import Genre
 from services.genres import GenreService, get_genre_service
 
-
 router = APIRouter()
 
 
@@ -18,7 +17,7 @@ router = APIRouter()
 async def genre_details(
     request: Request, genre_id: str, genre_service: GenreService = Depends(get_genre_service)
 ) -> Genre:
-    query_params = dict(genre_id=genre_id, request=request, index='genres')
+    query_params = dict(genre_id=genre_id, request=request, index="genres")
     genre = await genre_service.get_data_by_id(query_params)
     if not genre:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
