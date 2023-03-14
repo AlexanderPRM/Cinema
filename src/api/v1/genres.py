@@ -1,5 +1,4 @@
 from http import HTTPStatus
-
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from services.genres import GenreService, get_genre_service
