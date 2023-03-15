@@ -50,25 +50,11 @@ class Load:
                     "analyzer": "ru_en",
                     "fields": {"raw": {"type": "keyword"}},
                 },
-                "director": {
+                "films": {
                     "type": "nested",
                     "properties": {
                         "id": {"type": "keyword"},
-                        "title": {"type": "text", "analyzer": "ru_en"},
-                    },
-                },
-                "actor": {
-                    "type": "nested",
-                    "properties": {
-                        "id": {"type": "keyword"},
-                        "title": {"type": "text", "analyzer": "ru_en"},
-                    },
-                },
-                "writer": {
-                    "type": "nested",
-                    "properties": {
-                        "id": {"type": "keyword"},
-                        "title": {"type": "text", "analyzer": "ru_en"},
+                        "roles": {"type": "text", "analyzer": "ru_en"},
                     },
                 },
             },

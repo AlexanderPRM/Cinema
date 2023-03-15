@@ -24,9 +24,7 @@ async def person_details(
     return Person(
         id=person.id,
         full_name=person.full_name,
-        director=person.director,
-        actor=person.actor,
-        writer=person.writer,
+        films=person.films,
     )
 
 

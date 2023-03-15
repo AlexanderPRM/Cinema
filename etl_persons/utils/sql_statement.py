@@ -6,29 +6,11 @@ STMT = """
             json_agg(
                 DISTINCT jsonb_build_object(
                     'id', fw.id,
-                    'title', fw.title
+                    'roles', pfw.role
                 )
-            ) FILTER (WHERE pfw.role = 'director'),
+            ) FILTER (WHERE pfw.role IS NOT NULL ),
             '[]'
-        ) as director,
-        COALESCE (
-            json_agg(
-                DISTINCT jsonb_build_object(
-                    'id', fw.id,
-                    'title', fw.title
-                )
-            ) FILTER (WHERE pfw.role = 'actor'),
-            '[]'
-        ) as actors,
-        COALESCE (
-            json_agg(
-                DISTINCT jsonb_build_object(
-                    'id', fw.id,
-                    'title', fw.title
-                )
-            ) FILTER (WHERE pfw.role = 'writer'),
-            '[]'
-        ) as writers,
+        ) as films,
         MAX(p.updated_at) AS last_modified
     FROM
         content.person p

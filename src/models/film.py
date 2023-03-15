@@ -34,9 +34,7 @@ class Genre(BaseModel):
 class Person(BaseModel):
     id: str
     full_name: str
-    director: list[dict]
-    writer: list[dict]
-    actor: list[dict]
+    films: list[dict]
 
     class Config:
         json_loads = orjson.loads

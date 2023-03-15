@@ -5,9 +5,7 @@ class Transform:
             persons = {
                 "id": row["id"],
                 "full_name": row["full_name"],
-                "director": [film for film in row["director"]],
-                "actor": [film for film in row["actors"]],
-                "writer": [film for film in row["writers"]],
+                "films": [film for film in row["films"]],
             }
             transformed_part.append(persons)
         return transformed_part
