@@ -51,6 +51,7 @@ class PersonList(BaseModel):
         json_loads = orjson.loads
         json_dumps = orjson_dumps
 
+
 # Не нашли применения для данных моделей, но
 # согласно ТЗ, они должны быть.
 class Actor(BaseModel):

@@ -67,7 +67,7 @@ def load_to_etl():
         if state.get_state("index") is None:
             create_index()
             state.set_state("index", "True")
-        # Отправляем данны в ETL
+        # Отправляем данные в ETL
         print(json_body)
         elasticsearch_curl(
             uri=env_settings.URI,
