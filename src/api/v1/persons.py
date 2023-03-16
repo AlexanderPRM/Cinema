@@ -11,6 +11,7 @@ router = APIRouter()
 @router.get(
     "/{person_id}",
     response_model=Person,
+    summary="Персона",
     description="Получить информацию о персоне",
     response_description="Подробная информация о персоне",
 )
@@ -32,6 +33,7 @@ async def person_details(
     "/",
     response_model=list[PersonList],
     description="Список персон",
+    summary="Список персон",
     response_description="Список персон",
 )
 async def list_persons(
