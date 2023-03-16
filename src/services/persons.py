@@ -17,6 +17,22 @@ class PersonService:
         self.redis = redis
         self.elastic = elastic
 
+    async def search_persons(self, query, page_number, page_size):
+        search_query = {"query_string": {"default_field": "full_name", "query": query}}
+        persons = await self.elastic.search(
+            index="persons",
+            body={
+                "_source": ["id", "full_name", "films"],
+                "from": page_number,
+                "size": page_size,
+                "query": search_query,
+            },
+            params={"filter_path": "hits.hits._source"},
+        )
+        if not persons:
+            return None
+        return persons["hits"]["hits"]
+
     async def get_data_by_id(self, *args, **kwargs):
         (params,) = args
         person_id = params.get("person_id")

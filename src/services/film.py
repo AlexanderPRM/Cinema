@@ -17,6 +17,23 @@ class FilmService:
         self.redis = redis
         self.elastic = elastic
 
+    async def search_films(self, query, page_number, page_size) -> Optional[List[Film]]:
+        search_query = {"query_string": {"default_field": "title", "query": query}}
+        films = await self.elastic.search(
+            index="movies",
+            body={
+                "_source": ["id", "title", "imdb_rating"],
+                "from": page_number,
+                "size": page_size,
+                "query": search_query,
+            },
+            params={"filter_path": "hits.hits._source"},
+        )
+        print(films)
+        if not films:
+            return None
+        return films["hits"]["hits"]
+
     async def get_films(self, sort, genre, page_number, page_size) -> Optional[List[Film]]:
         if sort[0] == "-":
             sort = {sort[1:]: "desc"}
@@ -41,7 +58,6 @@ class FilmService:
                 "size": page_size,
                 "query": filter_query,
             },
-            size=20,
             params={"filter_path": "hits.hits._source"},
         )
         if not films:
