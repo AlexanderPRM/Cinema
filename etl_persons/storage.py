@@ -40,9 +40,8 @@ class State:
         self.state = self.storage.retrieve_state()
 
     def set_state(self, key: str, value: Any) -> None:
-        data = self.storage.retrieve_state()
-        data[key] = value
-        self.storage.save_state(data)
+        self.state[key] = value
+        self.storage.save_state(self.state)
 
     def get_state(self, key: str) -> Any:
         return self.state.get(key, None)
