@@ -6,7 +6,7 @@ from fastapi import Depends
 from redis.asyncio import Redis
 
 from db.elastic import get_elastic
-from db.redis import get_redis
+from db.redis_db import get_redis
 from models.film import Person, PersonList
 
 PERSON_CACHE_EXPIRE_IN_SECONDS = 60 * 5
@@ -51,14 +51,14 @@ class PersonService:
         return Person(**doc["_source"])
 
     async def _person_from_cache(self, person_id: str) -> Optional[Person]:
-        data = await self.redis.get(person_id)
+        data = self.redis.get(person_id)
         if not data:
             return None
         person = Person.parse_raw(data)
         return person
 
     async def _put_person_to_cache(self, person: Person):
-        await self.redis.set(person.id, person.json(), PERSON_CACHE_EXPIRE_IN_SECONDS)
+        self.redis.set(person.id, person.json(), PERSON_CACHE_EXPIRE_IN_SECONDS)
 
 
 @lru_cache()

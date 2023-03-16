@@ -1,3 +1,5 @@
+from typing import List
+
 import orjson
 from pydantic import BaseModel
 
@@ -44,6 +46,37 @@ class Person(BaseModel):
 class PersonList(BaseModel):
     id: str
     full_name: str
+
+    class Config:
+        json_loads = orjson.loads
+        json_dumps = orjson_dumps
+
+# Не нашли применения для данных моделей, но
+# согласно ТЗ, они должны быть.
+class Actor(BaseModel):
+    id: str
+    full_name: str
+    films: List[str]
+
+    class Config:
+        json_loads = orjson.loads
+        json_dumps = orjson_dumps
+
+
+class Director(BaseModel):
+    id: str
+    full_name: str
+    films: List[str]
+
+    class Config:
+        json_loads = orjson.loads
+        json_dumps = orjson_dumps
+
+
+class Writer(BaseModel):
+    id: str
+    full_name: str
+    films: List[str]
 
     class Config:
         json_loads = orjson.loads

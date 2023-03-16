@@ -6,7 +6,8 @@ from fastapi import Depends
 from redis.asyncio import Redis
 
 from db.elastic import get_elastic
-from db.redis import get_redis
+from db.redis_db import get_redis
+
 from models.film import Genre
 
 GENRE_CACHE_EXPIRE_IN_SECONDS = 60 * 5
@@ -51,14 +52,14 @@ class GenreService:
         return Genre(**doc["_source"])
 
     async def _genre_from_cache(self, genre_id: str) -> Optional[Genre]:
-        data = await self.redis.get(genre_id)
+        data = self.redis.get(genre_id)
         if not data:
             return None
         genre = Genre.parse_raw(data)
         return genre
 
     async def _put_genre_to_cache(self, genre: Genre):
-        await self.redis.set(genre.id, genre.json(), GENRE_CACHE_EXPIRE_IN_SECONDS)
+        self.redis.set(genre.id, genre.json(), GENRE_CACHE_EXPIRE_IN_SECONDS)
 
 
 @lru_cache()

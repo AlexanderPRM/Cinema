@@ -9,7 +9,7 @@ from redis.asyncio import Redis
 from api.v1 import films, genres, persons
 from core import config
 from core.logger import LOGGING
-from db import elastic, redis
+from db import elastic, redis_db
 
 app = FastAPI(
     title=config.PROJECT_NAME,
@@ -26,14 +26,14 @@ async def startup():
     # Подключаемся к базам при старте сервера
     # Подключиться можем при работающем event-loop
     # Поэтому логика подключения происходит в асинхронной функции
-    redis.redis = Redis(host=config.REDIS_HOST, port=config.REDIS_PORT)
+    redis_db.redis = Redis(host=config.REDIS_HOST, port=config.REDIS_PORT)
     elastic.es = AsyncElasticsearch(hosts=[f"{config.ELASTIC_HOST}:{config.ELASTIC_PORT}"])
 
 
 @app.on_event("shutdown")
 async def shutdown():
     # Отключаемся от баз при выключении сервера
-    await redis.redis.close()
+    await redis_db.redis.close()
     await elastic.es.close()
 
 
