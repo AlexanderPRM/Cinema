@@ -29,7 +29,14 @@ INDEX_CREATE = {
         "properties": {
             "id": {"type": "keyword"},
             "imdb_rating": {"type": "float"},
-            "genre": {"type": "keyword"},
+            "genre": {
+                "type": "nested",
+                "dynamic": "strict",
+                "properties": {
+                    "id": {"type": "keyword"},
+                    "name": {"type": "text", "analyzer": "ru_en"},
+                },
+            },
             "title": {"type": "text", "analyzer": "ru_en", "fields": {"raw": {"type": "keyword"}}},
             "description": {"type": "text", "analyzer": "ru_en"},
             "director": {"type": "text", "analyzer": "ru_en"},
@@ -75,7 +82,15 @@ SQL_QUERY = """
             ) FILTER (WHERE p.id is not null),
             '[]'
         ) as persons,
-        array_agg(DISTINCT g.name) as genres,
+        COALESCE (
+            json_agg(
+                DISTINCT jsonb_build_object(
+                    'genre_id', g.id,
+                    'genre_name', g.name
+                )
+            ) FILTER (WHERE g.id is not null),
+            '[]'
+        ) as genres,
         array_agg(g.updated_at) as g_updated_at,
         array_agg(p.updated_at) as p_updated_at
     FROM content.film_work fw
@@ -88,6 +103,3 @@ SQL_QUERY = """
     ORDER BY fw.updated_at
     LIMIT %s;
     """
-
-PERSON_QUERY = """
-  SELECT pfw.id FROM """

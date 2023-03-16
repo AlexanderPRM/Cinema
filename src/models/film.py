@@ -13,7 +13,7 @@ class Film(BaseModel):
     title: str
     imdb_rating: float
     description: str
-    genre: list[str]
+    genre: list[dict]
     actors: list[dict]
     writers: list[dict]
     director: list
@@ -50,7 +50,6 @@ class PersonList(BaseModel):
     class Config:
         json_loads = orjson.loads
         json_dumps = orjson_dumps
-
 
 # Не нашли применения для данных моделей, но
 # согласно ТЗ, они должны быть.
