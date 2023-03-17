@@ -88,7 +88,7 @@ class FilmService:
     async def _film_from_cache(self, film_id: str) -> Optional[FilmDetail]:
         # Пытаемся получить данные о фильме из кеша, используя команду get
         # https://redis.io/commands/get/
-        data = self.redis.get(film_id)
+        data = await self.redis.get(film_id)
         if not data:
             return None
 
@@ -101,7 +101,7 @@ class FilmService:
         # Выставляем время жизни кеша — 5 минут
         # https://redis.io/commands/set/
         # pydantic позволяет сериализовать модель в json
-        self.redis.set(film.id, film.json(), FILM_CACHE_EXPIRE_IN_SECONDS)
+        await self.redis.set(film.id, film.json(), FILM_CACHE_EXPIRE_IN_SECONDS)
 
 
 @lru_cache()
