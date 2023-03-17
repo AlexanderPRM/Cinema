@@ -9,10 +9,16 @@ from services.film import FilmService, get_film_service
 
 router = APIRouter()
 
+
 class CommonQueryParams:
-    def __init__(self, page_number: Optional[int] = 1, page_size: Optional[int] = 10):
+    def __init__(
+        self,
+        page_number: int | None = Query(default=1, ge=1),
+        page_size: int | None = Query(default=10, ge=1, le=50),
+    ):
         self.page_number = page_number
         self.page_size = page_size
+
 
 @router.get(
     "",
@@ -27,7 +33,7 @@ async def films(
     film_service: FilmService = Depends(get_film_service),
     sort: str = "-imdb_rating",
     genre: Optional[UUID] = None,
-    commons: CommonQueryParams = Depends(CommonQueryParams)
+    commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> Optional[List[Dict[str, Film]]]:
     films = await film_service.get_films(sort, genre, commons.page_number, commons.page_size)
     if not films:
@@ -46,7 +52,7 @@ async def films(
 async def search_films(
     film_service: FilmService = Depends(get_film_service),
     query: str = "",
-    commons: CommonQueryParams = Depends(CommonQueryParams)
+    commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> Optional[List[Dict[str, Film]]]:
     films = await film_service.search_films(query, commons.page_number, commons.page_size)
     if not films:
