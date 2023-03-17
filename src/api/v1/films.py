@@ -2,13 +2,17 @@ from http import HTTPStatus
 from typing import Dict, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from models.film import Film, FilmDetail
 from services.film import FilmService, get_film_service
 
 router = APIRouter()
 
+class CommonQueryParams:
+    def __init__(self, page_number: Optional[int] = 1, page_size: Optional[int] = 10):
+        self.page_number = page_number
+        self.page_size = page_size
 
 @router.get(
     "",
@@ -23,10 +27,9 @@ async def films(
     film_service: FilmService = Depends(get_film_service),
     sort: str = "-imdb_rating",
     genre: Optional[UUID] = None,
-    page_number: Optional[int] = 1,
-    page_size: Optional[int] = 10,
+    commons: CommonQueryParams = Depends(CommonQueryParams)
 ) -> Optional[List[Dict[str, Film]]]:
-    films = await film_service.get_films(sort, genre, page_number, page_size)
+    films = await film_service.get_films(sort, genre, commons.page_number, commons.page_size)
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Films Not Found")
     return films
@@ -43,10 +46,9 @@ async def films(
 async def search_films(
     film_service: FilmService = Depends(get_film_service),
     query: str = "",
-    page_number: Optional[int] = 1,
-    page_size: Optional[int] = 10,
+    commons: CommonQueryParams = Depends(CommonQueryParams)
 ) -> Optional[List[Dict[str, Film]]]:
-    films = await film_service.search_films(query, page_number, page_size)
+    films = await film_service.search_films(query, commons.page_number, commons.page_size)
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Films Not Found")
     return films
