@@ -14,7 +14,7 @@ router = APIRouter()
     "",
     response_model=List[Optional[Dict[str, Film]]],
     response_description="Пример вернувшегося списка фильмов.",
-    response_model_exclude=["description", "genre", "actors", "writers", "director"],
+    response_model_exclude={"description", "genre", "actors", "writers", "director"},
     summary="Список фильмов",
     description="Список фильмов с пагинацией, "
     "фильтрацией по жанрам и сортировкой по названию или рейтингу.",
@@ -36,7 +36,7 @@ async def films(
     "/search",
     response_model=List[Optional[Dict[str, Film]]],
     response_description="Пример найденных фильмов",
-    response_model_exclude=["description", "genre", "actors", "writers", "director"],
+    response_model_exclude={"description", "genre", "actors", "writers", "director"},
     description="Полнотекстовый поиск по фильмам",
     summary="Список найденных фильмов",
 )
