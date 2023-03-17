@@ -11,13 +11,13 @@ class BaseModelOrjson(BaseModel):
     json_dumps = orjson_dumps
 
 
-# class Film(BaseModel):
-#     id: str
-#     title: str
-#     imdb_rating: float
+class Film(BaseModelOrjson):
+    id: str
+    title: str
+    imdb_rating: float
 
 
-class FilmDetail(BaseModel):
+class FilmDetail(BaseModelOrjson):
     id: str
     title: str
     imdb_rating: float
