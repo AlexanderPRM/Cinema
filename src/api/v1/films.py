@@ -3,28 +3,11 @@ from typing import Dict, List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 
 from services.film import FilmService, get_film_service
+from models.film import Film, FilmDetail
 
 router = APIRouter()
-
-
-class Film(BaseModel):
-    id: str
-    title: str
-    imdb_rating: float
-
-
-class FilmDetail(BaseModel):
-    id: str
-    title: str
-    imdb_rating: float
-    desription: Optional[str]
-    genre: List[Optional[dict]]
-    actors: List[Optional[dict]]
-    writers: List[Optional[dict]]
-    director: List[Optional[str]]
 
 
 @router.get(
