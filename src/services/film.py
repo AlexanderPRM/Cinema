@@ -29,7 +29,6 @@ class FilmService:
             },
             params={"filter_path": "hits.hits._source"},
         )
-        print(films)
         if not films:
             return None
         return films["hits"]["hits"]
@@ -55,9 +54,9 @@ class FilmService:
                 "_source": ["id", "title", "imdb_rating"],
                 "sort": sort,
                 "from": page_number,
-                "size": page_size,
                 "query": filter_query,
             },
+            size=page_size,
             params={"filter_path": "hits.hits._source"},
         )
         if not films:
@@ -89,7 +88,7 @@ class FilmService:
     async def _film_from_cache(self, film_id: str) -> Optional[Film]:
         # Пытаемся получить данные о фильме из кеша, используя команду get
         # https://redis.io/commands/get/
-        data = self.redis.get(film_id)
+        data = await self.redis.get(film_id)
         if not data:
             return None
 
@@ -102,7 +101,7 @@ class FilmService:
         # Выставляем время жизни кеша — 5 минут
         # https://redis.io/commands/set/
         # pydantic позволяет сериализовать модель в json
-        self.redis.set(film.id, film.json(), FILM_CACHE_EXPIRE_IN_SECONDS)
+        await self.redis.set(film.id, film.json(), FILM_CACHE_EXPIRE_IN_SECONDS)
 
 
 @lru_cache()

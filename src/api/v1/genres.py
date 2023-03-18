@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from models.film import Genre
 from services.genres import GenreService, get_genre_service
@@ -35,8 +35,8 @@ async def genre_details(
 async def list_genres(
     request: Request,
     genre_service: GenreService = Depends(get_genre_service),
-    page_number=1,
-    page_size=20,
+    page_number: int | None = Query(default=1, ge=1),
+    page_size: int | None = Query(default=10, ge=1, le=50),
 ) -> list[Genre]:
     query_params = dict(
         request=request,

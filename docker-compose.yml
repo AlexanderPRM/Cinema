@@ -13,13 +13,6 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     restart: always
 
-  transfer:
-    build: ../sqlite_to_postgres
-    env_file:
-      - config.env
-    depends_on:
-      - db
-
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
     restart: always
@@ -43,7 +36,7 @@ services:
     depends_on:
       - db
       - elastic
-      - transfer
+      # - transfer
 
   etl_persons:
     build: etl_persons
@@ -53,7 +46,7 @@ services:
     depends_on:
       - db
       - elastic
-      - transfer
+      # - transfer
 
   etl_genres:
     build: etl_genres
@@ -63,7 +56,7 @@ services:
     depends_on:
       - db
       - elastic
-      - transfer
+      # - transfer
 
   redis:
     image: redis:7.0.9

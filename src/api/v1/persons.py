@@ -1,11 +1,21 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from models.film import Person, PersonList
 from services.persons import PersonService, get_person_service
 
 router = APIRouter()
+
+
+class CommonQueryParams:
+    def __init__(
+        self,
+        page_number: int | None = Query(default=1, ge=1),
+        page_size: int | None = Query(default=10, ge=1, le=50),
+    ):
+        self.page_number = page_number
+        self.page_size = page_size
 
 
 @router.get(
@@ -18,14 +28,13 @@ router = APIRouter()
 async def list_persons(
     request: Request,
     person_service: PersonService = Depends(get_person_service),
-    page_number=1,
-    page_size=20,
+    commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> list[PersonList]:
     query_params = dict(
         request=request,
         index="persons",
-        page_number=page_number,
-        page_size=page_size,
+        page_number=commons.page_number,
+        page_size=commons.page_size,
     )
     persons = await person_service.get_data_list(query_params)
     if not persons:
@@ -43,10 +52,9 @@ async def list_persons(
 async def search_persons(
     query: str = "",
     person_service: PersonService = Depends(get_person_service),
-    page_number=1,
-    page_size=20,
+    commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> list[Person]:
-    persons = await person_service.search_persons(query, page_number, page_size)
+    persons = await person_service.search_persons(query, commons.page_number, commons.page_size)
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
     return [

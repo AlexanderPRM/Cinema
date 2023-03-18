@@ -12,9 +12,9 @@ from core.logger import LOGGING
 from db import elastic, redis_db
 
 app = FastAPI(
-    title=config.PROJECT_NAME,
+    title=config.config.PROJECT_NAME,
     description="Информация о фильмах, жанрах и людях, участвовавших в создании произведения",
-    version=config.PROJECT_VERSION,
+    version=config.config.PROJECT_VERSION,
     docs_url="/api/openapi",
     openapi_url="/api/openapi.json",
     default_response_class=ORJSONResponse,
@@ -26,8 +26,10 @@ async def startup():
     # Подключаемся к базам при старте сервера
     # Подключиться можем при работающем event-loop
     # Поэтому логика подключения происходит в асинхронной функции
-    redis_db.redis = Redis(host=config.REDIS_HOST, port=config.REDIS_PORT)
-    elastic.es = AsyncElasticsearch(hosts=[f"{config.ELASTIC_HOST}:{config.ELASTIC_PORT}"])
+    redis_db.redis = Redis(host=config.config.REDIS_HOST, port=config.config.REDIS_PORT)
+    elastic.es = AsyncElasticsearch(
+        hosts=[f"{config.config.ELASTIC_HOST}:{config.config.ELASTIC_PORT}"]
+    )
 
 
 @app.on_event("shutdown")
