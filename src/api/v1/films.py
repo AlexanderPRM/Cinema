@@ -22,7 +22,7 @@ class CommonQueryParams:
 
 @router.get(
     "",
-    response_model=List[Optional[Dict[str, Film]]],
+    response_model=List[Film],
     response_description="Пример вернувшегося списка фильмов.",
     response_model_exclude={"description", "genre", "actors", "writers", "director"},
     summary="Список фильмов",
@@ -38,12 +38,12 @@ async def films(
     films = await film_service.get_films(sort, genre, commons.page_number, commons.page_size)
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Films Not Found")
-    return films
+    return [Film(**film["_source"]) for film in films]
 
 
 @router.get(
     "/search",
-    response_model=List[Optional[Dict[str, Film]]],
+    response_model=List[Film],
     response_description="Пример найденных фильмов",
     response_model_exclude={"description", "genre", "actors", "writers", "director"},
     description="Полнотекстовый поиск по фильмам",
@@ -57,7 +57,7 @@ async def search_films(
     films = await film_service.search_films(query, commons.page_number, commons.page_size)
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Films Not Found")
-    return films
+    return [Film(**film["_source"]) for film in films]
 
 
 # Внедряем FilmService с помощью Depends(get_film_service)
