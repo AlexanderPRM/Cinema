@@ -5,7 +5,9 @@ WORKDIR /opt/api
 
 COPY requirements.txt .
 
-RUN apt update && apt-get install python3-dev -y
+RUN apt-get update && apt-get install -y \
+     python3-dev  \
+     netcat
 
 RUN pip install --upgrade pip --no-cache-dir \
      && pip install -r requirements.txt --no-cache-dir
@@ -13,6 +15,5 @@ RUN pip install --upgrade pip --no-cache-dir \
 COPY run_api.sh .
 COPY src .
 
-RUN apt install -y netcat
 RUN chmod +x /opt/api/run_api.sh
 ENTRYPOINT [ "/opt/api/run_api.sh" ]
