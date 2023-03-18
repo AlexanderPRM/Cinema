@@ -40,20 +40,3 @@ class Person(BaseModelOrjson):
 
 class PersonList(BaseModelOrjson):
     full_name: str
-
-
-# Не нашли применения для данных моделей, но
-# согласно ТЗ, они должны быть.
-class Actor(BaseModelOrjson):
-    full_name: str
-    films: list[str]
-
-
-class Director(BaseModelOrjson):
-    full_name: str
-    films: list[str]
-
-
-class Writer(BaseModelOrjson):
-    full_name: str
-    films: list[str]
