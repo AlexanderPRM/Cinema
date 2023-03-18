@@ -1,7 +1,8 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 
+from core.config import CommonQueryParams
 from models.film import Genre
 from services.genres import GenreService, get_genre_service
 
@@ -35,14 +36,13 @@ async def genre_details(
 async def list_genres(
     request: Request,
     genre_service: GenreService = Depends(get_genre_service),
-    page_number: int | None = Query(default=1, ge=1),
-    page_size: int | None = Query(default=10, ge=1, le=50),
+    commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> list[Genre]:
     query_params = dict(
         request=request,
         index="genres",
-        page_number=page_number,
-        page_size=page_size,
+        page_number=commons.page_number,
+        page_size=commons.page_size,
     )
     genres = await genre_service.get_data_list(query_params)
     if not genres:

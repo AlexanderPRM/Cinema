@@ -2,22 +2,13 @@ from http import HTTPStatus
 from typing import Dict, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 
+from core.config import CommonQueryParams
 from models.film import Film, FilmDetail
 from services.film import FilmService, get_film_service
 
 router = APIRouter()
-
-
-class CommonQueryParams:
-    def __init__(
-        self,
-        page_number: int | None = Query(default=1, ge=1),
-        page_size: int | None = Query(default=10, ge=1, le=50),
-    ):
-        self.page_number = page_number
-        self.page_size = page_size
 
 
 @router.get(

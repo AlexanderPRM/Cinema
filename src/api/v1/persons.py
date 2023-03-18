@@ -1,21 +1,12 @@
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 
+from core.config import CommonQueryParams
 from models.film import Person, PersonList
 from services.persons import PersonService, get_person_service
 
 router = APIRouter()
-
-
-class CommonQueryParams:
-    def __init__(
-        self,
-        page_number: int | None = Query(default=1, ge=1),
-        page_size: int | None = Query(default=10, ge=1, le=50),
-    ):
-        self.page_number = page_number
-        self.page_size = page_size
 
 
 @router.get(

@@ -28,6 +28,13 @@ services:
     env_file:
       - config.env
 
+  transfer:
+    image: alexanderprm/sqlite_to_postgres:async_api_transfer
+    env_file:
+      - config.env
+    depends_on:
+      - db
+
   etl_movies:
     build: etl_movies
     restart: always
@@ -36,7 +43,7 @@ services:
     depends_on:
       - db
       - elastic
-      # - transfer
+      - transfer
 
   etl_persons:
     build: etl_persons
@@ -46,7 +53,7 @@ services:
     depends_on:
       - db
       - elastic
-      # - transfer
+      - transfer
 
   etl_genres:
     build: etl_genres
@@ -56,7 +63,7 @@ services:
     depends_on:
       - db
       - elastic
-      # - transfer
+      - transfer
 
   redis:
     image: redis:7.0.9
