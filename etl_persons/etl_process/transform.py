@@ -9,10 +9,7 @@ class Transform:
             films_with_roles = []
             for key, group in grouped_films:
                 roles = [x["roles"] for x in group]
-                films_with_roles.append({
-                    "id": key,
-                    "roles": roles
-                })
+                films_with_roles.append({"id": key, "roles": roles})
             persons = {
                 "id": row["id"],
                 "full_name": row["full_name"],
