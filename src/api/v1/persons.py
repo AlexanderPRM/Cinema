@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
@@ -66,12 +67,13 @@ async def search_persons(
     response_description="Подробная информация о персоне",
 )
 async def person_details(
-    request: Request, person_id: str, person_service: PersonService = Depends(get_person_service)
+    request: Request, person_id: UUID, person_service: PersonService = Depends(get_person_service)
 ) -> Person:
     query_params = dict(person_id=person_id, request=request, index="persons")
     person = await person_service.get_data_by_id(query_params)
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
+    print(person)
     return Person(
         id=person.id,
         full_name=person.full_name,

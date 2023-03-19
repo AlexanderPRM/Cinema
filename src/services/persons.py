@@ -36,6 +36,7 @@ class PersonService:
     async def get_data_by_id(self, *args, **kwargs):
         (params,) = args
         person_id = params.get("person_id")
+        person_id = str(person_id)
         person = await self._person_from_cache(person_id)
         if not person:
             person = await self._person_from_elastic(person_id)
@@ -67,7 +68,7 @@ class PersonService:
         return Person(**doc["_source"])
 
     async def _person_from_cache(self, person_id: str) -> Optional[Person]:
-        data = self.redis.get(person_id)
+        data = await self.redis.get(person_id)
         if not data:
             return None
         person = Person.parse_raw(data)
