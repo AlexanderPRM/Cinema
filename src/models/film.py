@@ -22,7 +22,7 @@ class Film(BaseModelOrjson):
 class FilmDetail(BaseModelOrjson):
     title: str
     imdb_rating: float
-    desription: str | None
+    description: str | None
     genre: list[dict | None]
     actors: list[dict | None]
     writers: list[dict | None]

@@ -60,7 +60,7 @@ async def search_films(
     description=("Получение одного фильма по ID"),
 )
 async def film_details(
-    film_id: str, film_service: FilmService = Depends(get_film_service)
+    film_id: UUID, film_service: FilmService = Depends(get_film_service)
 ) -> FilmDetail:
     film = await film_service._film_from_cache(film_id)
     if film is None:
@@ -68,11 +68,12 @@ async def film_details(
         await film_service._put_film_to_cache(film)
     if not film:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Film Not Found")
+    print(film)
     return FilmDetail(
         id=film.id,
         title=film.title,
         imdb_rating=film.imdb_rating,
-        desription=film.description,
+        description=film.description,
         genre=film.genre,
         actors=film.actors,
         writers=film.writers,

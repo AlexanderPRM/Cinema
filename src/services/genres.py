@@ -20,6 +20,7 @@ class GenreService:
     async def get_data_by_id(self, *args, **kwargs):
         (params,) = args
         genre_id = params.get("genre_id")
+        genre_id = str(genre_id)
         genre = await self._genre_from_cache(genre_id)
         if not genre:
             genre = await self._genre_from_elastic(genre_id)
@@ -51,7 +52,7 @@ class GenreService:
         return Genre(**doc["_source"])
 
     async def _genre_from_cache(self, genre_id: str) -> Optional[Genre]:
-        data = self.redis.get(genre_id)
+        data = await self.redis.get(genre_id)
         if not data:
             return None
         genre = Genre.parse_raw(data)
