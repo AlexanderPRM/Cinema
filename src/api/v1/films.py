@@ -3,35 +3,19 @@ from typing import Dict, List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
 
+from core.config import CommonQueryParams
+from models.film import Film, FilmDetail
 from services.film import FilmService, get_film_service
 
 router = APIRouter()
 
 
-class Film(BaseModel):
-    id: str
-    title: str
-    imdb_rating: float
-
-
-class FilmDetail(BaseModel):
-    id: str
-    title: str
-    imdb_rating: float
-    desription: Optional[str]
-    genre: List[Optional[dict]]
-    actors: List[Optional[dict]]
-    writers: List[Optional[dict]]
-    director: List[Optional[str]]
-
-
 @router.get(
     "",
-    response_model=List[Optional[Dict[str, Film]]],
+    response_model=List[Film],
     response_description="Пример вернувшегося списка фильмов.",
-    response_model_exclude=["description", "genre", "actors", "writers", "director"],
+    response_model_exclude={"description", "genre", "actors", "writers", "director"},
     summary="Список фильмов",
     description="Список фильмов с пагинацией, "
     "фильтрацией по жанрам и сортировкой по названию или рейтингу.",
@@ -40,33 +24,31 @@ async def films(
     film_service: FilmService = Depends(get_film_service),
     sort: str = "-imdb_rating",
     genre: Optional[UUID] = None,
-    page_number: Optional[int] = 1,
-    page_size: Optional[int] = 10,
+    commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> Optional[List[Dict[str, Film]]]:
-    films = await film_service.get_films(sort, genre, page_number, page_size)
+    films = await film_service.get_films(sort, genre, commons.page_number, commons.page_size)
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Films Not Found")
-    return films
+    return [Film(**film["_source"]) for film in films]
 
 
 @router.get(
     "/search",
-    response_model=List[Optional[Dict[str, Film]]],
+    response_model=List[Film],
     response_description="Пример найденных фильмов",
-    response_model_exclude=["description", "genre", "actors", "writers", "director"],
+    response_model_exclude={"description", "genre", "actors", "writers", "director"},
     description="Полнотекстовый поиск по фильмам",
     summary="Список найденных фильмов",
 )
 async def search_films(
     film_service: FilmService = Depends(get_film_service),
     query: str = "",
-    page_number: Optional[int] = 1,
-    page_size: Optional[int] = 10,
+    commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> Optional[List[Dict[str, Film]]]:
-    films = await film_service.search_films(query, page_number, page_size)
+    films = await film_service.search_films(query, commons.page_number, commons.page_size)
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Films Not Found")
-    return films
+    return [Film(**film["_source"]) for film in films]
 
 
 # Внедряем FilmService с помощью Depends(get_film_service)
@@ -78,7 +60,7 @@ async def search_films(
     description=("Получение одного фильма по ID"),
 )
 async def film_details(
-    film_id: str, film_service: FilmService = Depends(get_film_service)
+    film_id: UUID, film_service: FilmService = Depends(get_film_service)
 ) -> FilmDetail:
     film = await film_service._film_from_cache(film_id)
     if film is None:
@@ -86,11 +68,12 @@ async def film_details(
         await film_service._put_film_to_cache(film)
     if not film:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Film Not Found")
+    print(film)
     return FilmDetail(
         id=film.id,
         title=film.title,
         imdb_rating=film.imdb_rating,
-        desription=film.description,
+        description=film.description,
         genre=film.genre,
         actors=film.actors,
         writers=film.writers,

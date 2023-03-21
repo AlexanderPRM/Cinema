@@ -1,22 +1,37 @@
 import os
 from logging import config as logging_config
 
+from fastapi import Query
+from pydantic import BaseSettings
+
 from core.logger import LOGGING
 
 # Применяем настройки логирования
 logging_config.dictConfig(LOGGING)
 
-# Название проекта и его версия. Используется в Swagger-документации
-PROJECT_NAME = os.getenv("PROJECT_NAME", "movies")
-PROJECT_VERSION = os.getenv("PROJECT_VERSION", "1.0.0")
 
-# Настройки Redis
-REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
-REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+class CommonQueryParams:
+    def __init__(
+        self,
+        page_number: int | None = Query(default=1, ge=1),
+        page_size: int | None = Query(default=10, ge=1, le=50),
+    ):
+        self.page_number = page_number
+        self.page_size = page_size
 
-# Настройки Elasticsearch
-ELASTIC_HOST = os.getenv("ELASTIC_HOST", "127.0.0.1")
-ELASTIC_PORT = int(os.getenv("ELASTIC_PORT", 9200))
 
-# Корень проекта
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+class Settings(BaseSettings):
+    PROJECT_NAME: str
+    PROJECT_VERSION: str
+    REDIS_HOST: str
+    REDIS_PORT: str
+    ELASTIC_HOST: str
+    ELASTIC_PORT: str
+    BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    class Config:
+        case_sensitive = True
+        env_file = "config.env"
+
+
+config = Settings()

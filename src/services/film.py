@@ -7,7 +7,7 @@ from redis.asyncio import Redis
 
 from db.elastic import get_elastic
 from db.redis_db import get_redis
-from models.film import Film
+from models.film import Film, FilmDetail
 
 FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
 
@@ -29,7 +29,6 @@ class FilmService:
             },
             params={"filter_path": "hits.hits._source"},
         )
-        print(films)
         if not films:
             return None
         return films["hits"]["hits"]
@@ -55,9 +54,9 @@ class FilmService:
                 "_source": ["id", "title", "imdb_rating"],
                 "sort": sort,
                 "from": page_number,
-                "size": page_size,
                 "query": filter_query,
             },
+            size=page_size,
             params={"filter_path": "hits.hits._source"},
         )
         if not films:
@@ -65,7 +64,7 @@ class FilmService:
         return films["hits"]["hits"]
 
     # get_by_id возвращает объект фильма. Он опционален, так как фильм может отсутствовать в базе
-    async def get_by_id(self, film_id: str) -> Optional[Film]:
+    async def get_by_id(self, film_id: str) -> Optional[FilmDetail]:
         # Пытаемся получить данные из кеша, потому что оно работает быстрее
         film = await self._film_from_cache(film_id)
         if not film:
@@ -79,30 +78,30 @@ class FilmService:
 
         return film
 
-    async def _get_film_from_elastic(self, film_id: str) -> Optional[Film]:
+    async def _get_film_from_elastic(self, film_id: str) -> Optional[FilmDetail]:
         try:
             doc = await self.elastic.get("movies", film_id)
         except NotFoundError:
             return None
-        return Film(**doc["_source"])
+        return FilmDetail(**doc["_source"])
 
-    async def _film_from_cache(self, film_id: str) -> Optional[Film]:
+    async def _film_from_cache(self, film_id: str) -> Optional[FilmDetail]:
         # Пытаемся получить данные о фильме из кеша, используя команду get
         # https://redis.io/commands/get/
-        data = self.redis.get(film_id)
+        data = await self.redis.get(str(film_id))
         if not data:
             return None
 
         # pydantic предоставляет удобное API для создания объекта моделей из json
-        film = Film.parse_raw(data)
+        film = FilmDetail.parse_raw(data)
         return film
 
-    async def _put_film_to_cache(self, film: Film):
+    async def _put_film_to_cache(self, film: FilmDetail):
         # Сохраняем данные о фильме, используя команду set
         # Выставляем время жизни кеша — 5 минут
         # https://redis.io/commands/set/
         # pydantic позволяет сериализовать модель в json
-        self.redis.set(film.id, film.json(), FILM_CACHE_EXPIRE_IN_SECONDS)
+        await self.redis.set(str(film.id), film.json(), FILM_CACHE_EXPIRE_IN_SECONDS)
 
 
 @lru_cache()
