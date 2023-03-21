@@ -3,11 +3,11 @@ FROM python:3.10
 WORKDIR /opt/etl
 
 
-COPY requirements.txt .
-
 RUN apt-get update && apt-get install -y \
      python3-dev \
      netcat
+
+COPY requirements.txt .
 
 RUN pip install --upgrade pip --no-cache-dir \
      && pip install -r requirements.txt --no-cache-dir
