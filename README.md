@@ -1,11 +1,38 @@
 # Проектная работа 4 спринта: Async API
 
+[![linters](https://github.com/AlexanderPRM/Async_API/actions/workflows/linters.yml/badge.svg)](https://github.com/AlexanderPRM/Async_API/actions/workflows/linters.yml)
+
 ## Инструкция по настройке проекта
 
-- Создайте виртуальное окружение
-- Установите зависимости
-- Уберите расширение .example у .env.example
-- Запустите команду pre-commit install
-- Команда для запуска докера ```docker-compose --env-file config.env up --build```
+### Создайте виртуальное окружение
 
-### Можете работать с проектом :)
+    (Linux\MacOS)
+
+    python3 -m venv venv
+    source venv/bin/activate
+
+### Установите зависимости
+
+    (Для работы с API)
+    pip install -r requirements.txt
+
+    (Для работы с ETL)
+    pip install -r etl_genres/requirements.txt
+    pip install -r etl_persons/requirements.txt
+    pip install -r etl_movies/requirements.txt
+
+### Настройте переменные окружения
+
+    Достаточно убрать расширение .example у файла config.env.example
+
+    - mv config.env.example config.env
+
+    Если нужно, укажите свои значения
+
+### Если вы собираетесь работать с Git, установите pre-commit hock
+
+    pre-commit install
+
+### Запустите docker-compose
+
+    docker-compose --env-file config.env up --build
