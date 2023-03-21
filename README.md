@@ -21,6 +21,9 @@
     pip install -r etl_persons/requirements.txt
     pip install -r etl_movies/requirements.txt
 
+    (Инструменты разработки)
+    pip install -r requirements_dev.txt
+
 ### Настройте переменные окружения
 
     Достаточно убрать расширение .example у файла config.env.example
