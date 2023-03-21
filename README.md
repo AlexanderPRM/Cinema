@@ -6,31 +6,34 @@
 
 ### Создайте виртуальное окружение
 
-    (Linux\MacOS)
+#### (Linux\MacOS)
 
     python3 -m venv venv
     source venv/bin/activate
 
 ### Установите зависимости
 
-    (Для работы с API)
+##### (Для работы с API)
+
     pip install -r requirements.txt
 
-    (Для работы с ETL)
+##### (Для работы с ETL)
+
     pip install -r etl_genres/requirements.txt
     pip install -r etl_persons/requirements.txt
     pip install -r etl_movies/requirements.txt
 
-    (Инструменты разработки)
+##### (Инструменты разработки)
+
     pip install -r requirements_dev.txt
 
 ### Настройте переменные окружения
 
-    Достаточно убрать расширение .example у файла config.env.example
+#### Достаточно убрать расширение .example у файла config.env.example.
 
-    - mv config.env.example config.env
+#### Если нужно, укажите свои значения
 
-    Если нужно, укажите свои значения
+    mv config.env.example config.env
 
 ### Если вы собираетесь работать с Git, установите pre-commit hock
 
