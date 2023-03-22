@@ -68,7 +68,6 @@ async def film_details(
         await film_service._put_film_to_cache(film)
     if not film:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Film Not Found")
-    print(film)
     return FilmDetail(
         id=film.id,
         title=film.title,

@@ -18,6 +18,5 @@ class AsyncElastic:
         return docs
 
 
-# Функция понадобится при внедрении зависимостей
 async def get_elastic() -> AsyncElastic:
     return AsyncElastic(es)
