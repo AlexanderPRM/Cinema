@@ -3,7 +3,7 @@ from typing import Any
 
 
 class BaseCache:
-    CACHE_EXPIRE_IN_SECONDS = 300 # 5 mins
+    CACHE_EXPIRE_IN_SECONDS = 300
 
     @abstractmethod
     async def get_object_from_cache(self, url: str):

@@ -21,7 +21,10 @@ async def list_persons(
     person_service: PersonService = Depends(get_person_service),
     commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> list[PersonList]:
-    persons = await person_service.get_data_list(page_number=commons.page_number, page_size=commons.page_size)
+    persons = await person_service.get_data_list(
+        page_number=commons.page_number,
+        page_size=commons.page_size
+    )
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
     return persons

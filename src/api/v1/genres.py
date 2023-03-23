@@ -34,11 +34,13 @@ async def genre_details(
     response_description="Список жанров",
 )
 async def list_genres(
-    request: Request,
     genre_service: GenreService = Depends(get_genre_service),
     commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> list[Genre]:
-    genres = await genre_service.get_data_list(page_number=commons.page_number, page_size=commons.page_size)
+    genres = await genre_service.get_data_list(
+        page_number=commons.page_number,
+        page_size=commons.page_size
+    )
     if not genres:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
     return genres

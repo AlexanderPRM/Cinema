@@ -1,20 +1,18 @@
 from functools import lru_cache
 from typing import Optional
 
-from elasticsearch import NotFoundError, AsyncElasticsearch
+from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 from redis.asyncio import Redis
 
 from db.elastic import get_elastic
 from db.redis_db import get_redis
-from models.film import Genre
-
-GENRE_CACHE_EXPIRE_IN_SECONDS = 60 * 5
-
 from cache.base import BaseCache
 from cache.redis_cache import RedisCache
 from storage.genres import GenreBaseStorage, GenreElasticStorage
 from typing import Dict, List
+# from models.film import Genre
+
 
 class GenreService:
     def __init__(self, cache: BaseCache, storage: GenreBaseStorage):

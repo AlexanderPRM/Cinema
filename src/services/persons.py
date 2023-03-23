@@ -7,14 +7,12 @@ from redis.asyncio import Redis
 
 from db.elastic import get_elastic
 from db.redis_db import get_redis
-from models.film import Person, PersonList
-
-PERSON_CACHE_EXPIRE_IN_SECONDS = 60 * 5
-
 from cache.base import BaseCache
 from cache.redis_cache import RedisCache
 from storage.persons import PersonBaseStorage, PersonElasticStorage
 from typing import Dict, List
+# from models.film import Person, PersonList
+
 
 class PersonService:
 

@@ -4,6 +4,7 @@ import json
 
 from db.redis_db import Redis
 
+
 class RedisCache(BaseCache):
 
     def __init__(self, redis: Redis, expire: int = None):
