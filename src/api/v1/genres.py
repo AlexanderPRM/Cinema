@@ -20,11 +20,10 @@ router = APIRouter()
 async def genre_details(
     request: Request, genre_id: UUID, genre_service: GenreService = Depends(get_genre_service)
 ) -> Genre:
-    query_params = dict(genre_id=genre_id, request=request, index="genres")
-    genre = await genre_service.get_data_by_id(query_params)
+    genre = await genre_service.get_data_by_id(url=str(request.url), id=str(genre_id))
     if not genre:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
-    return Genre(id=genre.id, name=genre.name)
+    return genre
 
 
 @router.get(
@@ -39,13 +38,7 @@ async def list_genres(
     genre_service: GenreService = Depends(get_genre_service),
     commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> list[Genre]:
-    query_params = dict(
-        request=request,
-        index="genres",
-        page_number=commons.page_number,
-        page_size=commons.page_size,
-    )
-    genres = await genre_service.get_data_list(query_params)
+    genres = await genre_service.get_data_list(page_number=commons.page_number, page_size=commons.page_size)
     if not genres:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
-    return [Genre(id=genre.id, name=genre.name) for genre in genres]
+    return genres

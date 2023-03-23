@@ -2,7 +2,7 @@ from http import HTTPStatus
 from typing import Dict, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from core.config import CommonQueryParams
 from models.film import Film, FilmDetail
@@ -26,10 +26,10 @@ async def films(
     genre: Optional[UUID] = None,
     commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> Optional[List[Dict[str, Film]]]:
-    films = await film_service.get_films(sort, genre, commons.page_number, commons.page_size)
+    films = await film_service.get_data_list(sort, genre, commons.page_number, commons.page_size)
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Films Not Found")
-    return [Film(**film["_source"]) for film in films]
+    return films
 
 
 @router.get(
@@ -45,10 +45,10 @@ async def search_films(
     query: str = "",
     commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> Optional[List[Dict[str, Film]]]:
-    films = await film_service.search_films(query, commons.page_number, commons.page_size)
+    films = await film_service.search_data(query, commons.page_number, commons.page_size)
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Films Not Found")
-    return [Film(**film["_source"]) for film in films]
+    return films
 
 
 # Внедряем FilmService с помощью Depends(get_film_service)
@@ -59,22 +59,8 @@ async def search_films(
     summary="Фильм",
     description=("Получение одного фильма по ID"),
 )
-async def film_details(
-    film_id: UUID, film_service: FilmService = Depends(get_film_service)
-) -> FilmDetail:
-    film = await film_service._film_from_cache(film_id)
-    if film is None:
-        film = await film_service.get_by_id(film_id)
-        await film_service._put_film_to_cache(film)
+async def film_details(request: Request, film_id: UUID, film_service: FilmService = Depends(get_film_service)) -> FilmDetail:
+    film = await film_service.get_data_by_id(url=str(request.url), id=str(film_id))
     if not film:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Film Not Found")
-    return FilmDetail(
-        id=film.id,
-        title=film.title,
-        imdb_rating=film.imdb_rating,
-        description=film.description,
-        genre=film.genre,
-        actors=film.actors,
-        writers=film.writers,
-        director=film.director,
-    )
+    return film
