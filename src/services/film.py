@@ -1,11 +1,11 @@
 from functools import lru_cache
 from typing import List, Optional
 
-from elasticsearch import AsyncElasticsearch, NotFoundError
+from elasticsearch import NotFoundError
 from fastapi import Depends
 from redis.asyncio import Redis
 
-from db.elastic import get_elastic
+from db.elastic import AsyncElastic, get_elastic
 from db.redis_db import get_redis
 from models.film import Film, FilmDetail
 
@@ -13,7 +13,7 @@ FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
 
 
 class FilmService:
-    def __init__(self, redis: Redis, elastic: AsyncElasticsearch):
+    def __init__(self, redis: Redis, elastic: AsyncElastic):
         self.redis = redis
         self.elastic = elastic
 
@@ -54,9 +54,9 @@ class FilmService:
                 "_source": ["id", "title", "imdb_rating"],
                 "sort": sort,
                 "from": page_number,
+                "size": page_size,
                 "query": filter_query,
             },
-            size=page_size,
             params={"filter_path": "hits.hits._source"},
         )
         if not films:
@@ -107,6 +107,6 @@ class FilmService:
 @lru_cache()
 def get_film_service(
     redis: Redis = Depends(get_redis),
-    elastic: AsyncElasticsearch = Depends(get_elastic),
+    elastic: AsyncElastic = Depends(get_elastic),
 ) -> FilmService:
     return FilmService(redis, elastic)
