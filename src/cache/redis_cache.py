@@ -1,6 +1,7 @@
-from typing import Any, Optional
-from cache.base import BaseCache
 import json
+from typing import Any, Optional
+
+from cache.base import BaseCache
 
 from db.redis_db import Redis
 

@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Dict, List, Optional
 from uuid import UUID
 
-from elasticsearch import AsyncElasticsearch, NotFoundError
+from elasticsearch import AsyncElasticsearch
 
 from storage.base import BaseStorage
 
@@ -19,6 +19,7 @@ class FilmBaseStorage(BaseStorage):
     @abstractmethod
     async def search_data(self, query, page_number: int, page_size: int):
         pass
+
 
 class FilmElasticStorage(FilmBaseStorage):
     def __init__(self, elastic: AsyncElasticsearch):
@@ -46,7 +47,13 @@ class FilmElasticStorage(FilmBaseStorage):
             return None
         return doc["_source"]
 
-    async def get_data_list(self, sort: str, genre: UUID, page_number: int, page_size: int) -> List[Optional[Dict]]:
+    async def get_data_list(
+            self,
+            sort: str,
+            genre: UUID,
+            page_number: int,
+            page_size: int
+    ) -> List[Optional[Dict]]:
         if sort[0] == "-":
             sort = {sort[1:]: "desc"}
         else:

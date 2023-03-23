@@ -6,11 +6,12 @@ from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 from redis.asyncio import Redis
 
-from db.elastic import get_elastic
-from db.redis_db import get_redis
 from cache.base import BaseCache
 from cache.redis_cache import RedisCache
+from db.elastic import get_elastic
+from db.redis_db import get_redis
 from storage.films import FilmBaseStorage, FilmElasticStorage
+
 # from models.film import Film, FilmDetail
 
 

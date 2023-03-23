@@ -1,16 +1,16 @@
 from functools import lru_cache
-from typing import Optional
+from typing import Dict, List, Optional
 
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 from redis.asyncio import Redis
 
-from db.elastic import get_elastic
-from db.redis_db import get_redis
 from cache.base import BaseCache
 from cache.redis_cache import RedisCache
+from db.elastic import get_elastic
+from db.redis_db import get_redis
 from storage.genres import GenreBaseStorage, GenreElasticStorage
-from typing import Dict, List
+
 # from models.film import Genre
 
 

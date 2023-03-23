@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Dict, List, Optional
 
-from elasticsearch import AsyncElasticsearch, NotFoundError
+from elasticsearch import AsyncElasticsearch
 
 from storage.base import BaseStorage
 

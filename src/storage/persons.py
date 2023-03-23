@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Dict, List, Optional
 
-from elasticsearch import AsyncElasticsearch, NotFoundError
+from elasticsearch import AsyncElasticsearch
 
 from storage.base import BaseStorage
 
@@ -18,6 +18,7 @@ class PersonBaseStorage(BaseStorage):
     @abstractmethod
     async def search_data(self, query, page_number: int, page_size: int):
         pass
+
 
 class PersonElasticStorage(PersonBaseStorage):
     def __init__(self, elastic: AsyncElasticsearch):
