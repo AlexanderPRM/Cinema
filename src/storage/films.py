@@ -48,11 +48,7 @@ class FilmElasticStorage(FilmBaseStorage):
         return doc["_source"]
 
     async def get_data_list(
-            self,
-            sort: str,
-            genre: UUID,
-            page_number: int,
-            page_size: int
+            self, sort: str, genre: UUID, page_number: int, page_size: int
     ) -> List[Optional[Dict]]:
         if sort[0] == "-":
             sort = {sort[1:]: "desc"}

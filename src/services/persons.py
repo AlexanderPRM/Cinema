@@ -15,7 +15,6 @@ from storage.persons import PersonBaseStorage, PersonElasticStorage
 
 
 class PersonService:
-
     def __init__(self, cache: BaseCache, storage: PersonBaseStorage):
         self.cache = cache
         self.storage = storage

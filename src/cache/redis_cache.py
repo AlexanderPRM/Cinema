@@ -2,18 +2,18 @@ import json
 from typing import Any, Optional
 
 from cache.base import BaseCache
-
 from db.redis_db import Redis
 
 
 class RedisCache(BaseCache):
-
     def __init__(self, redis: Redis, expire: int = None):
         self.redis = redis
         self.expire = expire or self.CACHE_EXPIRE_IN_SECONDS
 
     async def get_object_from_cache(self, url: str) -> Optional[Any]:
-        result = await self.redis.get(str(url),)
+        result = await self.redis.get(
+            str(url),
+        )
         if result:
             result = json.loads(result)
         return result

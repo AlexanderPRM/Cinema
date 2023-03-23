@@ -16,7 +16,6 @@ from storage.films import FilmBaseStorage, FilmElasticStorage
 
 
 class FilmService:
-
     def __init__(self, cache: BaseCache, storage: FilmBaseStorage):
         self.cache = cache
         self.storage = storage
@@ -35,17 +34,10 @@ class FilmService:
         return data
 
     async def get_data_list(
-            self, sort:
-            str, genre:
-            UUID, page_number:
-            int,
-            page_size: int
+            self, sort: str, genre: UUID, page_number: int, page_size: int
     ) -> Optional[List[Dict]]:
         data = await self.storage.get_data_list(
-            sort=sort,
-            genre=genre,
-            page_number=page_number,
-            page_size=page_size
+            sort=sort, genre=genre, page_number=page_number, page_size=page_size
         )
         return data
 

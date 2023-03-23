@@ -38,8 +38,7 @@ async def list_genres(
     commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> list[Genre]:
     genres = await genre_service.get_data_list(
-        page_number=commons.page_number,
-        page_size=commons.page_size
+        page_number=commons.page_number, page_size=commons.page_size
     )
     if not genres:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
