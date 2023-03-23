@@ -11,8 +11,6 @@ from db.elastic import get_elastic
 from db.redis_db import get_redis
 from storage.persons import PersonBaseStorage, PersonElasticStorage
 
-# from models.film import Person, PersonList
-
 
 class PersonService:
     def __init__(self, cache: BaseCache, storage: PersonBaseStorage):

@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/",
+    "",
     response_model=list[PersonList],
     description="Список персон",
     summary="Список персон",
@@ -26,7 +26,13 @@ async def list_persons(
     )
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
-    return persons
+    return [
+        PersonList(
+            id=person["id"],
+            full_name=person["full_name"],
+        )
+        for person in persons
+    ]
 
 
 @router.get(
@@ -44,7 +50,14 @@ async def search_persons(
     persons = await person_service.search_data(query, commons.page_number, commons.page_size)
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
-    return persons
+    return [
+        Person(
+            id=person["id"],
+            full_name=person["full_name"],
+            films=person["films"],
+        )
+        for person in persons
+    ]
 
 
 @router.get(
@@ -60,4 +73,8 @@ async def person_details(
     person = await person_service.get_data_by_id(url=str(request.url), id=str(person_id))
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
-    return person
+    return Person(
+        id=person["id"],
+        full_name=person["full_name"],
+        films=person["films"],
+    )

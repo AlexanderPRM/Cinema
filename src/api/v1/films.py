@@ -29,7 +29,14 @@ async def films(
     films = await film_service.get_data_list(sort, genre, commons.page_number, commons.page_size)
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Films Not Found")
-    return films
+    return [
+        Film(
+            id=film["id"],
+            title=film["title"],
+            imdb_rating=film["imdb_rating"],
+        )
+        for film in films
+    ]
 
 
 @router.get(
@@ -48,7 +55,14 @@ async def search_films(
     films = await film_service.search_data(query, commons.page_number, commons.page_size)
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Films Not Found")
-    return films
+    return [
+        Film(
+            id=film["id"],
+            title=film["title"],
+            imdb_rating=film["imdb_rating"],
+        )
+        for film in films
+    ]
 
 
 # Внедряем FilmService с помощью Depends(get_film_service)
@@ -65,4 +79,13 @@ async def film_details(
     film = await film_service.get_data_by_id(url=str(request.url), id=str(film_id))
     if not film:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Film Not Found")
-    return film
+    return FilmDetail(
+        id=film["id"],
+        title=film["title"],
+        imdb_rating=film["imdb_rating"],
+        description=film["description"],
+        genre=film["genre"],
+        actors=film["actors"],
+        writers=film["writers"],
+        director=film["director"],
+    )

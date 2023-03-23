@@ -11,8 +11,6 @@ from db.elastic import get_elastic
 from db.redis_db import get_redis
 from storage.genres import GenreBaseStorage, GenreElasticStorage
 
-# from models.film import Genre
-
 
 class GenreService:
     def __init__(self, cache: BaseCache, storage: GenreBaseStorage):

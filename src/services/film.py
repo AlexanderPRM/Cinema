@@ -12,8 +12,6 @@ from db.elastic import get_elastic
 from db.redis_db import get_redis
 from storage.films import FilmBaseStorage, FilmElasticStorage
 
-# from models.film import Film, FilmDetail
-
 
 class FilmService:
     def __init__(self, cache: BaseCache, storage: FilmBaseStorage):

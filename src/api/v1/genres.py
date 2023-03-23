@@ -23,7 +23,10 @@ async def genre_details(
     genre = await genre_service.get_data_by_id(url=str(request.url), id=str(genre_id))
     if not genre:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
-    return genre
+    return Genre(
+        id=genre["id"],
+        name=genre["name"],
+    )
 
 
 @router.get(
@@ -42,4 +45,10 @@ async def list_genres(
     )
     if not genres:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
-    return genres
+    return [
+        Genre(
+            id=genre["id"],
+            name=genre["name"],
+        )
+        for genre in genres
+    ]
