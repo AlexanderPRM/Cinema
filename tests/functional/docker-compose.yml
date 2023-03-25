@@ -32,3 +32,5 @@ services:
       - redis
     env_file:
       - config_tests.env
+    volumes:
+      - /src:/opt/tests/
