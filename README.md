@@ -55,7 +55,6 @@
         ├── functional
             ├── config_tests.env.example
 
-
 #### Команда для запуска функциональных тестов
 
     docker-compose -f tests/functional/docker-compose.yml --env-file tests/functional/config_tests.env up --build

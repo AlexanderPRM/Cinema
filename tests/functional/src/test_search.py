@@ -1,7 +1,9 @@
 import datetime
+import logging
 import uuid
 
 import pytest
+from pytest import fixture
 
 #  Название теста должно начинаться со слова `test_`
 #  Любой тест с асинхронными вызовами нужно оборачивать декоратором `pytest.mark.asyncio`,
@@ -19,7 +21,9 @@ import pytest
     ],
 )
 @pytest.mark.asyncio
-async def test_search(make_get_request, es_write_films_data, query_data, expected_answer):
+async def test_search(
+    make_get_request: fixture, es_write_films_data: fixture, query_data: dict, expected_answer: dict
+):
     # 1. Генерируем данные для ES
 
     es_data = [
@@ -50,7 +54,7 @@ async def test_search(make_get_request, es_write_films_data, query_data, expecte
     status = response.status
 
     # 4. Проверяем ответ
-    print(body)
+    logging.info(body)
     assert status == expected_answer["status"]
     if expected_answer["exists"]:
         assert len(body) == expected_answer["length"]
