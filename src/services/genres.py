@@ -39,6 +39,7 @@ class GenreService:
                     "size": params.get("page_size"),
                     "query": {"match_all": {}},
                 },
+                params={"filter_path": "hits.hits._source"},
             )
         except NotFoundError:
             return []
