@@ -1,0 +1,32 @@
+import datetime
+import uuid
+
+import pytest
+
+@pytest.mark.parametrize(
+    "query_data", "expected_answer",
+    [
+        (
+            {"page_size": 50},
+            {"status":200, "length": 50, "exists": True}
+            ),
+        (
+            {"query":"Noob", "page_size": 50},
+            {"status":404, "length": 0, "exists": False}
+            ),
+        (
+            {"page_numder": 2, "page_size": 50},
+            {"status":404, "length": 0, "exists": False}
+            )
+        ]
+    )
+
+@pytest.mark.asyncio
+async def test_film(query_data, expected_answer):
+    #Очищаем данные из ElsticSearch
+
+    # Записываем данные в ElsticSearch
+
+    # Делаем запрос к API с предписанными параметрами
+
+    #Проверяем response на expected_answer

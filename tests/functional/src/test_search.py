@@ -5,15 +5,16 @@ import uuid
 import pytest
 from pytest import fixture
 
-#  РќР°Р·РІР°РЅРёРµ С‚РµСЃС‚Р° РґРѕР»Р¶РЅРѕ РЅР°С‡РёРЅР°С‚СЊСЃСЏ СЃРѕ СЃР»РѕРІР° `test_`
-#  Р›СЋР±РѕР№ С‚РµСЃС‚ СЃ Р°СЃРёРЅС…СЂРѕРЅРЅС‹РјРё РІС‹Р·РѕРІР°РјРё РЅСѓР¶РЅРѕ РѕР±РѕСЂР°С‡РёРІР°С‚СЊ РґРµРєРѕСЂР°С‚РѕСЂРѕРј `pytest.mark.asyncio`,
-#  РєРѕС‚РѕСЂС‹Р№ СЃР»РµРґРёС‚ Р·Р° Р·Р°РїСѓСЃРєРѕРј Рё СЂР°Р±РѕС‚РѕР№ С†РёРєР»Р° СЃРѕР±С‹С‚РёР№.
+#  Название теста должно начинаться со слова `test_`
+#  Любой тест с асинхронными вызовами нужно оборачивать декоратором `pytest.mark.asyncio`,
+#  который следит за запуском и работой цикла событий.
 
 
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
-        ({"query": "The Star", "page_size": 50}, {"status": 200, "length": 50, "exists": True}),
+        ({"query": "The Star", "page_size": 50}, {
+         "status": 200, "length": 50, "exists": True}),
         (
             {"query": "Mashed potato", "page_size": 50},
             {"status": 404, "length": 0, "exists": False},
@@ -24,7 +25,7 @@ from pytest import fixture
 async def test_search(
     make_get_request: fixture, es_write_films_data: fixture, query_data: dict, expected_answer: dict
 ):
-    # 1. Р“РµРЅРµСЂРёСЂСѓРµРј РґР°РЅРЅС‹Рµ РґР»СЏ ES
+    # 1. Генерируем данные для ES
 
     es_data = [
         {
@@ -47,13 +48,13 @@ async def test_search(
 
     await es_write_films_data(es_data)
 
-    # 3. Р—Р°РїСЂР°С€РёРІР°РµРј РґР°РЅРЅС‹Рµ РёР· ES РїРѕ API
+    # 3. Запрашиваем данные из ES по API
 
     response = await make_get_request("/api/v1/films/search", query_data)
     body = await response.json()
     status = response.status
 
-    # 4. РџСЂРѕРІРµСЂСЏРµРј РѕС‚РІРµС‚
+    # 4. Проверяем ответ
     logging.info(body)
     assert status == expected_answer["status"]
     if expected_answer["exists"]:
