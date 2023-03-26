@@ -53,7 +53,7 @@ class FilmService:
             body={
                 "_source": ["id", "title", "imdb_rating"],
                 "sort": sort,
-                "from": page_number,
+                "from": (page_number - 1) * page_size,
                 "size": page_size,
                 "query": filter_query,
             },
@@ -70,17 +70,20 @@ class FilmService:
         if not film:
             # Если фильма нет в кеше, то ищем его в Elasticsearch
             film = await self._get_film_from_elastic(film_id)
-            if not film:
+            print ('film: ', film)
+            if film is None:
                 # Если он отсутствует в Elasticsearch, значит, фильма вообще нет в базе
                 return None
             # Сохраняем фильм  в кеш
-            await self._put_film_to_cache(film)
+            else:
+                await self._put_film_to_cache(film)
 
         return film
 
     async def _get_film_from_elastic(self, film_id: str) -> Optional[FilmDetail]:
         try:
             doc = await self.elastic.get("movies", film_id)
+            print (doc)
         except NotFoundError:
             return None
         return FilmDetail(**doc["_source"])
@@ -101,7 +104,8 @@ class FilmService:
         # Выставляем время жизни кеша — 5 минут
         # https://redis.io/commands/set/
         # pydantic позволяет сериализовать модель в json
-        await self.redis.set(str(film.id), film.json(), FILM_CACHE_EXPIRE_IN_SECONDS)
+        if film is not None:
+            await self.redis.set(str(film.id), film.json(), FILM_CACHE_EXPIRE_IN_SECONDS)
 
 
 @lru_cache()
