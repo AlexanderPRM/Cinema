@@ -2,7 +2,7 @@
 
 [![linters](https://github.com/AlexanderPRM/Async_API/actions/workflows/linters.yml/badge.svg)](https://github.com/AlexanderPRM/Async_API/actions/workflows/linters.yml)
 
-## Инструкция по настройке проекта
+## Инструкция по настройке проекта*
 
 ### Создайте виртуальное окружение
 
@@ -42,3 +42,19 @@
 ### Запустите docker-compose
 
     docker-compose --env-file config.env up --build
+
+## Тесты*
+
+### Функциональные тесты
+
+#### Настройте переменные окружения для тестов
+
+    Уберите .example у файла config_tests.env.example и измените переменные, если нужно.
+
+    ├── tests
+        ├── functional
+            ├── config_tests.env.example
+
+#### Команда для запуска функциональных тестов
+
+    docker-compose -f tests/functional/docker-compose.yml --env-file tests/functional/config_tests.env up --build

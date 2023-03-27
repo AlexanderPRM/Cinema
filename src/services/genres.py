@@ -17,6 +17,7 @@ class GenreService:
         self.cache = cache
         self.storage = storage
 
+
     async def get_data_by_id(self, url: str, id: str) -> Optional[Dict]:
         data = await self.cache.get_object_from_cache(url)
         if not data:
