@@ -8,24 +8,18 @@ from pytest import fixture
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
-        (
-            {"query": "2281e359-4080-421f-a015-517d31ca8044"},
-            {"status": 200}
-        ),
-        (
-            {"query": "00000000-0000-0000-0000-000000000000"},
-            {"status": 404}
-        ),
+        ({"query": "2281e359-4080-421f-a015-517d31ca8044"}, {"status": 200}),
+        ({"query": "00000000-0000-0000-0000-000000000000"}, {"status": 404}),
     ],
 )
 @pytest.mark.asyncio
 async def test_genres_by_id(
-    make_get_request_genres: fixture, es_write_genres_data: fixture, query_data: dict, expected_answer: dict
+    make_get_request_genres: fixture,
+    es_write_genres_data: fixture,
+    query_data: dict,
+    expected_answer: dict,
 ):
-    es_data = [{
-        "id": "2281e359-4080-421f-a015-517d31ca8044",
-        "name": "created_genre"
-    }]
+    es_data = [{"id": "2281e359-4080-421f-a015-517d31ca8044", "name": "created_genre"}]
 
     await es_write_genres_data(es_data)
 
@@ -40,19 +34,16 @@ async def test_genres_by_id(
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
-        (
-            {"page_size": 10},
-            {"status": 200, "length": 10}
-        ),
-        (
-            {"page_size": 10, "page_number": 500},
-            {"status": 404, "length": 1}
-        ),
+        ({"page_size": 10}, {"status": 200, "length": 10}),
+        ({"page_size": 10, "page_number": 500}, {"status": 404, "length": 1}),
     ],
 )
 @pytest.mark.asyncio
 async def test_genres_list(
-    make_get_request: fixture, es_write_genres_data: fixture, query_data: dict, expected_answer: dict
+    make_get_request: fixture,
+    es_write_genres_data: fixture,
+    query_data: dict,
+    expected_answer: dict,
 ):
     es_data = [
         {
