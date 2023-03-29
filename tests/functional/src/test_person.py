@@ -4,6 +4,8 @@ import uuid
 import pytest
 from pytest import fixture
 
+from ..settings import person_settings
+
 
 @pytest.mark.parametrize(
     "query_data, expected_answer",
@@ -14,8 +16,8 @@ from pytest import fixture
 )
 @pytest.mark.asyncio
 async def test_persons_by_id(
-    make_get_request_persons: fixture,
-    es_write_persons_data: fixture,
+    make_get_request_id: fixture,
+    es_write_data: fixture,
     query_data: dict,
     expected_answer: dict,
 ):
@@ -23,9 +25,9 @@ async def test_persons_by_id(
         {"id": "2281e359-4080-421f-a015-517d31ca8041", "full_name": "created_person", "films": [{}]}
     ]
 
-    await es_write_persons_data(es_data)
+    await es_write_data(es_data, person_settings)
 
-    response = await make_get_request_persons("/api/v1/persons/", query_data["query"])
+    response = await make_get_request_id("/api/v1/persons/", query_data["query"], person_settings)
     body = await response.json()
     status = response.status
 
@@ -43,7 +45,7 @@ async def test_persons_by_id(
 @pytest.mark.asyncio
 async def test_persons_list(
     make_get_request: fixture,
-    es_write_persons_data: fixture,
+    es_write_data: fixture,
     query_data: dict,
     expected_answer: dict,
 ):
@@ -55,9 +57,9 @@ async def test_persons_list(
         for _ in range(60)
     ]
 
-    await es_write_persons_data(es_data)
+    await es_write_data(es_data, person_settings)
 
-    response = await make_get_request("/api/v1/persons/", query_data)
+    response = await make_get_request("/api/v1/persons/", query_data, person_settings)
     body = await response.json()
     status = response.status
 

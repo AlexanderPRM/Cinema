@@ -5,6 +5,8 @@ import uuid
 import pytest
 from pytest import fixture
 
+from ..settings import films_settings
+
 #  Название теста должно начинаться со слова `test_`
 #  Любой тест с асинхронными вызовами нужно оборачивать декоратором `pytest.mark.asyncio`,
 #  который следит за запуском и работой цикла событий.
@@ -22,7 +24,7 @@ from pytest import fixture
 )
 @pytest.mark.asyncio
 async def test_search(
-    make_get_request: fixture, es_write_films_data: fixture, query_data: dict, expected_answer: dict
+    make_get_request: fixture, es_write_data: fixture, query_data: dict, expected_answer: dict
 ):
     # 1. Генерируем данные для ES
 
@@ -45,11 +47,11 @@ async def test_search(
         for _ in range(60)
     ]
 
-    await es_write_films_data(es_data)
+    await es_write_data(es_data, films_settings)
 
     # 3. Запрашиваем данные из ES по API
 
-    response = await make_get_request("/api/v1/films/search", query_data)
+    response = await make_get_request("/api/v1/films/search", query_data, films_settings)
     body = await response.json()
     status = response.status
 

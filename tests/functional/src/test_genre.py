@@ -4,6 +4,8 @@ import uuid
 import pytest
 from pytest import fixture
 
+from ..settings import genre_setting
+
 
 @pytest.mark.parametrize(
     "query_data, expected_answer",
@@ -14,16 +16,16 @@ from pytest import fixture
 )
 @pytest.mark.asyncio
 async def test_genres_by_id(
-    make_get_request_genres: fixture,
-    es_write_genres_data: fixture,
+    make_get_request_id: fixture,
+    es_write_data: fixture,
     query_data: dict,
     expected_answer: dict,
 ):
     es_data = [{"id": "2281e359-4080-421f-a015-517d31ca8044", "name": "created_genre"}]
 
-    await es_write_genres_data(es_data)
+    await es_write_data(es_data, genre_setting)
 
-    response = await make_get_request_genres("/api/v1/genres/", query_data["query"])
+    response = await make_get_request_id("/api/v1/genres/", query_data["query"], genre_setting)
     body = await response.json()
     status = response.status
 
@@ -41,7 +43,7 @@ async def test_genres_by_id(
 @pytest.mark.asyncio
 async def test_genres_list(
     make_get_request: fixture,
-    es_write_genres_data: fixture,
+    es_write_data: fixture,
     query_data: dict,
     expected_answer: dict,
 ):
@@ -53,9 +55,9 @@ async def test_genres_list(
         for _ in range(60)
     ]
 
-    await es_write_genres_data(es_data)
+    await es_write_data(es_data, genre_setting)
 
-    response = await make_get_request("/api/v1/genres/", query_data)
+    response = await make_get_request("/api/v1/genres/", query_data, genre_setting)
     body = await response.json()
     status = response.status
 

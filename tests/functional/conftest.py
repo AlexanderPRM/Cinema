@@ -7,7 +7,6 @@ import pytest_asyncio
 from aiohttp import web_response
 from elasticsearch import AsyncElasticsearch
 
-from . import settings
 from .settings import films_settings, genre_setting, person_settings
 
 
@@ -45,33 +44,9 @@ async def aiohttp_client():
 
 
 @pytest.fixture
-def es_write_films_data(es_client):
-    async def inner(data: list[dict]) -> None:
-        bulk_query = get_es_bulk_query(data, films_settings.es_index, films_settings.es_id_field)
-        str_query = "\n".join(bulk_query) + "\n"
-        response = await es_client.bulk(str_query, refresh=True)
-        if response["errors"]:
-            raise Exception("Ошибка записи данных в Elasticsearch")
-
-    return inner
-
-
-@pytest.fixture
-def es_write_genres_data(es_client):
-    async def inner(data: list[dict]) -> None:
-        bulk_query = get_es_bulk_query(data, genre_setting.es_index, genre_setting.es_id_field)
-        str_query = "\n".join(bulk_query) + "\n"
-        response = await es_client.bulk(str_query, refresh=True)
-        if response["errors"]:
-            raise Exception("Ошибка записи данных в Elasticsearch")
-
-    return inner
-
-
-@pytest.fixture
-def es_write_persons_data(es_client):
-    async def inner(data: list[dict]) -> None:
-        bulk_query = get_es_bulk_query(data, person_settings.es_index, person_settings.es_id_field)
+def es_write_data(es_client):
+    async def inner(data: list[dict], settings) -> None:
+        bulk_query = get_es_bulk_query(data, settings.es_index, settings.es_id_field)
         str_query = "\n".join(bulk_query) + "\n"
         response = await es_client.bulk(str_query, refresh=True)
         if response["errors"]:
@@ -82,8 +57,8 @@ def es_write_persons_data(es_client):
 
 @pytest.fixture
 def make_get_request(aiohttp_client) -> web_response.Response:
-    async def inner(url, query_data):
-        url = settings.films_settings.service_url + url
+    async def inner(url, query_data, settings):
+        url = settings.service_url + url
         query_data = query_data
         response = await aiohttp_client.get(url, params=query_data)
         return response
@@ -92,19 +67,9 @@ def make_get_request(aiohttp_client) -> web_response.Response:
 
 
 @pytest.fixture
-def make_get_request_genres(aiohttp_client):
-    async def inner(url, query_data):
-        url = settings.genre_setting.service_url + url + query_data
-        response = await aiohttp_client.get(url)
-        return response
-
-    return inner
-
-
-@pytest.fixture
-def make_get_request_persons(aiohttp_client):
-    async def inner(url, query_data):
-        url = settings.person_settings.service_url + url + query_data
+def make_get_request_id(aiohttp_client):
+    async def inner(url, query_data, settings):
+        url = settings.service_url + url + query_data
         response = await aiohttp_client.get(url)
         return response
 
