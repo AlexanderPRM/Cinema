@@ -7,7 +7,7 @@ import pytest_asyncio
 from aiohttp import web_response
 from elasticsearch import AsyncElasticsearch
 
-from .settings import films_settings, genre_setting, person_settings
+from .settings import films_settings
 
 
 def get_es_bulk_query(es_data: list[dict], es_index: str, es_id_field: str) -> list:
