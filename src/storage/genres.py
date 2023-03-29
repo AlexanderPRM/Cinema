@@ -30,7 +30,7 @@ class GenreElasticStorage(GenreBaseStorage):
         docs = await self.elastic.search(
             index="genres",
             body={
-                "from": (page_number - 1) * page_size,
+                "from": page_number,
                 "size": page_size,
                 "query": {"match_all": {}},
             },

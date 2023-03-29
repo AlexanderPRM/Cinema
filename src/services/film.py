@@ -28,8 +28,6 @@ class FilmService:
             data = await self.storage.get_data_by_id(id=id)
             if data:
                 await self.cache.put_object_to_cache(url, data)
-            else:
-                return None
 
         return data
 

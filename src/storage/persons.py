@@ -30,7 +30,7 @@ class PersonElasticStorage(PersonBaseStorage):
             index="persons",
             body={
                 "_source": ["id", "full_name", "films"],
-                "from": (page_number - 1) * page_size,
+                "from": page_number,
                 "size": page_size,
                 "query": search_query,
             },
@@ -50,7 +50,7 @@ class PersonElasticStorage(PersonBaseStorage):
         docs = await self.elastic.search(
             index="persons",
             body={
-                "from": (page_number - 1) * page_size,
+                "from": page_number,
                 "size": page_size,
                 "query": {"match_all": {}},
             },
