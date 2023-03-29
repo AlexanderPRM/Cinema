@@ -3,6 +3,7 @@ from typing import Dict, List, Optional
 from uuid import UUID
 
 from elasticsearch import AsyncElasticsearch
+from elasticsearch import NotFoundError
 
 from storage.base import BaseStorage
 
@@ -31,7 +32,7 @@ class FilmElasticStorage(FilmBaseStorage):
             index="movies",
             body={
                 "_source": ["id", "title", "imdb_rating"],
-                "from": page_number,
+                "from": (page_number - 1) * page_size,
                 "size": page_size,
                 "query": search_query,
             },
@@ -42,8 +43,9 @@ class FilmElasticStorage(FilmBaseStorage):
         return [film["_source"] for film in docs["hits"]["hits"]]
 
     async def get_data_by_id(self, id: str) -> Optional[Dict]:
-        doc = await self.elastic.get("movies", id)
-        if not doc:
+        try:
+            doc = await self.elastic.get("movies", id)
+        except NotFoundError:
             return None
         return doc["_source"]
 
@@ -69,7 +71,7 @@ class FilmElasticStorage(FilmBaseStorage):
             body={
                 "_source": ["id", "title", "imdb_rating"],
                 "sort": sort,
-                "from": page_number,
+                "from": (page_number - 1) * page_size,
                 "size": page_size,
                 "query": filter_query,
             },
