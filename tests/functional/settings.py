@@ -24,7 +24,7 @@ class GenreSettings(BaseConfig):
     es_index: str = Field("genres")
 
 
-class PersonSetting(BaseSettings):
+class PersonSetting(BaseConfig):
     es_index: str = Field("persons")
 
 
