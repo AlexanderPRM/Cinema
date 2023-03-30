@@ -25,7 +25,9 @@ async def test_genres_by_id(
 
     await es_write_data(es_data, genre_setting)
 
-    response = await make_get_request_id("/api/v1/genres/", query_data["query"], genre_setting)
+    response = await make_get_request_id(
+        "/api/v1/genres/", query_data=query_data["query"], settings=genre_setting
+    )
     body = await response.json()
     status = response.status
 
@@ -57,7 +59,9 @@ async def test_genres_list(
 
     await es_write_data(es_data, genre_setting)
 
-    response = await make_get_request("/api/v1/genres/", query_data, genre_setting)
+    response = await make_get_request(
+        "/api/v1/genres/", query_data=query_data, settings=genre_setting
+    )
     body = await response.json()
     status = response.status
 

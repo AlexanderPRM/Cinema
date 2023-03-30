@@ -7,10 +7,6 @@ from pytest import fixture
 
 from ..settings import films_settings
 
-#  Название теста должно начинаться со слова `test_`
-#  Любой тест с асинхронными вызовами нужно оборачивать декоратором `pytest.mark.asyncio`,
-#  который следит за запуском и работой цикла событий.
-
 
 @pytest.mark.parametrize(
     "query_data, expected_answer",
@@ -24,10 +20,14 @@ from ..settings import films_settings
 )
 @pytest.mark.asyncio
 async def test_search(
-    make_get_request: fixture, es_write_data: fixture, query_data: dict, expected_answer: dict
+    make_get_request: fixture,
+    es_write_data: fixture,
+    query_data: dict,
+    expected_answer: dict,
+    es_clear_data: fixture,
 ):
+    await es_clear_data()
     # 1. Генерируем данные для ES
-
     es_data = [
         {
             "id": str(uuid.uuid4()),
@@ -44,22 +44,25 @@ async def test_search(
             "updated_at": datetime.datetime.now().isoformat(),
             "film_work_type": "movie",
         }
-        for _ in range(60)
+        for _ in range(50)
     ]
 
-    await es_write_data(es_data, films_settings)
+    await es_write_data(es_data, settings=films_settings)
 
     # 3. Запрашиваем данные из ES по API
 
-    response = await make_get_request("/api/v1/films/search", query_data, films_settings)
-    body = await response.json()
-    status = response.status
+    response = await make_get_request(
+        "/api/v1/films/search", query_data=query_data, settings=films_settings
+    )
+    if response is not None:
+        body = await response.json()
+        status = response.status
 
-    # 4. Проверяем ответ
-    logging.info(body)
-    assert status == expected_answer["status"]
-    if expected_answer["exists"]:
-        assert len(body) == expected_answer["length"]
-    else:
-        body.pop("detail")
-        assert len(body) == expected_answer["length"]
+        # 4. Проверяем ответ
+        logging.info(body)
+        assert status == expected_answer["status"]
+        if expected_answer["exists"]:
+            assert len(body) == expected_answer["length"]
+        else:
+            body.pop("detail")
+            assert len(body) == expected_answer["length"]

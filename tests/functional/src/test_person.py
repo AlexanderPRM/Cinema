@@ -27,7 +27,9 @@ async def test_persons_by_id(
 
     await es_write_data(es_data, person_settings)
 
-    response = await make_get_request_id("/api/v1/persons/", query_data["query"], person_settings)
+    response = await make_get_request_id(
+        "/api/v1/persons/", query_data=query_data["query"], settings=person_settings
+    )
     body = await response.json()
     status = response.status
 
@@ -59,7 +61,9 @@ async def test_persons_list(
 
     await es_write_data(es_data, person_settings)
 
-    response = await make_get_request("/api/v1/persons/", query_data, person_settings)
+    response = await make_get_request(
+        "/api/v1/persons/", query_data=query_data, settings=person_settings
+    )
     body = await response.json()
     status = response.status
 
