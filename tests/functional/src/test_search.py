@@ -32,10 +32,7 @@ async def test_film_search(
         {
             "id": str(uuid.uuid4()),
             "imdb_rating": 8.5,
-            "genre": [
-                {"id": "111", "name": "Action"},
-                {"id": "111", "name": "Sci-Fi"}
-                ],
+            "genre": [{"id": "111", "name": "Action"}, {"id": "111", "name": "Sci-Fi"}],
             "title": "The Star",
             "description": "New World",
             "director": ["Stan"],

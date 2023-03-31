@@ -30,10 +30,7 @@ async def test_film(
         {
             "id": str(uuid.uuid4()),
             "imdb_rating": 8.5,
-            "genre": [
-                {"id": "111", "name": "Action"},
-                {"id": "222", "name": "Sci-Fi"}
-            ],
+            "genre": [{"id": "111", "name": "Action"}, {"id": "222", "name": "Sci-Fi"}],
             "title": "Aboba Bumba",
             "description": "New World",
             "director": ["Stan"],
@@ -82,10 +79,7 @@ async def test_id_film(
         {
             "id": "40ebbe7c-9ed8-4986-a4ff-6a5918890178",
             "imdb_rating": 8.5,
-            "genre": [
-                {"id": "111", "name": "Action"},
-                {"id": "222", "name": "Sci-Fi"}
-                ],
+            "genre": [{"id": "111", "name": "Action"}, {"id": "222", "name": "Sci-Fi"}],
             "title": "Aboba Bumba",
             "description": "New World",
             "director": ["Stan"],
