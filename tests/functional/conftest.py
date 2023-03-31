@@ -3,32 +3,27 @@ import json
 
 import aiohttp
 import backoff
+import elasticsearch
 import pytest
 import pytest_asyncio
-from aiohttp import web_response
-import elasticsearch
-from elasticsearch import AsyncElasticsearch
 import requests
+from aiohttp import web_response
+from elasticsearch import AsyncElasticsearch
 
 from .settings import films_settings
 
 
-def get_es_bulk_query(es_data: list[dict],
-                      es_index: str,
-                      es_id_field: str) -> list:
+def get_es_bulk_query(es_data: list[dict], es_index: str, es_id_field: str) -> list:
     bulk_query = []
     for row in es_data:
         bulk_query.extend(
-            [json.dumps(
-                {'index': {'_index': es_index,
-                          '_id': row[es_id_field]}}),
-            json.dumps(row)]
+            [json.dumps({"index": {"_index": es_index, "_id": row[es_id_field]}}), json.dumps(row)]
         )
     print(bulk_query)
     return bulk_query
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def event_loop():
     """Overrides pytest default function scoped event loop."""
     policy = asyncio.get_event_loop_policy()
@@ -47,10 +42,9 @@ def event_loop():
     max_tries=50,
     max_time=60,
 )
-@pytest_asyncio.fixture(scope='session', autouse=True)
+@pytest_asyncio.fixture(scope="session", autouse=True)
 async def es_client():
-    client = AsyncElasticsearch(
-        hosts=films_settings.es_adress, validate_cert=False, use_ssl=False)
+    client = AsyncElasticsearch(hosts=films_settings.es_adress, validate_cert=False, use_ssl=False)
     yield client
     await client.close()
 
@@ -65,7 +59,7 @@ async def es_client():
     max_tries=50,
     max_time=60,
 )
-@pytest_asyncio.fixture(scope='session', autouse=True)
+@pytest_asyncio.fixture(scope="session", autouse=True)
 async def aiohttp_client():
     client = aiohttp.ClientSession()
     yield client
@@ -85,12 +79,11 @@ def es_write_data(es_client):
         max_time=60,
     )
     async def inner(data: list[dict], settings) -> None:
-        bulk_query = get_es_bulk_query(
-            data, settings.es_index, settings.es_id_field)
-        str_query = '\n'.join(bulk_query) + '\n'
+        bulk_query = get_es_bulk_query(data, settings.es_index, settings.es_id_field)
+        str_query = "\n".join(bulk_query) + "\n"
         response = await es_client.bulk(str_query, refresh=True)
-        if response['errors']:
-            raise Exception('Ошибка записи данных в Elasticsearch')
+        if response["errors"]:
+            raise Exception("Ошибка записи данных в Elasticsearch")
 
     return inner
 
@@ -149,7 +142,6 @@ def es_clear_data(es_client):
         max_time=60,
     )
     async def inner():
-        await es_client.delete_by_query(index='movies',
-                                       body={'query': {'match_all': {}}})
+        await es_client.delete_by_query(index="movies", body={"query": {"match_all": {}}})
 
     return inner
