@@ -141,7 +141,7 @@ def es_clear_data(es_client):
         max_tries=50,
         max_time=60,
     )
-    async def inner():
-        await es_client.delete_by_query(index="movies", body={"query": {"match_all": {}}})
+    async def inner(index):
+        await es_client.delete_by_query(index=index, body={"query": {"match_all": {}}})
 
     return inner

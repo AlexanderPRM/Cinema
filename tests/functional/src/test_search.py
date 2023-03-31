@@ -5,7 +5,7 @@ import uuid
 import pytest
 from pytest import fixture
 
-from ..settings import films_settings
+from ..settings import films_settings, person_settings
 
 
 @pytest.mark.parametrize(
@@ -19,14 +19,14 @@ from ..settings import films_settings
     ],
 )
 @pytest.mark.asyncio
-async def test_search(
+async def test_film_search(
     make_get_request: fixture,
     es_write_data: fixture,
     query_data: dict,
     expected_answer: dict,
     es_clear_data: fixture,
 ):
-    await es_clear_data()
+    await es_clear_data(films_settings.es_index)
     # 1. Генерируем данные для ES
     es_data = [
         {
@@ -66,3 +66,44 @@ async def test_search(
         else:
             body.pop("detail")
             assert len(body) == expected_answer["length"]
+
+
+@pytest.mark.parametrize(
+    "query_data, expected_answer",
+    [
+        ({"query": "created"}, {"status": 200}),
+        ({"query": "some_name"}, {"status": 404}),
+    ],
+)
+@pytest.mark.asyncio
+async def test_person_search(
+    make_get_request: fixture,
+    es_write_data: fixture,
+    query_data: dict,
+    expected_answer: dict,
+    es_clear_data: fixture,
+):
+    await es_clear_data(person_settings.es_index)
+    # 1. Генерируем данные для ES
+    es_data = [
+        {
+            "id": "2281e359-4080-421f-a015-517d31ca8041",
+            "full_name": "created person",
+            "films": [{"some": "act"}],
+        }
+    ]
+
+    await es_write_data(es_data, settings=person_settings)
+
+    # 3. Запрашиваем данные из ES по API
+
+    response = await make_get_request(
+        "/api/v1/persons/search", query_data=query_data, settings=person_settings
+    )
+    if response is not None:
+        body = await response.json()
+        status = response.status
+
+        # 4. Проверяем ответ
+        logging.info(body)
+        assert status == expected_answer["status"]

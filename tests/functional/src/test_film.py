@@ -24,7 +24,7 @@ async def test_film(
     expected_answer: dict,
 ):
     # Очищаем данные из ElsticSearch
-    await es_clear_data()
+    await es_clear_data(films_settings.es_index)
     # Записываем данные в ElsticSearch
     es_data = [
         {
