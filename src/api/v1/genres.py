@@ -32,7 +32,7 @@ async def genre_details(
 @router.get(
     "/",
     response_model=list[Genre],
-    description="Список жанров",
+    description="Список жанров с пагинацией",
     summary="Список жанров",
     response_description="Список жанров",
 )

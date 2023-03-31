@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 
 import aiohttp
 import backoff
@@ -19,7 +20,6 @@ def get_es_bulk_query(es_data: list[dict], es_index: str, es_id_field: str) -> l
         bulk_query.extend(
             [json.dumps({"index": {"_index": es_index, "_id": row[es_id_field]}}), json.dumps(row)]
         )
-    print(bulk_query)
     return bulk_query
 
 
@@ -82,7 +82,9 @@ def es_write_data(es_client):
         bulk_query = get_es_bulk_query(data, settings.es_index, settings.es_id_field)
         str_query = "\n".join(bulk_query) + "\n"
         response = await es_client.bulk(str_query, refresh=True)
+        logging.info(response)
         if response["errors"]:
+            logging.error(response)
             raise Exception("Ошибка записи данных в Elasticsearch")
 
     return inner

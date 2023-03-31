@@ -13,8 +13,8 @@ router = APIRouter()
 @router.get(
     "",
     response_model=list[PersonList],
-    description="Список персон",
-    summary="Список персон",
+    description="Полнотекстовый поиск по персонам с пагинацией",
+    summary="Полнотекстовый поиск по персонам",
     response_description="Список персон",
 )
 async def list_persons(
@@ -63,7 +63,7 @@ async def search_persons(
 @router.get(
     "/{person_id}",
     response_model=Person,
-    summary="Персона",
+    summary="Получение одной персоны",
     description="Получить информацию о персоне",
     response_description="Подробная информация о персоне",
 )
