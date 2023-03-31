@@ -2,8 +2,11 @@ import asyncio
 import json
 
 import aiohttp
+import backoff
+import elasticsearch
 import pytest
 import pytest_asyncio
+import requests
 from aiohttp import web_response
 from elasticsearch import AsyncElasticsearch
 
@@ -22,13 +25,23 @@ def get_es_bulk_query(es_data: list[dict], es_index: str, es_id_field: str) -> l
 
 @pytest.fixture(scope="session")
 def event_loop():
-    """Overrides pytest default function scoped event loop"""
+    """Overrides pytest default function scoped event loop."""
     policy = asyncio.get_event_loop_policy()
     loop = policy.new_event_loop()
     yield loop
     loop.close()
 
 
+@backoff.on_exception(
+    backoff.expo,
+    (
+        requests.exceptions.ConnectionError,
+        ConnectionRefusedError,
+        elasticsearch.exceptions.ConnectionError,
+    ),
+    max_tries=50,
+    max_time=60,
+)
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def es_client():
     client = AsyncElasticsearch(hosts=films_settings.es_adress, validate_cert=False, use_ssl=False)
@@ -36,6 +49,16 @@ async def es_client():
     await client.close()
 
 
+@backoff.on_exception(
+    backoff.expo,
+    (
+        requests.exceptions.ConnectionError,
+        ConnectionRefusedError,
+        aiohttp.client_exceptions.ClientConnectorError,
+    ),
+    max_tries=50,
+    max_time=60,
+)
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def aiohttp_client():
     client = aiohttp.ClientSession()
@@ -45,6 +68,16 @@ async def aiohttp_client():
 
 @pytest.fixture
 def es_write_data(es_client):
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            requests.exceptions.ConnectionError,
+            ConnectionRefusedError,
+            elasticsearch.exceptions.ConnectionError,
+        ),
+        max_tries=50,
+        max_time=60,
+    )
     async def inner(data: list[dict], settings) -> None:
         bulk_query = get_es_bulk_query(data, settings.es_index, settings.es_id_field)
         str_query = "\n".join(bulk_query) + "\n"
@@ -57,7 +90,17 @@ def es_write_data(es_client):
 
 @pytest.fixture
 def make_get_request(aiohttp_client) -> web_response.Response:
-    async def inner(url, query_data, settings):
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            requests.exceptions.ConnectionError,
+            ConnectionRefusedError,
+            elasticsearch.exceptions.ConnectionError,
+        ),
+        max_tries=50,
+        max_time=60,
+    )
+    async def inner(url, settings, query_data={}):
         url = settings.service_url + url
         query_data = query_data
         response = await aiohttp_client.get(url, params=query_data)
@@ -68,9 +111,37 @@ def make_get_request(aiohttp_client) -> web_response.Response:
 
 @pytest.fixture
 def make_get_request_id(aiohttp_client):
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            requests.exceptions.ConnectionError,
+            ConnectionRefusedError,
+            elasticsearch.exceptions.ConnectionError,
+        ),
+        max_tries=50,
+        max_time=60,
+    )
     async def inner(url, query_data, settings):
         url = settings.service_url + url + query_data
         response = await aiohttp_client.get(url)
         return response
+
+    return inner
+
+
+@pytest.fixture
+def es_clear_data(es_client):
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            requests.exceptions.ConnectionError,
+            ConnectionRefusedError,
+            elasticsearch.exceptions.ConnectionError,
+        ),
+        max_tries=50,
+        max_time=60,
+    )
+    async def inner():
+        await es_client.delete_by_query(index="movies", body={"query": {"match_all": {}}})
 
     return inner
