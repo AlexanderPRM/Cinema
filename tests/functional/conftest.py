@@ -11,7 +11,7 @@ import requests
 from aiohttp import web_response
 from elasticsearch import AsyncElasticsearch
 
-from .settings import films_settings
+from .settings import baseconfig
 
 
 def get_es_bulk_query(es_data: list[dict], es_index: str, es_id_field: str) -> list:
@@ -44,7 +44,7 @@ def event_loop():
 )
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def es_client():
-    client = AsyncElasticsearch(hosts=films_settings.es_adress, validate_cert=False, use_ssl=False)
+    client = AsyncElasticsearch(hosts=baseconfig.es_adress, validate_cert=False, use_ssl=False)
     yield client
     await client.close()
 
