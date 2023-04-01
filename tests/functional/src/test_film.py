@@ -16,6 +16,10 @@ pytestmark = pytest.mark.asyncio
     [
         ({"page_size": 5}, {"status": HTTPStatus.OK, "length": 5}),
         ({"page_size": 50, "page_number": 50}, {"status": HTTPStatus.NOT_FOUND, "length": 1}),
+        (
+            {"page_number": "page_number", "page_size": "page_size"},
+            {"status": HTTPStatus.UNPROCESSABLE_ENTITY, "length": 1},
+        ),
     ],
 )
 async def test_film(
@@ -69,6 +73,10 @@ async def test_film(
         (
             {"ID": "40ebbe7c-9ed8-4986-a4ff-6a5555555555"},
             {"status": HTTPStatus.NOT_FOUND, "id": None},
+        ),
+        (
+            {"ID": 000},
+            {"status": HTTPStatus.UNPROCESSABLE_ENTITY, "id": None},
         ),
     ],
 )

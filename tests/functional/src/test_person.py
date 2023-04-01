@@ -15,6 +15,7 @@ pytestmark = pytest.mark.asyncio
     [
         ({"query": "2281e359-4080-421f-a015-517d31ca8041"}, {"status": HTTPStatus.OK}),
         ({"query": "00000000-0000-0000-0000-000000000000"}, {"status": HTTPStatus.NOT_FOUND}),
+        ({"query": "000"}, {"status": HTTPStatus.UNPROCESSABLE_ENTITY}),
     ],
 )
 async def test_persons_by_id(
@@ -44,6 +45,10 @@ async def test_persons_by_id(
     [
         ({"page_size": 10}, {"status": HTTPStatus.OK, "length": 10}),
         ({"page_size": 10, "page_number": 500}, {"status": HTTPStatus.NOT_FOUND, "length": 1}),
+        (
+            {"page_size": "page_size", "page_number": "page_number"},
+            {"status": HTTPStatus.UNPROCESSABLE_ENTITY, "length": 1},
+        ),
     ],
 )
 async def test_persons_list(
