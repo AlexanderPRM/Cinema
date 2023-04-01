@@ -1,21 +1,23 @@
 import datetime
 import logging
 import uuid
+from http import HTTPStatus
 
 import pytest
 from pytest import fixture
 
 from ..settings import films_settings
 
+pytestmark = pytest.mark.asyncio
+
 
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
-        ({"page_size": 5}, {"status": 200, "length": 5}),
-        ({"page_size": 50, "page_number": 50}, {"status": 404, "length": 1}),
+        ({"page_size": 5}, {"status": HTTPStatus.OK, "length": 5}),
+        ({"page_size": 50, "page_number": 50}, {"status": HTTPStatus.NOT_FOUND, "length": 1}),
     ],
 )
-@pytest.mark.asyncio
 async def test_film(
     make_get_request: fixture,
     es_write_data: fixture,
@@ -53,7 +55,7 @@ async def test_film(
 
     logging.error(body)
     # Проверяем response на expected_answer
-    assert status == expected_answer["status"]
+    assert status == expected_answer["status"].value
     assert len(body) == expected_answer["length"]
 
 
@@ -62,12 +64,14 @@ async def test_film(
     [
         (
             {"ID": "40ebbe7c-9ed8-4986-a4ff-6a5918890178"},
-            {"status": 200, "id": "40ebbe7c-9ed8-4986-a4ff-6a5918890178"},
+            {"status": HTTPStatus.OK, "id": "40ebbe7c-9ed8-4986-a4ff-6a5918890178"},
         ),
-        ({"ID": "40ebbe7c-9ed8-4986-a4ff-6a5555555555"}, {"status": 404, "id": None}),
+        (
+            {"ID": "40ebbe7c-9ed8-4986-a4ff-6a5555555555"},
+            {"status": HTTPStatus.NOT_FOUND, "id": None},
+        ),
     ],
 )
-@pytest.mark.asyncio
 async def test_id_film(
     make_get_request: fixture,
     es_write_data: fixture,
@@ -101,6 +105,6 @@ async def test_id_film(
 
         logging.error(body)
         # Проверяем response на expected_answer
-        assert status == id_expected_answer["status"]
+        assert status == id_expected_answer["status"].value
         if "detail" not in body.keys():
             assert body["id"] == id_expected_answer["id"]
