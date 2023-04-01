@@ -136,6 +136,8 @@ def es_clear_data(es_client):
     @backoff.on_exception(
         backoff.expo,
         (
+            elasticsearch.exceptions.TransportError,
+            elasticsearch.exceptions.NotFoundError,
             requests.exceptions.ConnectionError,
             ConnectionRefusedError,
             elasticsearch.exceptions.ConnectionError,
