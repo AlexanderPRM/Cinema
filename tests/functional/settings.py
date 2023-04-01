@@ -28,6 +28,7 @@ class PersonSetting(BaseConfig):
     es_index: str = Field("persons")
 
 
+baseconfig = BaseConfig()
 films_settings = FilmsSettings()
 genre_setting = GenreSettings()
 person_settings = PersonSetting()

@@ -1,20 +1,23 @@
 import logging
 import uuid
+from http import HTTPStatus
 
 import pytest
 from pytest import fixture
 
 from ..settings import genre_setting
 
+pytestmark = pytest.mark.asyncio
+
 
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
-        ({"query": "2281e359-4080-421f-a015-517d31ca8044"}, {"status": 200}),
-        ({"query": "00000000-0000-0000-0000-000000000000"}, {"status": 404}),
+        ({"query": "2281e359-4080-421f-a015-517d31ca8044"}, {"status": HTTPStatus.OK}),
+        ({"query": "00000000-0000-0000-0000-000000000000"}, {"status": HTTPStatus.NOT_FOUND}),
+        ({"query": "000"}, {"status": HTTPStatus.UNPROCESSABLE_ENTITY}),
     ],
 )
-@pytest.mark.asyncio
 async def test_genres_by_id(
     make_get_request_id: fixture,
     es_write_data: fixture,
@@ -32,17 +35,20 @@ async def test_genres_by_id(
     status = response.status
 
     logging.info(body)
-    assert status == expected_answer["status"]
+    assert status == expected_answer["status"].value
 
 
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
-        ({"page_size": 10}, {"status": 200, "length": 10}),
-        ({"page_size": 10, "page_number": 500}, {"status": 404, "length": 1}),
+        ({"page_size": 10}, {"status": HTTPStatus.OK, "length": 10}),
+        ({"page_size": 10, "page_number": 500}, {"status": HTTPStatus.NOT_FOUND, "length": 1}),
+        (
+            {"page_size": "page_size", "page_number": "page_number"},
+            {"status": HTTPStatus.UNPROCESSABLE_ENTITY, "length": 1},
+        ),
     ],
 )
-@pytest.mark.asyncio
 async def test_genres_list(
     make_get_request: fixture,
     es_write_data: fixture,
@@ -66,5 +72,5 @@ async def test_genres_list(
     status = response.status
 
     logging.info(body)
-    assert status == expected_answer["status"]
+    assert status == expected_answer["status"].value
     assert len(body) == expected_answer["length"]

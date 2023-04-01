@@ -1,24 +1,33 @@
 import datetime
 import logging
 import uuid
+from http import HTTPStatus
 
 import pytest
 from pytest import fixture
 
 from ..settings import films_settings, person_settings
 
+pytestmark = pytest.mark.asyncio
+
 
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
-        ({"query": "The Star", "page_size": 50}, {"status": 200, "length": 50, "exists": True}),
+        (
+            {"query": "The Star", "page_size": 50},
+            {"status": HTTPStatus.OK, "length": 50, "exists": True},
+        ),
         (
             {"query": "Mashed potato", "page_size": 50},
-            {"status": 404, "length": 0, "exists": False},
+            {"status": HTTPStatus.NOT_FOUND, "length": 0, "exists": False},
+        ),
+        (
+            {"query": 000, "page_size": "Mashed potato"},
+            {"status": HTTPStatus.UNPROCESSABLE_ENTITY, "length": 0, "exists": False},
         ),
     ],
 )
-@pytest.mark.asyncio
 async def test_film_search(
     make_get_request: fixture,
     es_write_data: fixture,
@@ -32,7 +41,7 @@ async def test_film_search(
         {
             "id": str(uuid.uuid4()),
             "imdb_rating": 8.5,
-            "genre": [{"id": "111", "name": "Action"}, {"id": "111", "name": "Sci-Fi"}],
+            "genre": [{"id": "111", "name": "Action"}, {"id": "222", "name": "Sci-Fi"}],
             "title": "The Star",
             "description": "New World",
             "director": ["Stan"],
@@ -60,7 +69,7 @@ async def test_film_search(
 
         # 4. Проверяем ответ
         logging.info(body)
-        assert status == expected_answer["status"]
+        assert status == expected_answer["status"].value
         if expected_answer["exists"]:
             assert len(body) == expected_answer["length"]
         else:
@@ -71,11 +80,10 @@ async def test_film_search(
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
-        ({"query": "created"}, {"status": 200}),
-        ({"query": "some_name"}, {"status": 404}),
+        ({"query": "created"}, {"status": HTTPStatus.OK}),
+        ({"query": "some_name"}, {"status": HTTPStatus.NOT_FOUND}),
     ],
 )
-@pytest.mark.asyncio
 async def test_person_search(
     make_get_request: fixture,
     es_write_data: fixture,
@@ -106,4 +114,4 @@ async def test_person_search(
 
         # 4. Проверяем ответ
         logging.info(body)
-        assert status == expected_answer["status"]
+        assert status == expected_answer["status"].value
