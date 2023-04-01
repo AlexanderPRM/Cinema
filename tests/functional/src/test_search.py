@@ -22,6 +22,10 @@ pytestmark = pytest.mark.asyncio
             {"query": "Mashed potato", "page_size": 50},
             {"status": HTTPStatus.NOT_FOUND, "length": 0, "exists": False},
         ),
+        (
+            {"query": 000, "page_size": "Mashed potato"},
+            {"status": HTTPStatus.UNPROCESSABLE_ENTITY, "length": 0, "exists": False},
+        ),
     ],
 )
 async def test_film_search(
@@ -37,7 +41,7 @@ async def test_film_search(
         {
             "id": str(uuid.uuid4()),
             "imdb_rating": 8.5,
-            "genre": [{"id": "111", "name": "Action"}, {"id": "111", "name": "Sci-Fi"}],
+            "genre": [{"id": "111", "name": "Action"}, {"id": "222", "name": "Sci-Fi"}],
             "title": "The Star",
             "description": "New World",
             "director": ["Stan"],
