@@ -7,10 +7,9 @@ import elasticsearch
 from etl_process.extract import Extract
 from etl_process.load import Load
 from etl_process.transform import Transform
+from storage import JsonFileStorage, State
 from utils.dsn import Config
 from utils.log import get_logger
-
-from storage import JsonFileStorage, State
 
 
 @backoff.on_exception(

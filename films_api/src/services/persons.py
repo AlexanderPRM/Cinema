@@ -1,20 +1,18 @@
 from functools import lru_cache
 from typing import Dict, List, Optional
-from uuid import UUID
-
-from elasticsearch import AsyncElasticsearch
-from fastapi import Depends
-from redis.asyncio import Redis
 
 from cache.base import BaseCache
 from cache.redis_cache import RedisCache
 from db.elastic import get_elastic
 from db.redis_db import get_redis
-from storage.films import FilmBaseStorage, FilmElasticStorage
+from elasticsearch import AsyncElasticsearch
+from fastapi import Depends
+from redis.asyncio import Redis
+from storage.persons import PersonBaseStorage, PersonElasticStorage
 
 
-class FilmService:
-    def __init__(self, cache: BaseCache, storage: FilmBaseStorage):
+class PersonService:
+    def __init__(self, cache: BaseCache, storage: PersonBaseStorage):
         self.cache = cache
         self.storage = storage
 
@@ -31,20 +29,16 @@ class FilmService:
 
         return data
 
-    async def get_data_list(
-        self, sort: str, genre: UUID, page_number: int, page_size: int
-    ) -> Optional[List[Dict]]:
-        data = await self.storage.get_data_list(
-            sort=sort, genre=genre, page_number=page_number, page_size=page_size
-        )
+    async def get_data_list(self, page_number: int, page_size: int) -> Optional[List[Dict]]:
+        data = await self.storage.get_data_list(page_number=page_number, page_size=page_size)
         return data
 
 
 @lru_cache()
-def get_film_service(
+def get_person_service(
     redis: Redis = Depends(get_redis),
     elastic: AsyncElasticsearch = Depends(get_elastic),
-) -> FilmService:
+) -> PersonService:
     redis = RedisCache(redis)
-    elastic = FilmElasticStorage(elastic)
-    return FilmService(redis, elastic)
+    elastic = PersonElasticStorage(elastic)
+    return PersonService(redis, elastic)
