@@ -1,9 +1,8 @@
 from http import HTTPStatus
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Request
-
 from core.config import CommonQueryParams
+from fastapi import APIRouter, Depends, HTTPException, Request
 from models.film import Genre
 from services.genres import GenreService, get_genre_service
 

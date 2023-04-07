@@ -1,15 +1,14 @@
 import logging
 
 import uvicorn
-from elasticsearch import AsyncElasticsearch
-from fastapi import FastAPI
-from fastapi.responses import ORJSONResponse
-from redis.asyncio import Redis
-
 from api.v1 import films, genres, persons
 from core.config import config
 from core.logger import LOGGING
 from db import elastic, redis_db
+from elasticsearch import AsyncElasticsearch
+from fastapi import FastAPI
+from fastapi.responses import ORJSONResponse
+from redis.asyncio import Redis
 
 app = FastAPI(
     title=config.PROJECT_NAME,
