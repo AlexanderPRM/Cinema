@@ -1,9 +1,7 @@
 import uuid
 
-from db import db
+from db.postgres import db
 from sqlalchemy.dialects.postgresql import UUID
-
-# Начальная конфигурация юзера из теории
 
 
 class User(db.Model):

@@ -3,13 +3,10 @@ import logging
 import uvicorn
 from core.config import config
 from core.logger import LOGGING
+from db.postgres import db
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-
-
-db = SQLAlchemy()
 
 
 def init_db(app: Flask):
@@ -19,6 +16,11 @@ def init_db(app: Flask):
     db_host = config.AUTH_POSTGRES_HOST
     app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
     db.init_app(app)
+    with app.app_context():
+        # Импорты моделей для создания в БД.
+        from db.models import User  # noqa:402
+
+        db.create_all()
 
 
 if __name__ == "__main__":
