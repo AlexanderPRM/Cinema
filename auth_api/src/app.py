@@ -1,7 +1,7 @@
 import logging
 
-from api import api_blueprint_v1
 import uvicorn
+from api import api_blueprint_v1
 from core.config import config
 from core.logger import LOGGING
 from db.postgres import db
