@@ -1,8 +1,4 @@
-
-
-
-
-class UserSerivce(): # Унаследовать надо будет
+class UserSerivce():  # Унаследовать надо будет
     def __init__():
         super().__init__()
 

@@ -1,9 +1,6 @@
-from flask import Blueprint
-from flask import request
-from flask import abort
+from flask import abort, Blueprint, request
 
 user_bp = Blueprint("user", __name__, url_prefix="/user")
-
 
 
 def data_validate(request):

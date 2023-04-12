@@ -1,15 +1,16 @@
 import logging
 
+from api import api_blueprint_v1
 import uvicorn
 from core.config import config
 from core.logger import LOGGING
 from db.postgres import db
 from flask import Flask
-from api import api_blueprint_v1
 
 app = Flask(__name__)
 
 app.register_blueprint(api_blueprint_v1)
+
 
 def init_db(app: Flask):
     db_name = config.AUTH_POSTGRES_DB
