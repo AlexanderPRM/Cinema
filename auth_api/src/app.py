@@ -18,7 +18,7 @@ def init_db(app: Flask):
     db.init_app(app)
     with app.app_context():
         # Импорты моделей для создания в БД.
-        from db.models import User  # noqa:402
+        from db.models import ServiceUser, User, UserLoginHistory, UsersRoles  # noqa:402
 
         db.create_all()
 
