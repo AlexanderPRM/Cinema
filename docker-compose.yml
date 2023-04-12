@@ -28,8 +28,6 @@ services:
       - POSTGRES_PASSWORD=${AUTH_POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/auth_data/
-    ports:
-      - 5432:5432
     restart: always
 
   auth_redis:
