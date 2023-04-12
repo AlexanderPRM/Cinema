@@ -14,7 +14,7 @@ def signin():
     return "Success"
 
 
-@user_bp.route("/signun", methods=["POST"])
+@user_bp.route("/signup", methods=["POST"])
 def signup():
     pass
 
