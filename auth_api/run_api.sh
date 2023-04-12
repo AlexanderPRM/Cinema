@@ -17,6 +17,4 @@ done
 
 
 echo "Redis started"
-
-python wsgi_run.py
-gunicorn wsgi_run:app --workers 4 -k gevent --bind 0.0.0.0:8000
+gunicorn wsgi_run:gunicorn_run --workers 4 -k gevent --bind 0.0.0.0:8000

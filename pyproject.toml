@@ -10,8 +10,6 @@ exclude = '''
 '''
 
 [tool.isort]
-src_paths=["src", "tests"]
-extend_skip=["wsgi_app.py"]
 profile="black"
-multi_line_output=1
+multi_line_output=3
 line_length=100

@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     AUTH_POSTGRES_HOST: str
     AUTH_POSTGRES_PORT: str
     AUTH_POSTGRES_DB: str
+    JWT_SECRET: str
+    ACCESS_TOKEN_EXPIRES: str
+    REFRESH_TOKEN_EXPIRES: str
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     class Config:

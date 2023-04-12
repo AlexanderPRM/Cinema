@@ -2,14 +2,26 @@ import logging
 
 import uvicorn
 from api import api_blueprint_v1
+from api.v1.user_handlers import jwt
 from core.config import config
 from core.logger import LOGGING
 from db.postgres import db
 from flask import Flask
 
 app = Flask(__name__)
+app.config
 
 app.register_blueprint(api_blueprint_v1)
+
+
+def init_jwt(app: Flask):
+    secret_key = config.JWT_SECRET
+    access_token_exp = config.ACCESS_TOKEN_EXPIRES
+    refresh_token_exp = config.REFRESH_TOKEN_EXPIRES
+    app.config["JWT_SECRET_KEY"] = secret_key
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = int(access_token_exp)
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = int(refresh_token_exp)
+    jwt.init_app(app)
 
 
 def init_db(app: Flask):
@@ -21,12 +33,13 @@ def init_db(app: Flask):
     db.init_app(app)
     with app.app_context():
         # Импорты моделей для создания в БД.
-        from db.models import ServiceUser, User, UserLoginHistory, UsersRoles  # noqa:402
+        from db.models import ServiceUser, User, UserLoginHistory, UserRole  # noqa:402
 
         db.create_all()
 
 
 if __name__ == "__main__":
+    init_jwt(app)
     init_db(app)
     app.run()
     uvicorn.run(
