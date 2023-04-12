@@ -1,4 +1,4 @@
-from flask import abort, Blueprint, request
+from flask import Blueprint, abort, request
 
 user_bp = Blueprint("user", __name__, url_prefix="/user")
 
@@ -12,3 +12,10 @@ def data_validate(request):
 def signin():
     data_validate(request)
     return "Success"
+
+
+@user_bp.route("/signun", methods=["POST"])
+def signup():
+    pass
+
+# И тд
