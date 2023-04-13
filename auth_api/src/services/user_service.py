@@ -20,7 +20,7 @@ class UserService:  # Унаследовать надо будет
     def signin():
         pass
 
-    def signup(self, email, password):
+    def signup(self, email, password, name):
         try:
             validate_email(email)
         except EmailError:
@@ -30,7 +30,7 @@ class UserService:  # Унаследовать надо будет
             return abort(Response(json.dumps({"message": f"User {email} already exists."}), 422))
 
         hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-        user = User(email=email, password=hashed_pass.decode())
+        user = User(email=email, password=hashed_pass.decode(), name=name)
         db.session.add(user)
         db.session.commit()
         role = db.session.query(UserRole).filter_by(name="default").first()
