@@ -1,3 +1,5 @@
+from core import config
+from db.redis import redis_db
 from flask import Blueprint, Response, abort, json, jsonify, request
 from flask_jwt_extended import (
     JWTManager,
@@ -38,4 +40,5 @@ def signup():
     )
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
+    redis_db.setex(str(user.id), config.config.REFRESH_TOKEN_EXPIRES, refresh_token)
     return resp, 201

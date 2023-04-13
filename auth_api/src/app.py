@@ -6,12 +6,20 @@ from api.v1.user_handlers import jwt
 from core.config import config
 from core.logger import LOGGING
 from db.postgres import db
+from db.redis import redis_db
 from flask import Flask
 
 app = Flask(__name__)
-app.config
 
 app.register_blueprint(api_blueprint_v1)
+
+
+def init_redis(app: Flask):
+    redis_host = config.AUTH_REDIS_HOST
+    redis_port = config.AUTH_REDIS_PORT
+    app.config["REDIS_HOST"] = redis_host
+    app.config["REDIS_PORT"] = redis_port
+    redis_db.init_app(app)
 
 
 def init_jwt(app: Flask):
@@ -32,7 +40,6 @@ def init_db(app: Flask):
     app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
     db.init_app(app)
     with app.app_context():
-        # Импорты моделей для создания в БД.
         from db.models import ServiceUser, User, UserLoginHistory, UserRole  # noqa:402
 
         db.create_all()
@@ -41,6 +48,9 @@ def init_db(app: Flask):
 if __name__ == "__main__":
     init_jwt(app)
     init_db(app)
+    init_redis(app)
+
+    # Для разработки.
     app.run()
     uvicorn.run(
         "app:app",
