@@ -21,11 +21,11 @@ class UserService:  # Унаследовать надо будет
         pass
 
     def signup(self, email, password):
-        email = self.normalize_email(email)
         try:
             validate_email(email)
         except EmailError:
             return abort(Response(json.dumps({"message": "Email is not correct."}), 422))
+        email = self.normalize_email(email)
         if db.session.query(User).filter_by(email=email).first():
             return abort(Response(json.dumps({"message": f"User {email} already exists."}), 422))
 
