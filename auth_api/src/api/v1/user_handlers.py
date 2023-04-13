@@ -1,3 +1,4 @@
+import redis
 from core.config import config
 from flask import (Blueprint,
                    Response,
@@ -13,6 +14,7 @@ from flask_jwt_extended import (JWTManager,
                                 create_access_token,
                                 create_refresh_token,
                                 decode_token,
+                                get_jwt,
                                 get_jwt_identity,
                                 jwt_required,
                                 set_access_cookies,
@@ -25,8 +27,19 @@ from jwt import InvalidTokenError
 from jwt import decode as jwt_decode
 from services.user_service import UserService
 
+jwt_redis_blocklist = redis.StrictRedis(
+    host=config.AUTH_REDIS_HOST, port=config.AUTH_REDIS_PORT, db=0, decode_responses=True
+)
+
 user_bp = Blueprint("user", __name__, url_prefix="/user")
 jwt = JWTManager()
+
+
+@jwt.token_in_blocklist_loader
+def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
+    jti = jwt_payload["jti"]
+    token_in_redis = jwt_redis_blocklist.get(jti)
+    return token_in_redis is not None
 
 
 def data_validate(request):
@@ -78,7 +91,7 @@ def refresh():
     unset_refresh_cookies(resp)
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
-    return resp
+    return resp, 200
 
 
 @user_bp.route("/profile", methods=["GET", "POST"])  # GET
@@ -94,7 +107,7 @@ def personal_info():
     user_info = service.get_profile_info(current_user)
 
     user_data = {"name": user_info.name, "email": current_user, "role": role}
-    return render_template("profile.html", current_user=current_user, **user_data)
+    return render_template("profile.html", current_user=current_user, **user_data), 200
 
 
 @user_bp.route("/profile/name", methods=["GET", "POST"])  # POST
@@ -105,10 +118,10 @@ def change_user_name():
     current_user = get_jwt_identity()
     if new_name is not None:
         service.change_name(current_user, new_name)
-        return jsonify({"Your NEW name: ": new_name})
+        return jsonify({"Your NEW name: ": new_name}), 200
     else:
         name = service.get_profile_info(current_user).name
-        return jsonify({"Your name: ": name})
+        return jsonify({"Your name: ": name}), 200
 
 
 @user_bp.route("/profile/password", methods=["GET", "POST"])  # POST
@@ -120,7 +133,7 @@ def change_user_password():
     current_user = get_jwt_identity()
     if service.check_password(current_user, cur_password):
         service.change_password(current_user, new_password)
-        return jsonify({"Your NEW password: ": new_password})
+        return jsonify({"Your NEW password: ": new_password}), 200
     else:
         return abort(Response(json.dumps({"error_message": "WRONG Password"}), 403))
 
@@ -153,14 +166,16 @@ def change_user_email():
         # отправка токенов в куки
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
-        return resp
+        return resp, 200
     else:
         return abort(Response(json.dumps({"error_message": "WRONG Password"}), 403))
 
 
-@user_bp.route("/profile/logout")  # POST
+@user_bp.route("/profile/logout", methods=["POST"])  # POST
 @jwt_required()
 def logout():
+    jti = get_jwt()["jti"]
+    jwt_redis_blocklist.set(jti, "", ex=config.ACCESS_TOKEN_EXPIRES)
     resp = make_response(redirect(url_for("user.signup")))
     unset_jwt_cookies(resp)
-    return resp
+    return resp, 200
