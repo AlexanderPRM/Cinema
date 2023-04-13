@@ -20,7 +20,7 @@ services:
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -q -d ${AUTH_POSTGRES_DB} -U ${AUTH_POSTGRES_USER}" ]
       interval: 5s
-      timeout: 5sauth_redis
+      timeout: 5s
       retries: 5
     environment:
       - POSTGRES_DB=${AUTH_POSTGRES_DB}
