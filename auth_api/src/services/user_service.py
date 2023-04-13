@@ -30,7 +30,7 @@ class UserService:  # Унаследовать надо будет
             return abort(Response(json.dumps({"message": f"User {email} already exists."}), 422))
 
         hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-        user = User(email=email, password=hashed_pass)
+        user = User(email=email, password=hashed_pass.decode())
         db.session.add(user)
         db.session.commit()
         role = db.session.query(UserRole).filter_by(name="default").first()
