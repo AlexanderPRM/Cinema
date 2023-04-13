@@ -57,7 +57,7 @@ def create_super_user():
             email = input("Enter your email: ")
             if db.session.query(User).filter_by(email=email).first():
                 print(f"User {email} already exists.")
-                return exit()
+                exit()
             validate_email(email)
             break
         except EmailError:
