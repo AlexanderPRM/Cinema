@@ -1,12 +1,12 @@
 import logging
 
+import redis
 import uvicorn
 from api.v1.user_handlers import jwt, user_bp
 from core.config import config
 from core.logger import LOGGING
 from db.postgres import db
 from flask import Flask
-import redis
 
 app = Flask(__name__)
 app.config
@@ -24,8 +24,8 @@ def init_jwt(app: Flask):
     app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
     app.config["JWT_REFRESH_COOKIE_PATH"] = "/user/refresh"
     app.config["JWT_COOKIE_CSRF_PROTECT"] = False
-    app.config['JWT_BLACKLIST_ENABLED'] = True
-    app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+    app.config["JWT_BLACKLIST_ENABLED"] = True
+    app.config["JWT_BLACKLIST_TOKEN_CHECKS"] = ["access", "refresh"]
     jwt.init_app(app)
 
 
@@ -37,7 +37,7 @@ def init_db(app: Flask):
     redis_host = config.AUTH_REDIS_HOST
     redis_port = config.AUTH_REDIS_PORT
     app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
-    app.config['REDIS_URL'] = f"redis://{redis_host}:{redis_port}/0"
+    app.config["REDIS_URL"] = f"redis://{redis_host}:{redis_port}/0"
     db.init_app(app)
     with app.app_context():
         # Импорты моделей для создания в БД.
