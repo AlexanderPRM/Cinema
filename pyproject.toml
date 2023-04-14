@@ -5,11 +5,13 @@ exclude = '''
   /(
     | __pycache__
     | venv
+    | migrations
   )/
 )
 '''
 
 [tool.isort]
 profile="black"
+extend_skip=["migrations"]
 multi_line_output=3
 line_length=100

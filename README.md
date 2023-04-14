@@ -61,6 +61,40 @@
 
 ## Полезные команды*
 
-### Создание суперюзера
+### Не через докер контейнер. (Если прокинуты порты у БД)
 
-    flask --app auth_api/src/wsgi_run:app create-superuser
+<br>
+
+**Создание суперюзера**
+
+    flask --app auth_api/src/wsgi_run:run create-superuser
+
+**Миграции**
+
+    # Создание
+
+    flask --app auth_api/src/wsgi_run:run db migrate -m "<comment>" --directory auth_api/migrations
+
+    # Применение
+
+    flask --app auth_api/src/wsgi_run:gunicorn_run db upgrade --directory auth_api/migrations
+
+<br>
+
+### Через докер контейнер.
+
+    docker-compose exec auth_api
+
+**Создание суперюзера**
+
+    flask --app wsgi_run:run create-superuser
+
+**Миграции**
+
+    # Применение
+
+    flask --app wsgi_run:run db upgrade
+
+    # Создание
+
+    При разработке, миграции создавать не через контейнер.
