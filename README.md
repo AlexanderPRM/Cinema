@@ -43,9 +43,9 @@
 
     docker-compose --env-file config.env up --build
 
-## Тесты*
+## Тесты
 
-### Функциональные тесты
+### Функциональные тесты*
 
 #### Настройте переменные окружения для тестов
 
@@ -58,3 +58,9 @@
 #### Команда для запуска функциональных тестов
 
     docker-compose -f tests/functional/docker-compose.yml --env-file tests/functional/config_tests.env up --build
+
+## Полезные команды*
+
+### Создание суперюзера
+
+    flask --app auth_api/src/wsgi_run:app create-superuser
