@@ -26,6 +26,8 @@ services:
       - POSTGRES_DB=${AUTH_POSTGRES_DB}
       - POSTGRES_USER=${AUTH_POSTGRES_USER}
       - POSTGRES_PASSWORD=${AUTH_POSTGRES_PASSWORD}
+    volumes:
+      - auth_postgres_data:/var/lib/postgresql/auth_data/
     restart: always
 
   auth_redis:
