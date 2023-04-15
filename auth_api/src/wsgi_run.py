@@ -12,4 +12,4 @@ def wsgi_run():
     return app
 
 
-gunicorn_run = wsgi_run()
+run = wsgi_run()

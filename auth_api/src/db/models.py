@@ -15,6 +15,7 @@ class User(db.Model):
     name = db.Column(db.String(155), nullable=True)
 
     service_info = db.relationship("ServiceUser", back_populates="user", uselist=False)
+    login_history = db.relationship("UserLoginHistory", back_populates="user")
 
     def __repr__(self):
         return f"<User {self.email}>"
@@ -55,7 +56,7 @@ class UserLoginHistory(db.Model):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False
     )
     user_id = db.Column(db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    user = db.relationship("User")
+    user = db.relationship("User", back_populates="login_history")
 
     user_agent = db.Column(db.Text, nullable=False)
     authentication_date = db.Column(db.DateTime, default=datetime.datetime.now)

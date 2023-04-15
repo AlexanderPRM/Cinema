@@ -11,9 +11,11 @@ from db.postgres import db
 from db.redis import redis_db
 from flask import Flask
 from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_migrate import Migrate
 from pydantic import EmailError, validate_email
 
 app = Flask(__name__)
+migrate = Migrate(app, db)
 
 app.register_blueprint(api_blueprint_v1)
 
@@ -43,10 +45,6 @@ def init_db(app: Flask):
     db_host = config.AUTH_POSTGRES_HOST
     app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
     db.init_app(app)
-    with app.app_context():
-        from db.models import ServiceUser, User, UserLoginHistory, UserRole  # noqa:402
-
-        db.create_all()
 
 
 @app.cli.command("create-superuser")
