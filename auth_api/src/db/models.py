@@ -15,7 +15,7 @@ class User(db.Model):
     name = db.Column(db.String(155), nullable=True)
 
     service_info = db.relationship("ServiceUser", back_populates="user", uselist=False)
-
+    login_history = db.relationship("UserLoginHistory", back_populates="user")
     def __repr__(self):
         return f"<User {self.email}>"
 
