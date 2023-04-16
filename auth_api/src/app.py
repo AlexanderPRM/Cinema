@@ -33,22 +33,6 @@ def init_jwt(app: Flask):
     jwt.init_app(app)
 
 
-#def init_db(app: Flask):
-#    db_name = config.AUTH_POSTGRES_DB
-#    db_user = config.AUTH_POSTGRES_USER
-#    db_pass = config.AUTH_POSTGRES_PASSWORD
-#    db_host = config.AUTH_POSTGRES_HOST
-#    redis_host = config.AUTH_REDIS_HOST
-#    redis_port = config.AUTH_REDIS_PORT
-#    app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
-#    app.config["REDIS_URL"] = f"redis://{redis_host}:{redis_port}/0"
-#    db.init_app(app)
-#    with app.app_context():
-#        # Импорты моделей для создания в БД.
-#        from db.models import ServiceUser, User, UserLoginHistory, UserRole  # noqa:402
-
-#        db.create_all()
-
 def init_db(app: Flask):
     db_name = config.AUTH_POSTGRES_DB
     db_user = config.AUTH_POSTGRES_USER
