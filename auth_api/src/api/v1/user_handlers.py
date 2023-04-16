@@ -49,10 +49,18 @@ def data_validate(request):
         )
 
 
+@user_bp.route("/signin", methods=["POST"])
+def signin():
+    data_validate(request)
+    return "Success"
+
+
 @user_bp.route("/signup", methods=["POST"])
 def signup():
     data_validate(request)
-    email, password, name = request.json["email"], request.json["password"], request.json["name"]
+    email, password = request.json["email"], request.json["password"]
+    name = request.json["name"] if "name" in request.json else None
+
     service = UserService()
     email, password, role, user = service.signup(email, password, name)
     access_token = create_access_token(identity=email, additional_claims={"role": role.name})
@@ -62,6 +70,7 @@ def signup():
     )
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
+    redis_db.setex(str(user.id), config.config.REFRESH_TOKEN_EXPIRES, refresh_token)
     return resp, 201
 
 
