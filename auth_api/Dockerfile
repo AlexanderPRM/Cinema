@@ -12,6 +12,7 @@ RUN pip install --upgrade pip --no-cache-dir \
      && pip install -r requirements.txt --no-cache-dir
 
 COPY run_api.sh .
+COPY migrations migrations/
 COPY src .
 
 RUN chmod +x /opt/auth_api/run_api.sh

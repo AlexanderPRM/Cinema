@@ -6,10 +6,14 @@ from api.v1.user_handlers import jwt, user_bp
 from core.config import config
 from core.logger import LOGGING
 from db.postgres import db
+from db.redis import redis_db
 from flask import Flask
+from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_migrate import Migrate
+from pydantic import EmailError, validate_email
 
 app = Flask(__name__)
-app.config
+migrate = Migrate(app, db)
 
 app.register_blueprint(user_bp)
 
@@ -29,26 +33,44 @@ def init_jwt(app: Flask):
     jwt.init_app(app)
 
 
+#def init_db(app: Flask):
+#    db_name = config.AUTH_POSTGRES_DB
+#    db_user = config.AUTH_POSTGRES_USER
+#    db_pass = config.AUTH_POSTGRES_PASSWORD
+#    db_host = config.AUTH_POSTGRES_HOST
+#    redis_host = config.AUTH_REDIS_HOST
+#    redis_port = config.AUTH_REDIS_PORT
+#    app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
+#    app.config["REDIS_URL"] = f"redis://{redis_host}:{redis_port}/0"
+#    db.init_app(app)
+#    with app.app_context():
+#        # Импорты моделей для создания в БД.
+#        from db.models import ServiceUser, User, UserLoginHistory, UserRole  # noqa:402
+
+#        db.create_all()
+
 def init_db(app: Flask):
     db_name = config.AUTH_POSTGRES_DB
     db_user = config.AUTH_POSTGRES_USER
     db_pass = config.AUTH_POSTGRES_PASSWORD
     db_host = config.AUTH_POSTGRES_HOST
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
+    db.init_app(app)
+
+def init_redis(app: Flask):
     redis_host = config.AUTH_REDIS_HOST
     redis_port = config.AUTH_REDIS_PORT
-    app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
-    app.config["REDIS_URL"] = f"redis://{redis_host}:{redis_port}/0"
-    db.init_app(app)
-    with app.app_context():
-        # Импорты моделей для создания в БД.
-        from db.models import ServiceUser, User, UserLoginHistory, UserRole  # noqa:402
-
-        db.create_all()
+    app.config["REDIS_HOST"] = redis_host
+    app.config["REDIS_PORT"] = redis_port
+    redis_db.init_app(app)
 
 
 if __name__ == "__main__":
     init_jwt(app)
     init_db(app)
+    init_redis(app)
+
+    # Для разработки.
     app.run()
     uvicorn.run(
         "app:app",

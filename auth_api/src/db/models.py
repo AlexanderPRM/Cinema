@@ -56,9 +56,8 @@ class UserLoginHistory(db.Model):
     )
     user_id = db.Column(db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     user = db.relationship("User")
-
     user_agent = db.Column(db.Text, nullable=False)
-    authentication_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    authentication_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
         return f"<User {self.user} User Agent {self.user_agent}>"
