@@ -1,5 +1,6 @@
 import redis
 from core.config import config
+from db.redis import redis_db
 from flask import (Blueprint,
                    Response,
                    abort,
@@ -21,9 +22,7 @@ from flask_jwt_extended import (JWTManager,
                                 set_refresh_cookies,
                                 unset_access_cookies,
                                 unset_jwt_cookies,
-                                unset_refresh_cookies,
-                                verify_jwt_in_request,)
-from jwt import InvalidTokenError
+                                unset_refresh_cookies,)
 from jwt import decode as jwt_decode
 from services.user_service import UserService
 

@@ -5,6 +5,7 @@ import uvicorn
 from api.v1.user_handlers import jwt, user_bp
 from core.config import config
 from core.logger import LOGGING
+from db.models import ServiceUser, User, UserRole
 from db.postgres import db
 from db.redis import redis_db
 from flask import Flask
