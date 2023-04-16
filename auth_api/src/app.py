@@ -41,6 +41,7 @@ def init_db(app: Flask):
     app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
     db.init_app(app)
 
+
 def init_redis(app: Flask):
     redis_host = config.AUTH_REDIS_HOST
     redis_port = config.AUTH_REDIS_PORT
