@@ -9,7 +9,7 @@ uvicorn==0.21.1
 pydantic==1.10.5
 Flask-JWT-Extended==4.4.4
 bcrypt==4.0.1
-email-normalize==2.0.0
 pydantic[email]==1.10.5
 Flask-And-Redis==1.0.0
 Flask-Migrate==4.0.4
+email-normalize==2.0.0
