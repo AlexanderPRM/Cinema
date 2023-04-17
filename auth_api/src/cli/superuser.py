@@ -1,7 +1,9 @@
 import bcrypt
 from app import app
+from core import config
 from db.models import ServiceUser, User
 from db.postgres import db
+from db.redis import redis_db
 from flask_jwt_extended import create_access_token, create_refresh_token
 from pydantic import EmailError, validate_email
 from services.role_service import RoleService
@@ -39,6 +41,11 @@ def create_super_user():
         db.session.commit()
     access_token = create_access_token(identity=email, additional_claims={"role": "superuser"})
     refresh_token = create_refresh_token(identity=email)
+    redis_db.setex(
+        str(user.id) + "_" + "admin-pc" + "_refresh",
+        config.config.REFRESH_TOKEN_EXPIRES,
+        refresh_token,
+    )
     print("\nNow creating superuser:", email)
     print(f"Your access_token: \n{access_token}")
     print(f"\nYour refresh_token: \n{refresh_token}")

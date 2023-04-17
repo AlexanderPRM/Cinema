@@ -21,7 +21,7 @@ def permission_validate(data: dict):
 @role_bp.route("/", methods=["GET"])
 def get_roles():
     data = _decode_jwt_from_request(locations=["headers", "cookies"], fresh=False)
-    permission_validate(data[0], "superuser")
+    permission_validate(data[0])
 
     roles = db.session.query(UserRole).all()
     roles = [{"id": role.id, "name": role.name} for role in roles]
