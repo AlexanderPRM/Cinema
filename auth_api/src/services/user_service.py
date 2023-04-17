@@ -1,9 +1,9 @@
 import bcrypt
-from db.models import ServiceUser, User, UserRole
+from db.models import ServiceUser, User, UserRole, UserLoginHistory
 from db.postgres import db
 from flask import Response, abort, json
 from pydantic import EmailError, validate_email
-
+from datetime import datetime
 
 class UserService:  # Унаследовать надо будет
     def __init__(self):
@@ -17,8 +17,32 @@ class UserService:  # Унаследовать надо будет
             email_user = email_user[: email_user.find("+")]
         return f"{email_user}@{email_domain}"
 
-    def signin():
-        pass
+    def signin(self, email, password, useragent):
+        try:
+            validate_email(email)
+        except EmailError:
+            return abort(Response(json.dumps({"message": "Email is not correct."}), 422))
+        email = self.normalize_email(email)
+        user = db.session.query(User).filter_by(email=email).first()
+        if not user:
+            return abort(Response(json.dumps({"message": "User was not found."}), 404))
+
+        if bcrypt.checkpw(password.encode(), user.password.encode()):
+            role = db.session.query(UserRole).\
+                join(ServiceUser).\
+                join(User).\
+                filter(User.id == user.id).\
+                first()
+            login_record = UserLoginHistory(
+                authentication_date=datetime.utcnow(),
+                user_id=user.id,
+                user_agent=useragent
+            )
+            db.session.add(login_record)
+            db.session.commit()
+            return email, role, user
+        else:
+            return abort(Response(json.dumps({"message": "Incorrect password."}), 401))
 
     def signup(self, email, password, name):
         try:
@@ -51,3 +75,9 @@ class UserService:  # Унаследовать надо будет
 
     def change_email():
         pass
+
+    def login_history(self, email):
+        user_id = db.session.query(User.id).filter_by(email=email).scalar()
+        return db.session.query(UserLoginHistory).\
+            join(User, User.id == UserLoginHistory.user_id).\
+            filter(User.id == user_id).all()
