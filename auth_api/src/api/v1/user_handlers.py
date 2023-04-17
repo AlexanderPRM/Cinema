@@ -68,7 +68,7 @@ def login_history():
     user_email = get_jwt_identity()
     login_history = service.login_history(user_email)
     login_history_data = [
-        {'user': h.user.email, 'user_agent': h.user_agent, 'auth_date': h.authentication_date}
+        {"user": h.user.email, "user_agent": h.user_agent, "auth_date": h.authentication_date}
         for h in login_history
     ]
     resp = jsonify({"login_history": login_history_data})
