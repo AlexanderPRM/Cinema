@@ -1,10 +1,10 @@
 import bcrypt
+from app import app
 from db.models import ServiceUser, User
 from db.postgres import db
 from flask_jwt_extended import create_access_token, create_refresh_token
 from pydantic import EmailError, validate_email
 from services.role_service import RoleService
-from wsgi_run import app
 
 
 @app.cli.command("create-superuser")
