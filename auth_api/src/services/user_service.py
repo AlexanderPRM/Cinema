@@ -36,15 +36,7 @@ class UserService:
         db.session.add(user)
         db.session.commit()
         role_service = RoleService()
-        if role := role_service.get("default"):
-            user_service = ServiceUser(user=user, role=role)
-            db.session.add(user_service)
-            db.session.commit()
-        else:
-            role = role_service.post("default")
-            user_service = ServiceUser(user=user, role=role)
-            db.session.add(user_service)
-            db.session.commit()
+        role = role_service.change_user_role_to_default(user=user)
         return email, password, role, user
 
     def change_password():
