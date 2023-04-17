@@ -7,10 +7,10 @@ from flask_jwt_extended import (
     JWTManager,
     create_access_token,
     create_refresh_token,
+    get_jwt_identity,
+    jwt_required,
     set_access_cookies,
     set_refresh_cookies,
-    get_jwt_identity,
-    jwt_required
 )
 from services.user_service import UserService
 
@@ -32,14 +32,10 @@ def signin():
     email = request.json.get("email")
     useragent = request.headers.get("User-Agent")
     password = request.json.get("password")
-    email, role, user = service.signin(
-        email=email, password=password, useragent=useragent
-    )
+    email, role, user = service.signin(email=email, password=password, useragent=useragent)
     access_token = create_access_token(identity=email, additional_claims={"role": role.name})
     refresh_token = create_refresh_token(identity=email)
-    resp = jsonify(
-        {"tokens": {"access_token": access_token, "refresh_token": refresh_token}}
-    )
+    resp = jsonify({"tokens": {"access_token": access_token, "refresh_token": refresh_token}})
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
     redis_db.setex(str(user.id), config.config.REFRESH_TOKEN_EXPIRES, refresh_token)
@@ -71,12 +67,9 @@ def login_history():
     service = UserService()
     user_email = get_jwt_identity()
     login_history = service.login_history(user_email)
-    login_history_data = [{
-        'user': h.user.email,
-        'user_agent': h.user_agent,
-        'auth_date': h.authentication_date
-    } for h in login_history]
-    resp = jsonify(
-        {"login_history": login_history_data}
-    )
+    login_history_data = [
+        {'user': h.user.email, 'user_agent': h.user_agent, 'auth_date': h.authentication_date}
+        for h in login_history
+    ]
+    resp = jsonify({"login_history": login_history_data})
     return resp, 200
