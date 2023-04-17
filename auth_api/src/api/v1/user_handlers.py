@@ -1,31 +1,27 @@
 from core.config import config
 from db.redis import redis_db
-from flask import (
-    Blueprint,
-    Response,
-    abort,
-    json,
-    jsonify,
-    make_response,
-    redirect,
-    render_template,
-    request,
-    url_for,
-)
-from flask_jwt_extended import (
-    JWTManager,
-    create_access_token,
-    create_refresh_token,
-    decode_token,
-    get_jwt,
-    get_jwt_identity,
-    jwt_required,
-    set_access_cookies,
-    set_refresh_cookies,
-    unset_access_cookies,
-    unset_jwt_cookies,
-    unset_refresh_cookies,
-)
+from flask import (Blueprint,
+                   Response,
+                   abort,
+                   json,
+                   jsonify,
+                   make_response,
+                   redirect,
+                   render_template,
+                   request,
+                   url_for,)
+from flask_jwt_extended import (JWTManager,
+                                create_access_token,
+                                create_refresh_token,
+                                decode_token,
+                                get_jwt,
+                                get_jwt_identity,
+                                jwt_required,
+                                set_access_cookies,
+                                set_refresh_cookies,
+                                unset_access_cookies,
+                                unset_jwt_cookies,
+                                unset_refresh_cookies,)
 from jwt import decode as jwt_decode
 from services.user_service import UserService
 
@@ -89,6 +85,9 @@ def refresh():
         if (
             redis_db.get(str(user.id) + "_" + user_agent + "_refresh").decode("utf-8")
             != refresh_token_cookie
+        ) or (
+            redis_db.get(str(user.id) + "_" + "admin-pc" + "_refresh").decode("utf-8")
+            != refresh_token_cookie
         ):
             return abort(Response(json.dumps({"error_message": "outdate refresh_token"}), 401))
     except AttributeError:
@@ -151,7 +150,7 @@ def change_user_password():
     current_user = get_jwt_identity()
     if service.check_password(current_user, cur_password):
         service.change_password(current_user, new_password)
-        return jsonify({"Your NEW password: ": new_password}), 200
+        return "You have successfully changed your password", 200
     else:
         return abort(Response(json.dumps({"error_message": "WRONG Password"}), 403))
 
