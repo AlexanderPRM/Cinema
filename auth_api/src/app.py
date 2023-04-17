@@ -2,7 +2,8 @@ import logging
 
 import bcrypt
 import uvicorn
-from api.v1.user_handlers import jwt, user_bp
+from api import api_blueprint_v1
+from api.v1.user_handlers import jwt
 from core.config import config
 from core.logger import LOGGING
 from db.models import ServiceUser, User, UserRole
@@ -16,7 +17,7 @@ from pydantic import EmailError, validate_email
 app = Flask(__name__)
 migrate = Migrate(app, db)
 
-app.register_blueprint(user_bp)
+app.register_blueprint(api_blueprint_v1)
 
 
 def init_redis(app: Flask):
