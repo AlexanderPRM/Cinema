@@ -1,11 +1,11 @@
+from core.permissions import admin_required
+from core.utils import is_uuid_valid
 from db.models import User, UserRole
 from db.postgres import db
-from services.role_service import RoleService
 from flask import Blueprint, Response, abort, json, jsonify, request
 from flask_jwt_extended.view_decorators import _decode_jwt_from_request, jwt_required
 from services.exception_service import HttpExceptions
-from core.permissions import admin_required
-from core.utils import is_uuid_valid
+from services.role_service import RoleService
 
 role_bp = Blueprint("role", __name__, url_prefix="/role")
 

@@ -1,5 +1,5 @@
 import bcrypt
-from db.models import ServiceUser, User
+from db.models import User
 from db.postgres import db
 from pydantic import EmailError, validate_email
 

@@ -1,4 +1,4 @@
-from db.models import UserRole, ServiceUser
+from db.models import ServiceUser, UserRole
 from db.postgres import db
 
 
