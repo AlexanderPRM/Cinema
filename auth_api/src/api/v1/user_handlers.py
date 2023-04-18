@@ -38,7 +38,11 @@ def signin():
     resp = jsonify({"tokens": {"access_token": access_token, "refresh_token": refresh_token}})
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
-    redis_db.setex(str(user.id), config.config.REFRESH_TOKEN_EXPIRES, refresh_token)
+    redis_db.setex(
+        str(user.id) + "_" + useragent + "_refresh",
+        config.config.REFRESH_TOKEN_EXPIRES,
+        refresh_token
+    )
     return resp, HTTPStatus.OK
 
 
