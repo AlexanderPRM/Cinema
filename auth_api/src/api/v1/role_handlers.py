@@ -1,9 +1,9 @@
-from core.permissions import admin_required
+from core.permissions import superuser_required
 from core.utils import is_uuid_valid
 from db.models import User, UserRole
 from db.postgres import db
 from flask import Blueprint, Response, abort, json, jsonify, request
-from flask_jwt_extended.view_decorators import _decode_jwt_from_request, jwt_required
+from flask_jwt_extended.view_decorators import jwt_required
 from services.exception_service import HttpExceptions
 from services.role_service import RoleService
 
@@ -15,17 +15,10 @@ def name_validate(request):
         return abort(Response(json.dumps({"error_message": "Name not specified"}), 422))
 
 
-def permission_validate(data: dict):
-    if "superuser" != data["role"]:
-        return abort(Response(json.dumps({"error_message": "Permission Denied"}), 403))
-
-
+@superuser_required
 @jwt_required(True, locations=["headers", "cookies"])
 @role_bp.route("/", methods=["GET"])
 def get_roles():
-    data = _decode_jwt_from_request(locations=["headers", "cookies"], fresh=False)
-    permission_validate(data[0])
-
     roles = db.session.query(UserRole).all()
     roles = [{"id": role.id, "name": role.name} for role in roles]
 
@@ -33,11 +26,10 @@ def get_roles():
     return resp, 200
 
 
+@superuser_required
 @jwt_required(True, locations=["headers", "cookies"])
 @role_bp.route("/", methods=["POST"])
 def create_role():
-    data = _decode_jwt_from_request(locations=["headers", "cookies"], fresh=False)
-    permission_validate(data[0])
     name_validate(request)
 
     name = request.json["role_name"]
@@ -52,12 +44,10 @@ def create_role():
     return resp, 201
 
 
+@superuser_required
 @jwt_required(True, locations=["headers", "cookies"])
 @role_bp.route("/<uuid:id>", methods=["DELETE"])
 def delete_role(id):
-    data = _decode_jwt_from_request(locations=["headers", "cookies"], fresh=False)
-    permission_validate(data[0])
-
     role = db.session.query(UserRole).filter_by(id=id).first()
     if not role:
         return HttpExceptions().not_exists("Role", id)
@@ -69,11 +59,10 @@ def delete_role(id):
     return resp, 200
 
 
+@superuser_required
 @jwt_required(True, locations=["headers", "cookies"])
 @role_bp.route("/<uuid:id>", methods=["PUT"])
 def update_role(id):
-    data = _decode_jwt_from_request(locations=["headers", "cookies"], fresh=False)
-    permission_validate(data[0])
     name_validate(request)
 
     role = db.session.query(UserRole).filter_by(id=id).first()
@@ -87,7 +76,7 @@ def update_role(id):
     return resp, 200
 
 
-@admin_required
+@superuser_required
 @jwt_required()
 @role_bp.route("/change_role/<uuid:id>", methods=["PUT"])
 def change_role(id):
@@ -105,7 +94,7 @@ def change_role(id):
     return resp, 200
 
 
-@admin_required
+@superuser_required
 @jwt_required()
 @role_bp.route("/change_role_to_default/<uuid:id>", methods=["PUT"])
 def change_role_to_default(id):
