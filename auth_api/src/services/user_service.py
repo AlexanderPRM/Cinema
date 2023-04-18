@@ -25,7 +25,7 @@ class UserService:
         email = self.normalize_email(email)
         user = db.session.query(User).filter_by(email=email).first()
         if not user:
-            return HttpExceptions().not_exists("User", user.id)
+            return HttpExceptions().not_exists("User", email)
 
         if bcrypt.checkpw(password.encode(), user.password.encode()):
             role = (
