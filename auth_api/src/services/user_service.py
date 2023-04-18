@@ -4,7 +4,6 @@ import bcrypt
 from db.models import ServiceUser, User, UserLoginHistory, UserRole
 from db.postgres import db
 from pydantic import EmailError, validate_email
-from services.exception_service import HttpExceptions
 
 from .exception_service import HttpExceptions
 from .role_service import RoleService
