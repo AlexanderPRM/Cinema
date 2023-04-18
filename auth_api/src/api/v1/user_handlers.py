@@ -41,7 +41,7 @@ def signin():
     redis_db.setex(
         str(user.id) + "_" + useragent + "_refresh",
         config.config.REFRESH_TOKEN_EXPIRES,
-        refresh_token
+        refresh_token,
     )
     return resp, HTTPStatus.OK
 
