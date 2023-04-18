@@ -5,6 +5,7 @@ from db.models import ServiceUser, User, UserLoginHistory, UserRole
 from db.postgres import db
 from flask import Response, abort, json
 from pydantic import EmailError, validate_email
+from services.exception_service import HttpExceptions
 
 
 class UserService:
@@ -19,11 +20,11 @@ class UserService:
         try:
             validate_email(email)
         except EmailError:
-            return abort(Response(json.dumps({"message": "Email is not correct."}), 422))
+            return HttpExceptions().email_error()
         email = self.normalize_email(email)
         user = db.session.query(User).filter_by(email=email).first()
         if not user:
-            return abort(Response(json.dumps({"message": "User was not found."}), 404))
+            return HttpExceptions().not_exists("User", user.id)
 
         if bcrypt.checkpw(password.encode(), user.password.encode()):
             role = (
@@ -40,7 +41,7 @@ class UserService:
             db.session.commit()
             return email, role, user
         else:
-            return abort(Response(json.dumps({"message": "Incorrect password."}), 401))
+            return HttpExceptions().password_error()
 
     def signup(self, email, password, name):
         try:
