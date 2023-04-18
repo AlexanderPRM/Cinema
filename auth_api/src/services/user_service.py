@@ -3,9 +3,11 @@ from datetime import datetime
 import bcrypt
 from db.models import ServiceUser, User, UserLoginHistory, UserRole
 from db.postgres import db
-from flask import Response, abort, json
 from pydantic import EmailError, validate_email
 from services.exception_service import HttpExceptions
+
+from .exception_service import HttpExceptions
+from .role_service import RoleService
 
 
 class UserService:
@@ -44,27 +46,27 @@ class UserService:
             return HttpExceptions().password_error()
 
     def signup(self, email, password, name):
+        exceptions = HttpExceptions()
         try:
             validate_email(email)
         except EmailError:
-            return abort(Response(json.dumps({"message": "Email is not correct."}), 422))
+            return exceptions.already_exists("User", email)
         email = self.normalize_email(email)
         if db.session.query(User).filter_by(email=email).first():
-            return abort(Response(json.dumps({"message": f"User {email} already exists."}), 422))
+            return exceptions.email_error()
 
         hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
         user = User(email=email, password=hashed_pass.decode(), name=name)
         db.session.add(user)
         db.session.commit()
-        role = db.session.query(UserRole).filter_by(name="default").first()
-        if role:
+        role_service = RoleService()
+        if role := role_service.get("default"):
             user_service = ServiceUser(user=user, role=role)
             db.session.add(user_service)
             db.session.commit()
         else:
-            role = UserRole(name="default")
+            role = role_service.post("default")
             user_service = ServiceUser(user=user, role=role)
-            db.session.add(role)
             db.session.add(user_service)
             db.session.commit()
         return email, password, role, user
