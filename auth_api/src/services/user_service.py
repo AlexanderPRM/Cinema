@@ -31,8 +31,7 @@ class UserService:
             role = (
                 db.session.query(UserRole)
                 .join(ServiceUser)
-                .join(User)
-                .filter(User.id == user.id)
+                .filter(ServiceUser.user == user)
                 .first()
             )
             login_record = UserLoginHistory(
