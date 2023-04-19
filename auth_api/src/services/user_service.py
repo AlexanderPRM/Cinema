@@ -1,5 +1,7 @@
+from datetime import datetime
+
 import bcrypt
-from db.models import User
+from db.models import ServiceUser, User, UserLoginHistory, UserRole
 from db.postgres import db
 from pydantic import EmailError, validate_email
 
@@ -8,9 +10,6 @@ from .role_service import RoleService
 
 
 class UserService:
-    def __init__(self):
-        pass
-
     @classmethod
     def normalize_email(self, email):
         email_user, email_domain = email.lower().strip().split("@")
@@ -18,8 +17,31 @@ class UserService:
             email_user = email_user[: email_user.find("+")]
         return f"{email_user}@{email_domain}"
 
-    def signin():
-        pass
+    def signin(self, email, password, useragent):
+        try:
+            validate_email(email)
+        except EmailError:
+            return HttpExceptions().email_error()
+        email = self.normalize_email(email)
+        user = db.session.query(User).filter_by(email=email).first()
+        if not user:
+            return HttpExceptions().not_exists("User", email)
+
+        if bcrypt.checkpw(password.encode(), user.password.encode()):
+            role = (
+                db.session.query(UserRole)
+                .join(ServiceUser)
+                .filter(ServiceUser.user == user)
+                .first()
+            )
+            login_record = UserLoginHistory(
+                authentication_date=datetime.utcnow(), user_id=user.id, user_agent=useragent
+            )
+            db.session.add(login_record)
+            db.session.commit()
+            return email, role, user
+        else:
+            return HttpExceptions().password_error()
 
     def signup(self, email, password, name):
         exceptions = HttpExceptions()
@@ -39,8 +61,46 @@ class UserService:
         role = role_service.change_user_role_to_default(user=user)
         return email, password, role, user
 
-    def change_password():
-        pass
+    def refresh(self, email):
+        user = User.query.filter_by(email=email).first()
+        return user.id
 
     def change_email():
         pass
+
+    def login_history(self, email):
+        user_id = db.session.query(User.id).filter_by(email=email).scalar()
+        return (
+            db.session.query(UserLoginHistory)
+            .join(User, User.id == UserLoginHistory.user_id)
+            .filter(User.id == user_id)
+            .all()
+        )
+
+    def get_profile_info(self, email):
+        user = User.query.filter_by(email=email).first()
+        return user
+
+    def change_name(self, email, new_name):
+        db.session.query(User).filter(User.email.ilike(email)).update(
+            {"name": new_name}, synchronize_session="fetch"
+        )
+        db.session.commit()
+
+    def check_password(self, email, password):
+        cur_hash_password = User.query.filter_by(email=email).first().password
+        return bcrypt.checkpw(password.encode(), cur_hash_password.encode())
+
+    def change_password(self, email, password):
+        hash_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+        db.session.query(User).filter(User.email.ilike(email)).update(
+            {"password": hash_password.decode()}, synchronize_session="fetch"
+        )
+        db.session.commit()
+
+    def change_email(self, email, new_email):
+        db.session.query(User).filter(User.email.ilike(email)).update(
+            {"email": new_email}, synchronize_session="fetch"
+        )
+        db.session.commit()
+

@@ -57,7 +57,6 @@ class UserLoginHistory(db.Model):
     )
     user_id = db.Column(db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     user = db.relationship("User", back_populates="login_history")
-
     user_agent = db.Column(db.Text, nullable=False)
     authentication_date = db.Column(db.DateTime, default=datetime.datetime.now)
 

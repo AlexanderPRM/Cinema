@@ -15,3 +15,6 @@ class HttpExceptions:
 
     def not_valid_uuid(self):
         return abort(Response(json.dumps({"message": "UUID is not valid."}), 422))
+
+    def password_error(self):
+        return abort(Response(json.dumps({"message": "Incorrect password."}), 401))
