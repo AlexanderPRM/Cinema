@@ -1,6 +1,6 @@
 from http import HTTPStatus
-from core.config import config
 
+from core.config import config
 from db.redis import redis_db
 from flask import (
     Blueprint,
@@ -100,11 +100,7 @@ def login_history():
         for h in login_history
     ]
     resp = jsonify({"login_history": login_history_data})
-    user_agent = request.headers.get("User-Agent")
-    redis_db.setex(
-        str(user.id) + "_" + user_agent + "_refresh", config.REFRESH_TOKEN_EXPIRES, refresh_token
-    )
-    return resp, 201
+    return resp, 200
 
 
 @user_bp.route("/refresh", methods=["POST"])  # POST

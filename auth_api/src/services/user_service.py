@@ -65,9 +65,6 @@ class UserService:
         user = User.query.filter_by(email=email).first()
         return user.id
 
-    def change_email():
-        pass
-
     def login_history(self, email):
         user_id = db.session.query(User.id).filter_by(email=email).scalar()
         return (
@@ -103,4 +100,3 @@ class UserService:
             {"email": new_email}, synchronize_session="fetch"
         )
         db.session.commit()
-
