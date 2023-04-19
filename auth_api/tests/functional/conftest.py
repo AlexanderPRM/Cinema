@@ -1,7 +1,6 @@
 import asyncio
 import json
 import uuid
-from email import header
 
 import backoff
 import pytest
