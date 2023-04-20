@@ -323,6 +323,7 @@ def create_account(aiohttp_client) -> web_response.Response:
         response_text = await response.text()
         response_data = json.loads(response_text)
         user_id = response_data.get("id")
-        return {"user_id": user_id, "email": email, "password": password}
+        user_tokens = response_data.get("tokens")
+        return {"user_id": user_id, "email": email, "password": password, "tokens": user_tokens}
 
     return inner
