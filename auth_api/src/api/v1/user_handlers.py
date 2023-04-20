@@ -1,5 +1,3 @@
-from http import HTTPStatus
-
 from core.config import config
 from db.redis import redis_db
 from flask import (
@@ -10,7 +8,6 @@ from flask import (
     jsonify,
     make_response,
     redirect,
-    render_template,
     request,
     url_for,
 )
@@ -118,11 +115,17 @@ def refresh():
     refresh_token_cookie = request.cookies.get("refresh_token_cookie")
     refresh_from_storage = None
     try:
-        refresh_from_storage = redis_db.get(str(user.id) + "_" + user_agent + "_refresh").decode("utf-8")
+        refresh_from_storage = redis_db.get(str(user.id) + "_" + user_agent + "_refresh").decode(
+            "utf-8"
+        )
     except AttributeError:
-        refresh_from_storage = redis_db.get(str(user.id) + "_" + "admin-pc" + "_refresh").decode("utf-8")
-    if (refresh_from_storage != refresh_token_cookie):
-        return abort(Response(json.dumps({"error_message": "Not found or expired refresh_token"}), 401))
+        refresh_from_storage = redis_db.get(str(user.id) + "_" + "admin-pc" + "_refresh").decode(
+            "utf-8"
+        )
+    if refresh_from_storage != refresh_token_cookie:
+        return abort(
+            Response(json.dumps({"error_message": "Not found or expired refresh_token"}), 401)
+        )
 
     access_token_cookie = request.cookies.get("access_token_cookie")
     jwt_data = decode_token(access_token_cookie, allow_expired=True)
