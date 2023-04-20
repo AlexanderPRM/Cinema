@@ -36,9 +36,7 @@ async def test_create_role(
         "/role/", headers=headers, query_data=query_data, settings=baseconfig
     )
     assert response.status == expected_answer["status"]
-    response = await make_get_request_role(
-        "/role/", headers=headers, settings=baseconfig
-    )
+    response = await make_get_request_role("/role/", headers=headers, settings=baseconfig)
     response_text = await response.text()
     response_data = json.loads(response_text)
     assert len(response_data["roles"]) == expected_answer["roles"]
@@ -65,9 +63,7 @@ async def test_get_role(
     await make_post_request_role(
         "/role/", headers=headers, query_data=query_data, settings=baseconfig
     )
-    response = await make_get_request_role(
-        "/role/", headers=headers, settings=baseconfig
-    )
+    response = await make_get_request_role("/role/", headers=headers, settings=baseconfig)
     response_text = await response.text()
     response_data = json.loads(response_text)
     assert response.status == expected_answer["status"]
@@ -96,9 +92,7 @@ async def test_delete_role_success(
     await make_post_request_role(
         "/role/", headers=headers, query_data=query_data, settings=baseconfig
     )
-    response = await make_get_request_role(
-        "/role/", headers=headers, settings=baseconfig
-    )
+    response = await make_get_request_role("/role/", headers=headers, settings=baseconfig)
     response_text = await response.text()
     response_data = json.loads(response_text)
     role_id = response_data["roles"][0]["id"]
@@ -152,9 +146,7 @@ async def test_put_role_success(
     await make_post_request_role(
         "/role/", headers=headers, query_data=query_data, settings=baseconfig
     )
-    response = await make_get_request_role(
-        "/role/", headers=headers, settings=baseconfig
-    )
+    response = await make_get_request_role("/role/", headers=headers, settings=baseconfig)
     response_text = await response.text()
     response_data = json.loads(response_text)
     role_id = response_data["roles"][0]["id"]
@@ -162,9 +154,7 @@ async def test_put_role_success(
         f"/role/{role_id}", query_data=create_data, headers=headers, settings=baseconfig
     )
     assert response.status == expected_answer["status"]
-    response = await make_get_request_role(
-        "/role/", headers=headers, settings=baseconfig
-    )
+    response = await make_get_request_role("/role/", headers=headers, settings=baseconfig)
     response_text = await response.text()
     response_data = json.loads(response_text)
     assert response_data["roles"][0]["name"] == create_data["role_name"]
@@ -189,7 +179,7 @@ async def test_put_role_error(
     headers = {"Authorization": f"Bearer {token}", "content-type": "application/json"}
     role_id = uuid.uuid4()
     response = await make_put_request_role(
-        f'/role/{role_id}', query_data=query_data, headers=headers, settings=baseconfig
+        f"/role/{role_id}", query_data=query_data, headers=headers, settings=baseconfig
     )
     assert response.status == expected_answer["status"]
 
@@ -226,9 +216,7 @@ async def test_change_role_success(
         settings=baseconfig,
     )
     assert response.status == expected_answer["status"]
-    response = await make_get_request_role(
-        "/role/", headers=headers, settings=baseconfig
-    )
+    response = await make_get_request_role("/role/", headers=headers, settings=baseconfig)
     response_text = await response.text()
     response_data = json.loads(response_text)
     roles = response_data.get("roles", [])
@@ -335,9 +323,7 @@ async def test_change_role_to_default_success(
         "email": user_data.get("email"),
         "password": user_data.get("password"),
     }
-    resp = await make_post_request_role(
-        "/user/signin", query_data=payload, settings=baseconfig
-    )
+    resp = await make_post_request_role("/user/signin", query_data=payload, settings=baseconfig)
     assert resp.status == expected_answer["status"]
     response_text = await resp.text()
     response_data = json.loads(response_text)
