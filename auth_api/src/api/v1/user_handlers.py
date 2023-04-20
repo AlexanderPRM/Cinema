@@ -1,5 +1,3 @@
-from http import HTTPStatus
-
 from core.config import config
 from db.redis import redis_db
 from flask import (
@@ -65,10 +63,10 @@ def signin():
     set_refresh_cookies(resp, refresh_token)
     redis_db.setex(
         str(user.id) + "_" + useragent + "_refresh",
-        config.config.REFRESH_TOKEN_EXPIRES,
+        config.REFRESH_TOKEN_EXPIRES,
         refresh_token,
     )
-    return resp, HTTPStatus.OK
+    return resp, 200
 
 
 @user_bp.route("/signup", methods=["POST"])
@@ -85,8 +83,8 @@ def signup():
     )
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
-    redis_db.setex(str(user.id), config.config.REFRESH_TOKEN_EXPIRES, refresh_token)
-    return resp, HTTPStatus.CREATED
+    redis_db.setex(str(user.id), config.REFRESH_TOKEN_EXPIRES, refresh_token)
+    return resp, 201
 
 
 @user_bp.route("/login_history", methods=["GET"])
@@ -113,17 +111,19 @@ def refresh():
 
     # проверка на наличие рефреш в бд
     refresh_token_cookie = request.cookies.get("refresh_token_cookie")
+    refresh_from_storage = None
     try:
-        if (
-            redis_db.get(str(user.id) + "_" + user_agent + "_refresh").decode("utf-8")
-            != refresh_token_cookie
-        ) or (
-            redis_db.get(str(user.id) + "_" + "admin-pc" + "_refresh").decode("utf-8")
-            != refresh_token_cookie
-        ):
-            return abort(Response(json.dumps({"error_message": "outdate refresh_token"}), 401))
+        refresh_from_storage = redis_db.get(str(user.id) + "_" + user_agent + "_refresh").decode(
+            "utf-8"
+        )
     except AttributeError:
-        return abort(Response(json.dumps({"error_message": "No refresh_token"}), 401))
+        refresh_from_storage = redis_db.get(str(user.id) + "_" + "admin-pc" + "_refresh").decode(
+            "utf-8"
+        )
+    if refresh_from_storage != refresh_token_cookie:
+        return abort(
+            Response(json.dumps({"error_message": "Not found or expired refresh_token"}), 401)
+        )
 
     access_token_cookie = request.cookies.get("access_token_cookie")
     jwt_data = decode_token(access_token_cookie, allow_expired=True)
@@ -157,8 +157,8 @@ def personal_info():
     role = jwt_data["role"]
     current_user = get_jwt_identity()
     user_info = service.get_profile_info(current_user)
-    user_data = {"name": user_info.name, "email": current_user, "role": role}
-    return render_template("profile.html", current_user=current_user, **user_data), 200
+    resp = {"name": user_info.name, "email": current_user, "role": role}
+    return resp, 200
 
 
 @user_bp.route("/profile/name", methods=["POST"])  # POST
@@ -182,7 +182,7 @@ def change_user_password():
     current_user = get_jwt_identity()
     if service.check_password(current_user, cur_password):
         service.change_password(current_user, new_password)
-        return "You have successfully changed your password", 200
+        return jsonify({"message": "You have successfully changed your password"}), 200
     else:
         return abort(Response(json.dumps({"error_message": "WRONG Password"}), 403))
 
