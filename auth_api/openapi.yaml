@@ -1,0 +1,608 @@
+openapi: "3.0.3"
+info:
+  title: auth_api
+  version: 1.0.0
+  description: Документация API авторизации пользователей
+paths:
+  /user/signup:
+    post:
+      tags:
+      - User
+      description: Signup User
+      operationId: addUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User added successfully
+          headers:
+            location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSignUp'
+        '422':
+          description: Already exists or Email not correct
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+  /user/signin:
+    post:
+      tags:
+      - User
+      description: Signin User
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: User login successfully
+          headers:
+            location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tokens:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                      refresh_token:
+                        type: string
+        '422':
+          description: Not exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+  /user/login_history:
+    get:
+      tags:
+      - User
+      description: Login History User
+      operationId: LoginHistoryUser
+      security:
+       - access_cookieAuth: []
+      responses:
+        '200':
+          description: Get login history successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLoginHistory'
+        '422':
+          description: Missing JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+  /user/refresh:
+    post:
+      tags:
+      - User
+      description: Refresh User Tokens
+      operationId: RefreshUserTokens
+      security:
+       - refresh_cookieAuth: []
+      responses:
+        '200':
+          description: Refresh successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  old_refresh:
+                    type: string
+                  jti:
+                    type: string
+                  tokens:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                      refresh_token:
+                        type: string
+                
+        '401':
+          description: Expire or Not refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+  
+  /user/profile:
+    get:
+      tags:
+      - User
+      description: Profile User
+      operationId: ProfileUser
+      security:
+       - access_cookieAuth: []
+      responses:
+        '200':
+          description: Refresh successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  email:
+                    type: string
+                    format: email
+                  role:
+                    type: string
+                
+        '401':
+          description: Expire or Not refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+  
+  /user/profile/name:
+    post:
+      tags:
+      - User
+      description: Profile Name User
+      operationId: ProfileNameUser
+      security:
+       - access_cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Change Name successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+  
+  /user/profile/password:
+    post:
+      tags:
+      - User
+      description: Change User Password
+      operationId: ChangePasswordUser
+      security:
+       - access_cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                new_password:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Change Password successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+                
+        '403':
+          description: Wrong Password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+                
+  /user/profile/email:
+    post:
+      tags:
+      - User
+      description: Change User Email
+      operationId: ChangeEmailUser
+      security:
+       - access_cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                new_email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Change Password successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  new_email:
+                    type: string
+                  new_tokens:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                      refresh_token:
+                        type: string
+                
+        '403':
+          description: Wrong Password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+                
+  /user/logout:
+    post:
+      tags:
+      - User
+      description: Logout User
+      operationId: LogoutUser
+      security:
+       - access_cookieAuth: []
+      responses:
+        '200':
+          description: Change Password successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  user_agent:
+                    type: string
+                  jti:
+                    type: string
+                  tokens:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                      refresh_token:
+                        type: string
+                
+        '422':
+          description: JWT Missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+                
+  /user/delete:
+    post:
+      tags:
+      - User
+      description: Delete User
+      operationId: DeleteUser
+      security:
+       - access_cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User login successfully
+          content:
+            applications/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+                
+        '403':
+          description: Wrong Password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+  
+  /role/:
+    get:
+      security:
+       - access_cookieAuth: []
+      tags:
+       - Role
+      description: Get All Roles, access_token required
+      operationId: getAllRoles
+      responses:
+        '200':
+          description: All roles are returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfRoles'
+        '403':
+          description: Permission Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+    post:
+      tags:
+      - Role
+      security:
+      - access_cookieAuth: []
+      description: Add A Role
+      operationId: addRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role_name:
+                  type: string
+      responses:
+        '201':
+          description: Role added successfully
+          headers:
+            location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+        '422':
+          description: Already exists or Permission Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+  /change_role/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+    put:
+      tags:
+      - Role
+      security:
+      - access_cookieAuth: []
+      description: Change A Role
+      operationId: ChangeRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role_name:
+                  type: string
+      responses:
+        '200':
+          description: Role changed succesfly
+          headers:
+            location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+        '422':
+          description: UUID not valid or Not exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+                
+  /change_role_to_default/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+    put:
+      tags:
+      - Role
+      security:
+      - access_cookieAuth: []
+      description: Change A Role to Default
+      operationId: ChangeToDefaultRole
+      responses:
+        '200':
+          description: Role changed succesfly
+          headers:
+            location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+        '422':
+          description: UUID not valid or Not exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+  
+  /role/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+    delete:
+      description: Delete Role
+      tags:
+        - Role
+      operationId: DeleteRoleById
+      security:
+        - access_cookieAuth: []
+      responses:
+        '200':
+          description: Delete Role by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+        '422':
+          description: Not exists or Permission Denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+    put:
+      tags:
+        - Role
+      description: Update A Role
+      operationId: updateRole
+      security:
+        - access_cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role_name:
+                  type: string
+      responses:
+        '200':
+          description: Update Role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+        '422':
+          description: Product Does not Exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusMessage'
+components:
+  securitySchemes:
+    access_cookieAuth:
+      type: apiKey
+      in: cookie
+      name: access_token_cookie
+    refresh_cookieAuth:
+      type: apiKey
+      in: cookie
+      name: refresh_token_cookie
+  schemas:
+    ListOfRoles:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+          format: UUID
+        name:
+          type: string
+
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        name:
+          type: string
+      required:
+        - email
+        - password
+    
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required:
+        - email
+        - password
+        
+    UserLoginHistory:
+      type: object
+      properties:
+        login_history:
+          type: array
+          items:
+            properties:
+              user:
+                type: string
+                format: email
+              user_agent:
+                type: string
+              auth_date:
+                type: string
+                format: date-time
+    UserSignUp:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tokens:
+          type: object
+          properties:
+            access_token:
+              type: string
+            refresh_token:
+              type: string
+    
+    StatusMessage:
+      type: object
+      properties:
+        message:
+          type: string
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/AlexanderPRM/auth_api/1.0.0
+  - description: Auth API base url
+    url: http://127.0.0.1:5000/api/v1/

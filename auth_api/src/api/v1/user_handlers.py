@@ -88,7 +88,7 @@ def signup():
 
 
 @user_bp.route("/login_history", methods=["GET"])
-@jwt_required()
+@jwt_required(locations=["headers", "cookies"])
 def login_history():
     service = UserService()
     user_email = get_jwt_identity()
@@ -102,7 +102,7 @@ def login_history():
 
 
 @user_bp.route("/refresh", methods=["POST"])  # POST
-@jwt_required(refresh=True)
+@jwt_required(locations=["headers", "cookies"], refresh=True)
 def refresh():
     jti = get_jwt()["jti"]
     current_user = get_jwt_identity()
@@ -150,7 +150,7 @@ def refresh():
 
 
 @user_bp.route("/profile", methods=["GET"])  # GET
-@jwt_required()
+@jwt_required(locations=["headers", "cookies"])
 def personal_info():
     access_token_cookie = request.cookies.get("access_token_cookie")
     jwt_data = jwt_decode(access_token_cookie, config.JWT_SECRET, algorithms=["HS256"])
@@ -162,7 +162,7 @@ def personal_info():
 
 
 @user_bp.route("/profile/name", methods=["POST"])  # POST
-@jwt_required()
+@jwt_required(locations=["headers", "cookies"])
 def change_user_name():
     new_name = request.json["name"]
     current_user = get_jwt_identity()
@@ -175,7 +175,7 @@ def change_user_name():
 
 
 @user_bp.route("/profile/password", methods=["POST"])  # POST
-@jwt_required()
+@jwt_required(locations=["headers", "cookies"])
 def change_user_password():
     new_password = request.json["new_password"]
     cur_password = request.json["password"]
@@ -188,7 +188,7 @@ def change_user_password():
 
 
 @user_bp.route("/profile/email", methods=["POST"])  # POST
-@jwt_required()
+@jwt_required(locations=["headers", "cookies"])
 def change_user_email():
     access_token_cookie = request.cookies.get("access_token_cookie")
     jwt_data = jwt_decode(access_token_cookie, config.JWT_SECRET, algorithms=["HS256"])
@@ -246,7 +246,7 @@ def logout():
 
 
 @user_bp.route("/profile/delete", methods=["POST"])  # POST
-@jwt_required()
+@jwt_required(locations=["headers", "cookies"])
 def delete():
     password = request.json["password"]
     current_user = get_jwt_identity()

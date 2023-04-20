@@ -2,6 +2,12 @@
 
 [![linters](https://github.com/AlexanderPRM/Async_API/actions/workflows/linters.yml/badge.svg)](https://github.com/AlexanderPRM/Async_API/actions/workflows/linters.yml)
 
+## Документация Auth API
+
+    https://app.swaggerhub.com/apis/AlexanderPRM/auth_api/1.0.0#/
+
+    Также в папке auth_api лежит openapi.yaml
+
 ## Инструкция по настройке проекта*
 
 ### Создайте виртуальное окружение
