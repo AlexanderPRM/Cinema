@@ -5,6 +5,7 @@ from http import HTTPStatus
 import jwt
 import pytest
 from pytest import fixture
+
 from settings import baseconfig
 
 pytestmark = pytest.mark.asyncio

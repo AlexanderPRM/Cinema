@@ -1,10 +1,10 @@
 from datetime import datetime
 
 import bcrypt
-from db.models import ServiceUser, User, UserLoginHistory, UserRole
-from db.postgres import db
 from pydantic import EmailError, validate_email
 
+from db.models import ServiceUser, User, UserLoginHistory, UserRole
+from db.postgres import db
 from .exception_service import HttpExceptions
 from .role_service import RoleService
 
@@ -40,8 +40,7 @@ class UserService:
             db.session.add(login_record)
             db.session.commit()
             return email, role, user
-        else:
-            return HttpExceptions().password_error()
+        return HttpExceptions().password_error()
 
     def signup(self, email, password, name):
         exceptions = HttpExceptions()

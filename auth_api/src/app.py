@@ -1,14 +1,15 @@
 import logging
 
 import uvicorn
+from flask import Flask
+from flask_migrate import Migrate
+
 from api import api_blueprint_v1
 from api.v1.user_handlers import jwt
 from core.config import config
 from core.logger import LOGGING
 from db.postgres import db
 from db.redis import redis_db
-from flask import Flask
-from flask_migrate import Migrate
 
 app = Flask(__name__)
 migrate = Migrate(app, db)
