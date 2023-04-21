@@ -64,12 +64,14 @@ class UserService:
         user = User.query.filter_by(email=email).first()
         return user.id
 
-    def login_history(self, email):
+    def login_history(self, email, page_size, page_number):
         user_id = db.session.query(User.id).filter_by(email=email).scalar()
         return (
             db.session.query(UserLoginHistory)
             .join(User, User.id == UserLoginHistory.user_id)
             .filter(User.id == user_id)
+            .offset(page_number * page_size)
+            .limit(page_size)
             .all()
         )
 
