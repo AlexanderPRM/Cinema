@@ -40,8 +40,7 @@ class UserService:
             db.session.add(login_record)
             db.session.commit()
             return email, role, user
-        else:
-            return HttpExceptions().password_error()
+        return HttpExceptions().password_error()
 
     def signup(self, email, password, name):
         exceptions = HttpExceptions()

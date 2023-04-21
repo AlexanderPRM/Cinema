@@ -176,9 +176,8 @@ def change_user_name():
     if new_name is not None:
         service.change_name(current_user, new_name)
         return jsonify({"Your NEW name: ": new_name}), HTTPStatus.OK
-    else:
-        name = service.get_profile_info(current_user).name
-        return jsonify({"Your name: ": name}), HTTPStatus.OK
+    name = service.get_profile_info(current_user).name
+    return jsonify({"Your name: ": name}), HTTPStatus.OK
 
 
 @user_bp.route("/profile/password", methods=["POST"])  # POST
@@ -190,10 +189,9 @@ def change_user_password():
     if service.check_password(current_user, cur_password):
         service.change_password(current_user, new_password)
         return jsonify({"message": "You have successfully changed your password"}), HTTPStatus.OK
-    else:
-        return abort(
-            Response(json.dumps({"error_message": "WRONG Password"}), HTTPStatus.FORBIDDEN)
-        )
+    return abort(
+        Response(json.dumps({"error_message": "WRONG Password"}), HTTPStatus.FORBIDDEN)
+    )
 
 
 @user_bp.route("/profile/email", methods=["POST"])  # POST
@@ -224,10 +222,9 @@ def change_user_email():
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
         return resp, HTTPStatus.OK
-    else:
-        return abort(
-            Response(json.dumps({"error_message": "WRONG Password"}), HTTPStatus.FORBIDDEN)
-        )
+    return abort(
+        Response(json.dumps({"error_message": "WRONG Password"}), HTTPStatus.FORBIDDEN)
+    )
 
 
 @user_bp.route("/profile/logout", methods=["POST"])  # POST
