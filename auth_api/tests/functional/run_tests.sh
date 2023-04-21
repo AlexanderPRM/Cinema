@@ -7,7 +7,7 @@ while ! nc -z $AUTH_POSTGRES_HOST $AUTH_POSTGRES_PORT; do
 done
 
 sleep 0.1
-echo "ElasticSearch started"
+echo "Postgres started"
 
 echo "Waiting for Redis..."
 

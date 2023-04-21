@@ -275,3 +275,38 @@ async def test_login_history(
     response_text = await resp.text()
     response_data = json.loads(response_text)
     assert len(response_data["login_history"]) == 1
+
+
+@pytest.mark.parametrize(
+    "expected_answer",
+    [
+        {"status": HTTPStatus.OK},
+    ],
+)
+async def test_refresh_success(
+    create_account: fixture,
+    make_post_request_role: fixture,
+    expected_answer: dict,
+):
+    user_data = await create_account(settings=baseconfig)
+    user_refresh_token = user_data.get("tokens").get("refresh_token")
+    resp = await make_post_request_role(
+        "/user/refresh", query_data=user_refresh_token, settings=baseconfig
+    )
+    assert resp.status == expected_answer["status"]
+
+
+@pytest.mark.parametrize(
+    "expected_answer",
+    [
+        {"status": HTTPStatus.UNAUTHORIZED},
+    ],
+)
+async def test_refresh_no_token_error(
+    create_jwt_superuser_token: fixture,
+    make_post_request_role: fixture,
+    expected_answer: dict,
+):
+    token = await create_jwt_superuser_token(settings=baseconfig)
+    resp = await make_post_request_role("/user/refresh", query_data=token, settings=baseconfig)
+    assert resp.status == expected_answer["status"]

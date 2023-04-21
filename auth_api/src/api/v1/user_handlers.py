@@ -114,14 +114,13 @@ def refresh():
     # проверка на наличие рефреш в бд
     refresh_token_cookie = request.cookies.get("refresh_token_cookie")
     refresh_from_storage = None
-    try:
-        refresh_from_storage = redis_db.get(str(user.id) + "_" + user_agent + "_refresh").decode(
-            "utf-8"
-        )
-    except AttributeError:
-        refresh_from_storage = redis_db.get(str(user.id) + "_" + "admin-pc" + "_refresh").decode(
-            "utf-8"
-        )
+    redis_key = f"{user.id}_{user_agent}_refresh"
+    refresh_from_storage = redis_db.get(redis_key)
+    if refresh_from_storage is None:
+        redis_key = f"{user.id}_admin-pc_refresh"
+        refresh_from_storage = redis_db.get(redis_key)
+    if refresh_from_storage is not None:
+        refresh_from_storage = refresh_from_storage.decode("utf-8")
     if refresh_from_storage != refresh_token_cookie:
         return abort(
             Response(json.dumps({"error_message": "Not found or expired refresh_token"}), 401)
