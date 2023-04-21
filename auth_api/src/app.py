@@ -1,10 +1,10 @@
 import logging
 
+import uvicorn
 from flasgger import Swagger
 from flask import Flask
 from flask_migrate import Migrate
 
-import uvicorn
 from api import api_blueprint_v1
 from api.v1.user_handlers import jwt
 from core.config import config
