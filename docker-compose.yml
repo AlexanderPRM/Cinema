@@ -38,8 +38,6 @@ services:
 
   auth_api:
     build: auth_api
-    expose:
-      - 5000
     ports:
       - 5000:8000
     env_file:
