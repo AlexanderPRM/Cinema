@@ -128,7 +128,7 @@ def refresh():
         return abort(
             Response(
                 json.dumps({"error_message": "Not found or expired refresh_token"}),
-                HTTPStatus.UNAUTHORIZED
+                HTTPStatus.UNAUTHORIZED,
             )
         )
 
