@@ -14,6 +14,7 @@ RUN pip install --upgrade pip --no-cache-dir \
 COPY run_api.sh .
 COPY migrations migrations/
 COPY src .
+COPY openapi.yaml .
 
 RUN chmod +x /opt/auth_api/run_api.sh
 ENTRYPOINT [ "/opt/auth_api/run_api.sh" ]
