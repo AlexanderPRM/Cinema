@@ -123,7 +123,6 @@ services:
       - auth_api
     ports:
       - 80:80
-      - 5005:5005
 
 
 volumes:
