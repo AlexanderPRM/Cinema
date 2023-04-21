@@ -276,7 +276,6 @@ async def test_login_history(
     response_data = json.loads(response_text)
     assert len(response_data["login_history"]) == 1
 
-
 @pytest.mark.parametrize(
     "expected_answer",
     [
