@@ -1,8 +1,11 @@
+from http import HTTPStatus
+
+from flask import Blueprint, Response, abort, json, jsonify, request
+
 from core.permissions import superuser_required
 from core.utils import is_uuid_valid
 from db.models import User, UserRole
 from db.postgres import db
-from flask import Blueprint, Response, abort, json, jsonify, request
 from services.exception_service import HttpExceptions
 from services.role_service import RoleService
 
@@ -21,7 +24,7 @@ def get_roles():
     roles = [{"id": role.id, "name": role.name} for role in roles]
 
     resp = jsonify({"roles": roles})
-    return resp, 200
+    return resp, HTTPStatus.OK
 
 
 @role_bp.route("/", methods=["POST"])
@@ -38,7 +41,7 @@ def create_role():
     db.session.commit()
 
     resp = jsonify({"message": f"Role {name} created successfully"})
-    return resp, 201
+    return resp, HTTPStatus.CREATED
 
 
 @role_bp.route("/<uuid:id>", methods=["DELETE"])
@@ -52,7 +55,7 @@ def delete_role(id):
     db.session.commit()
 
     resp = jsonify({"message": f"Role {role.id} deleted successfully"})
-    return resp, 200
+    return resp, HTTPStatus.OK
 
 
 @role_bp.route("/<uuid:id>", methods=["PUT"])
@@ -68,7 +71,7 @@ def update_role(id):
     db.session.commit()
 
     resp = jsonify({"message": f"Role {role.id} updated successfully"})
-    return resp, 200
+    return resp, HTTPStatus.OK
 
 
 @role_bp.route("/change_role/<uuid:id>", methods=["PUT"])
@@ -85,7 +88,7 @@ def change_role(id):
         return HttpExceptions().not_exists("User", id)
     RoleService().change_user_role(role=role, user=user)
     resp = jsonify({"message": f"{user.email}'s role updated to {role.name} successfully"})
-    return resp, 200
+    return resp, HTTPStatus.OK
 
 
 @role_bp.route("/change_role_to_default/<uuid:id>", methods=["PUT"])
@@ -98,4 +101,4 @@ def change_role_to_default(id):
         return HttpExceptions().not_exists("User", id)
     RoleService().change_user_role_to_default(user=user)
     resp = jsonify({"message": f"{user.email}'s role updated to default successfully"})
-    return resp, 200
+    return resp, HTTPStatus.OK

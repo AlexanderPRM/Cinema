@@ -1,5 +1,5 @@
-from core.config import config
-from db.redis import redis_db
+from http import HTTPStatus
+
 from flask import (
     Blueprint,
     Response,
@@ -26,7 +26,10 @@ from flask_jwt_extended import (
     unset_refresh_cookies,
 )
 from jwt import decode as jwt_decode
+
 from services.user_service import UserService
+from core.config import config
+from db.redis import redis_db
 
 user_bp = Blueprint("user", __name__, url_prefix="/user")
 jwt = JWTManager()
@@ -65,7 +68,7 @@ def signin():
         config.REFRESH_TOKEN_EXPIRES,
         refresh_token,
     )
-    return resp, 200
+    return resp, HTTPStatus.OK
 
 
 @user_bp.route("/signup", methods=["POST"])
@@ -86,7 +89,7 @@ def signup():
     redis_db.setex(
         str(user.id) + "_" + user_agent + "_refresh", config.REFRESH_TOKEN_EXPIRES, refresh_token
     )
-    return resp, 201
+    return resp, HTTPStatus.CREATED
 
 
 @user_bp.route("/login_history", methods=["GET"])
@@ -100,7 +103,7 @@ def login_history():
         for h in login_history
     ]
     resp = jsonify({"login_history": login_history_data})
-    return resp, 200
+    return resp, HTTPStatus.OK
 
 
 @user_bp.route("/refresh", methods=["POST"])  # POST
@@ -123,7 +126,10 @@ def refresh():
         refresh_from_storage = refresh_from_storage.decode("utf-8")
     if refresh_from_storage != refresh_token_cookie:
         return abort(
-            Response(json.dumps({"error_message": "Not found or expired refresh_token"}), 401)
+            Response(
+                json.dumps({"error_message": "Not found or expired refresh_token"}),
+                HTTPStatus.UNAUTHORIZED
+            )
         )
 
     access_token_cookie = request.cookies.get("access_token_cookie")
@@ -147,7 +153,7 @@ def refresh():
     unset_refresh_cookies(resp)
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
-    return resp, 200
+    return resp, HTTPStatus.OK
 
 
 @user_bp.route("/profile", methods=["GET"])  # GET
@@ -159,7 +165,7 @@ def personal_info():
     current_user = get_jwt_identity()
     user_info = service.get_profile_info(current_user)
     resp = {"name": user_info.name, "email": current_user, "role": role}
-    return resp, 200
+    return resp, HTTPStatus.OK
 
 
 @user_bp.route("/profile/name", methods=["POST"])  # POST
@@ -169,10 +175,10 @@ def change_user_name():
     current_user = get_jwt_identity()
     if new_name is not None:
         service.change_name(current_user, new_name)
-        return jsonify({"Your NEW name: ": new_name}), 200
+        return jsonify({"Your NEW name: ": new_name}), HTTPStatus.OK
     else:
         name = service.get_profile_info(current_user).name
-        return jsonify({"Your name: ": name}), 200
+        return jsonify({"Your name: ": name}), HTTPStatus.OK
 
 
 @user_bp.route("/profile/password", methods=["POST"])  # POST
@@ -183,9 +189,11 @@ def change_user_password():
     current_user = get_jwt_identity()
     if service.check_password(current_user, cur_password):
         service.change_password(current_user, new_password)
-        return jsonify({"message": "You have successfully changed your password"}), 200
+        return jsonify({"message": "You have successfully changed your password"}), HTTPStatus.OK
     else:
-        return abort(Response(json.dumps({"error_message": "WRONG Password"}), 403))
+        return abort(
+            Response(json.dumps({"error_message": "WRONG Password"}), HTTPStatus.FORBIDDEN)
+        )
 
 
 @user_bp.route("/profile/email", methods=["POST"])  # POST
@@ -215,9 +223,11 @@ def change_user_email():
         # отправка токенов в куки
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
-        return resp, 200
+        return resp, HTTPStatus.OK
     else:
-        return abort(Response(json.dumps({"error_message": "WRONG Password"}), 403))
+        return abort(
+            Response(json.dumps({"error_message": "WRONG Password"}), HTTPStatus.FORBIDDEN)
+        )
 
 
 @user_bp.route("/profile/logout", methods=["POST"])  # POST
@@ -243,7 +253,7 @@ def logout():
         }
     )
     unset_jwt_cookies(resp)
-    return resp, 200
+    return resp, HTTPStatus.OK
 
 
 @user_bp.route("/profile/delete", methods=["POST"])  # POST
@@ -252,7 +262,9 @@ def delete():
     password = request.json["password"]
     current_user = get_jwt_identity()
     if not (service.check_password(current_user, password)):
-        return abort(Response(json.dumps({"error_message": "WRONG Password"}), 403))
+        return abort(
+            Response(json.dumps({"error_message": "WRONG Password"}), HTTPStatus.FORBIDDEN)
+        )
 
     jti = get_jwt()["jti"]
     # Получаем id пользователя и юзер агент
@@ -269,4 +281,4 @@ def delete():
 
     resp = make_response(redirect(url_for("user.signup")))
     unset_jwt_cookies(resp)
-    return resp, 200
+    return resp, HTTPStatus.OK
