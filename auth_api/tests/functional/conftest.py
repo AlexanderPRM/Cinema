@@ -1,4 +1,6 @@
 import asyncio
+import json
+import uuid
 
 import backoff
 import pytest
@@ -29,6 +31,38 @@ def event_loop():
     max_time=60,
 )
 @pytest.fixture
+def make_post_request(aiohttp_client) -> web_response.Response:
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            requests.exceptions.ConnectionError,
+            ConnectionRefusedError,
+        ),
+        max_tries=50,
+        max_time=60,
+    )
+    async def inner(url, settings, query_data={}, cookies={}):
+        url = settings.service_url + url
+        query_data = query_data
+        headers = {"Content-Type": "application/json"}
+        response = await aiohttp_client.post(
+            url, headers=headers, data=json.dumps(query_data), cookies=cookies
+        )
+        return response
+
+    return inner
+
+
+@backoff.on_exception(
+    backoff.expo,
+    (
+        requests.exceptions.ConnectionError,
+        ConnectionRefusedError,
+    ),
+    max_tries=50,
+    max_time=60,
+)
+@pytest.fixture
 def make_get_request(aiohttp_client) -> web_response.Response:
     @backoff.on_exception(
         backoff.expo,
@@ -39,11 +73,48 @@ def make_get_request(aiohttp_client) -> web_response.Response:
         max_tries=50,
         max_time=60,
     )
-    async def inner(url, settings, query_data={}):
+    async def inner(url, settings, query_data={}, cookies={}):
         url = settings.service_url + url
         query_data = query_data
-        response = await aiohttp_client.get(url, params=query_data)
+        headers = {"Content-Type": "application/json"}
+        response = await aiohttp_client.get(
+            url, headers=headers, data=json.dumps(query_data), cookies=cookies
+        )
         return response
+
+    return inner
+
+
+@backoff.on_exception(
+    backoff.expo,
+    (
+        requests.exceptions.ConnectionError,
+        ConnectionRefusedError,
+    ),
+    max_tries=50,
+    max_time=60,
+)
+@pytest.fixture
+def get_access_token(aiohttp_client) -> web_response.Response:
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            requests.exceptions.ConnectionError,
+            ConnectionRefusedError,
+        ),
+        max_tries=50,
+        max_time=60,
+    )
+    async def inner(settings, email=f"{str(uuid.uuid4().hex)[:10]}@mail.ru"):
+        password = "1"
+        url = settings.service_url + "/user/signup"
+        query_data = {"email": email, "password": password, "name": "Romel"}
+        headers = {"Content-Type": "application/json"}
+        response = await aiohttp_client.post(url, headers=headers, data=json.dumps(query_data))
+        response_text = await response.text()
+        response_data = json.loads(response_text)
+        access_token = response_data.get("tokens").get("access_token")
+        return access_token
 
     return inner
 
