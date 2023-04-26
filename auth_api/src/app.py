@@ -7,6 +7,7 @@ from core.config import config
 from core.logger import LOGGING
 from db.postgres import db
 from db.redis import redis_db
+from flasgger import Swagger
 from flask import Flask
 from flask_migrate import Migrate
 
@@ -17,6 +18,8 @@ app.register_blueprint(api_blueprint_v1)
 
 with app.app_context():
     from cli.superuser import create_super_user  # noqa: 402
+
+swagger = Swagger(app, template_file="openapi.yaml")
 
 
 def init_redis(app: Flask):

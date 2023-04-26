@@ -118,11 +118,19 @@ def signup():
 
 
 @user_bp.route("/login_history", methods=["GET"])
-@jwt_required(locations=["headers", "cookies"])
+@jwt_required()
 def login_history():
+    page_number = request.args.get("page_number", default=1, type=int)
+    page_size = request.args.get("page_size", default=10, type=int)
+    if page_size < 1 or page_number < 1:
+        abort(HTTPStatus.BAD_REQUEST, "Required arg must be greater than or equal to 1")
+    if page_size > 50:
+        abort(HTTPStatus.BAD_REQUEST, "Page size must be less than 50")
     service = UserService()
     user_email = get_jwt_identity()
-    login_history = service.login_history(user_email)
+    login_history = service.login_history(
+        email=user_email, page_size=page_size, page_number=page_number - 1
+    )
     login_history_data = [
         {"user": h.user.email, "user_agent": h.user_agent, "auth_date": h.authentication_date}
         for h in login_history
