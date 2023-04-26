@@ -1,10 +1,10 @@
 from datetime import datetime
 
 import bcrypt
-from pydantic import EmailError, validate_email
-
 from db.models import ServiceUser, User, UserLoginHistory, UserRole
 from db.postgres import db
+from pydantic import EmailError, validate_email
+
 from .exception_service import HttpExceptions
 from .role_service import RoleService
 
