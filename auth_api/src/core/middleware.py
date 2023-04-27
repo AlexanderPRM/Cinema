@@ -12,12 +12,12 @@ MAX_TOKENS = config.MAX_TOKENS
 SEC_FOR_TOKEN = config.SEC_FOR_TOKEN
 
 redis_conn = redis.Redis(host=config.AUTH_REDIS_HOST, port=config.AUTH_REDIS_PORT, db=1)
-redis_conn.set("tokens", MAX_TOKENS)
+redis_conn.set("tokens_amount", MAX_TOKENS)
 redis_conn.set("last_refill_time", time.time())
 
 
 def check_rate_limit():
-    tokens_amount = int(redis_conn.get("tokens"))
+    tokens_amount = int(redis_conn.get("tokens_amount"))
     last_refill_time = float(redis_conn.get("last_refill_time"))
 
     time_diff = time.time() - float(last_refill_time)
@@ -30,7 +30,7 @@ def check_rate_limit():
         redis_conn.set("last_refill_time", time.time() - float(remainder))
 
     if tokens_amount > 0:
-        redis_conn.set("tokens", tokens_amount - 1)
+        redis_conn.set("tokens_amount", tokens_amount - 1)
     else:
         abort(
             Response(
