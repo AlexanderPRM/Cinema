@@ -40,3 +40,8 @@ class Person(BaseModelOrjson):
 
 class PersonList(BaseModelOrjson):
     full_name: str
+
+
+class User(BaseModel):
+    username: str
+    # role: str
