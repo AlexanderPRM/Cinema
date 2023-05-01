@@ -123,6 +123,13 @@ services:
       - auth_api
     ports:
       - 80:80
+ 
+  tracer_jaeger:
+    image: jaegertracing/all-in-one:latest
+    restart: always
+    ports:
+      - "6831:6831/udp"
+      - "16686:16686"
 
 
 volumes:
