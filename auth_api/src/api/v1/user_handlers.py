@@ -1,35 +1,29 @@
-from datetime import datetime
 from http import HTTPStatus
 
 import flask
 from core.config import config
 from db.redis import redis_db
-from flask import (
-    Blueprint,
-    Response,
-    abort,
-    json,
-    jsonify,
-    make_response,
-    redirect,
-    request,
-    url_for,
-)
-from flask.wrappers import Request
-from flask_jwt_extended import (
-    JWTManager,
-    create_access_token,
-    create_refresh_token,
-    decode_token,
-    get_jwt,
-    get_jwt_identity,
-    jwt_required,
-    set_access_cookies,
-    set_refresh_cookies,
-    unset_access_cookies,
-    unset_jwt_cookies,
-    unset_refresh_cookies,
-)
+from flask import (Blueprint,
+                   Response,
+                   abort,
+                   json,
+                   jsonify,
+                   make_response,
+                   redirect,
+                   request,
+                   url_for,)
+from flask_jwt_extended import (JWTManager,
+                                create_access_token,
+                                create_refresh_token,
+                                decode_token,
+                                get_jwt,
+                                get_jwt_identity,
+                                jwt_required,
+                                set_access_cookies,
+                                set_refresh_cookies,
+                                unset_access_cookies,
+                                unset_jwt_cookies,
+                                unset_refresh_cookies,)
 from jwt import decode as jwt_decode
 from openapi_core import Spec, unmarshal_response
 from openapi_core.contrib.flask.requests import FlaskOpenAPIRequest
@@ -69,9 +63,7 @@ def signin():
     resp = jsonify({"tokens": {"access_token": access_token, "refresh_token": refresh_token}})
     # провеяем валидность ответа
     resp = make_response(resp, HTTPStatus.OK)
-    result = unmarshal_response(
-        FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
-    )
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
 
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
@@ -97,9 +89,7 @@ def signup():
     )
     # провеяем валидность ответа
     resp = make_response(resp, HTTPStatus.CREATED)
-    result = unmarshal_response(
-        FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
-    )
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
 
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
@@ -135,9 +125,7 @@ def login_history():
     resp = jsonify({"login_history": login_history_data})
     # провеяем валидность ответа
     resp = make_response(resp, HTTPStatus.OK)
-    result = unmarshal_response(
-        FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
-    )
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
 
     return resp
 
@@ -185,9 +173,7 @@ def refresh():
     )
     # провеяем валидность ответа
     resp = make_response(resp, HTTPStatus.OK)
-    result = unmarshal_response(
-        FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
-    )
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
 
     unset_refresh_cookies(resp)
     set_access_cookies(resp, access_token)
@@ -205,11 +191,7 @@ def personal_info():
     user_info = service.get_profile_info(current_user)
     resp = jsonify({"name": user_info.name, "email": current_user, "role": role})
     # провеяем валидность ответа
-    result = unmarshal_response(
-        FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
-    )
-    if result.errors:
-        return jsonify({"message": "Ошибка валидации ответа"}), 500
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
     return resp, HTTPStatus.OK
 
 
@@ -259,7 +241,7 @@ def change_user_email():
         )
         # провеяем валидность ответа
         resp = make_response(resp, HTTPStatus.OK)
-        result = unmarshal_response(
+        unmarshal_response(
             FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
         )
 
@@ -298,9 +280,7 @@ def logout():
     )
     # провеяем валидность ответа
     resp = make_response(resp, HTTPStatus.OK)
-    result = unmarshal_response(
-        FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
-    )
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
 
     unset_jwt_cookies(resp)
     return resp
