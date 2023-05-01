@@ -29,6 +29,7 @@ with app.app_context():
 
 swagger = Swagger(app, template_file="openapi.yaml")
 
+
 # запретить выполнять запросы без заголовка X-Request-Id
 @app.before_request
 def before_request():
@@ -66,7 +67,6 @@ def init_db(app: Flask):
     db_host = config.AUTH_POSTGRES_HOST
     app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
     db.init_app(app)
-
 
 
 if __name__ == "__main__":
