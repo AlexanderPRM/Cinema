@@ -3,7 +3,7 @@ from typing import Any
 
 from core.config import config
 from fastapi import HTTPException
-from jose import JWTError, jwt
+from jose import jwt
 from models.film import User
 
 
