@@ -98,10 +98,5 @@ class UserService:
         db.session.commit()
 
     def get_user_role(self, user):
-        role = (
-            db.session.query(UserRole)
-            .join(ServiceUser)
-            .filter(ServiceUser.user == user)
-            .first()
-        )
+        role = db.session.query(UserRole).join(ServiceUser).filter(ServiceUser.user == user).first()
         return role
