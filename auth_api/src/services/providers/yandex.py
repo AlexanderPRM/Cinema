@@ -2,7 +2,7 @@ import string
 from secrets import choice as secrets_choice
 
 from core.config import yandex_config
-from db.models import SocialAccount
+from db.models import SocialAccount, User
 from db.postgres import db
 from services.user_service import UserService
 from yandexid import YandexID, YandexOAuth
@@ -36,17 +36,22 @@ class YandexProvider:
         if account:
             user, email, role = account.user, account.user.email, account.user.service_info.role
             return user, email, role
+
+        user = UserService()
+        if created_user := db.session.query(User).filter_by(email=user_data.default_email).first():
+            role = user.get_user_role(created_user)
+            email = created_user.email
         else:
-            user = UserService()
-            email, password, role, created_user = user.signup(
+            email, _, role, created_user = user.signup(
                 user_data.default_email, generate_random_string(), user_data.first_name
             )
-            social_account = SocialAccount(
-                user=created_user, social_id=user_data.psuid, social_name="yandex"
-            )
-            db.session.add(social_account)
-            db.session.commit()
-            return created_user, email, role
+
+        social_account = SocialAccount(
+            user=created_user, social_id=user_data.psuid, social_name="yandex"
+        )
+        db.session.add(social_account)
+        db.session.commit()
+        return created_user, email, role
 
 
 yandex_provider = YandexProvider()

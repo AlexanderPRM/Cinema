@@ -28,12 +28,7 @@ class UserService:
             return HttpExceptions().not_exists("User", email)
 
         if bcrypt.checkpw(password.encode(), user.password.encode()):
-            role = (
-                db.session.query(UserRole)
-                .join(ServiceUser)
-                .filter(ServiceUser.user == user)
-                .first()
-            )
+            role = self.get_user_role(user)
             login_record = UserLoginHistory(
                 authentication_date=datetime.utcnow(), user_id=user.id, user_agent=useragent
             )
@@ -101,3 +96,12 @@ class UserService:
             {"email": new_email}, synchronize_session="fetch"
         )
         db.session.commit()
+
+    def get_user_role(self, user):
+        role = (
+            db.session.query(UserRole)
+            .join(ServiceUser)
+            .filter(ServiceUser.user == user)
+            .first()
+        )
+        return role
