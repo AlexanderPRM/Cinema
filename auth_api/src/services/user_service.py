@@ -43,11 +43,7 @@ class UserService:
 
         if bcrypt.checkpw(password.encode(), user.password.encode()):
             role = self.get_user_role(user)
-            login_record = UserLoginHistory(
-                authentication_date=datetime.utcnow(), user_id=user.id, user_agent=useragent
-            )
-            db.session.add(login_record)
-            db.session.commit()
+            self.add_login_history(user_id=user.id, useragent=useragent)
             return email, role, user
         return HttpExceptions().password_error()
 
