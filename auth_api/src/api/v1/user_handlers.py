@@ -1,5 +1,7 @@
 from http import HTTPStatus
 
+from core.config import config
+from db.redis import redis_db
 from flask import (
     Blueprint,
     Response,
@@ -26,10 +28,8 @@ from flask_jwt_extended import (
     unset_refresh_cookies,
 )
 from jwt import decode as jwt_decode
-
+from services.providers.yandex import yandex_provider
 from services.user_service import UserService
-from core.config import config
-from db.redis import redis_db
 
 user_bp = Blueprint("user", __name__, url_prefix="/user")
 jwt = JWTManager()
@@ -61,6 +61,31 @@ def signin():
     access_token = create_access_token(identity=email, additional_claims={"role": role.name})
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify({"tokens": {"access_token": access_token, "refresh_token": refresh_token}})
+    set_access_cookies(resp, access_token)
+    set_refresh_cookies(resp, refresh_token)
+    redis_db.setex(
+        str(user.id) + "_" + useragent + "_refresh",
+        config.REFRESH_TOKEN_EXPIRES,
+        refresh_token,
+    )
+    return resp, HTTPStatus.OK
+
+
+@user_bp.route("/signin/yandex/", methods=["POST"])
+def yandex_signin():
+    return redirect(yandex_provider.get_auth_url())
+
+
+@user_bp.route("/signin/yandex/callback/", methods=["GET"])
+def yandex_signin_callback():
+    if "code" not in request.args:
+        return abort(Response(json.dumps({"message": "[code] - Parameter was not found"})), 422)
+    code = request.args["code"]
+    useragent = request.headers.get("User-Agent")
+    user, email, role = yandex_provider.signin(code)
+    resp = jsonify({"message": "Successful login"})
+    access_token = create_access_token(identity=email, additional_claims={"role": role.name})
+    refresh_token = create_refresh_token(identity=email)
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
     redis_db.setex(

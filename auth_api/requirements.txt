@@ -13,5 +13,6 @@ pydantic[email]==1.10.5
 Flask-And-Redis==1.0.0
 Flask-Migrate==4.0.4
 flasgger==0.9.5
-python-dotenv==0.21.0
 user-agents==2.2.0
+yandexid==0.3.1
+python-dotenv==0.21.0
