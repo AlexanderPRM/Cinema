@@ -1,6 +1,9 @@
 import datetime
 import uuid
 
+
+from sqlalchemy import UniqueConstraint
+
 from db.postgres import db
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -66,8 +69,38 @@ class ServiceUser(db.Model):
         return f"<User {self.user} User Role {self.role}>"
 
 
+def create_partition(target, connection, **kw) -> None:
+    device_types = [
+        UserLoginHistory.DeviceType.PC,
+        UserLoginHistory.DeviceType.TABLET,
+        UserLoginHistory.DeviceType.MOBILE,
+        UserLoginHistory.DeviceType.BOT,
+        UserLoginHistory.DeviceType.UNKNOWN,
+    ]
+    for device_type in device_types:
+        connection.execute(
+            "CREATE TABLE IF NOT EXISTS login_history_%s PARTITION OF %s FOR VALUES IN (%s)",
+            (device_type, target.fullname, device_type)
+        )
+
+
 class UserLoginHistory(db.Model):
     __tablename__ = "users_login_history"
+    __table_args__ = (
+        UniqueConstraint("id", "device_type"),
+        {
+            "postgresql_partition_by": "LIST (device_type)",
+            "listeners": [("after_create", create_partition)],
+        },
+    )
+
+    class DeviceType:
+        PC = "desktop"
+        TABLET = "tablet"
+        MOBILE = "mobile"
+        BOT = "bot"
+        UNKNOWN = "unknown"
+
     id = db.Column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False
     )
@@ -75,6 +108,7 @@ class UserLoginHistory(db.Model):
     user = db.relationship("User", back_populates="login_history")
     user_agent = db.Column(db.Text, nullable=False)
     authentication_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    device_type = db.Column(db.String(255), primary_key=True)
 
     def __repr__(self):
         return f"<User {self.user} User Agent {self.user_agent}>"

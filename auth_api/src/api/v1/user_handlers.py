@@ -101,8 +101,9 @@ def signup():
     data_validate(request)
     email, password = request.json["email"], request.json["password"]
     name = request.json["name"] if "name" in request.json else None
+    useragent = request.headers.get("User-Agent")
 
-    email, password, role, user = service.signup(email, password, name)
+    email, password, role, user = service.signup(email=email, password=password, name=name, useragent=useragent)
     access_token = create_access_token(identity=email, additional_claims={"role": role.name})
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify(
