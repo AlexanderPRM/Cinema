@@ -1,11 +1,20 @@
 import os
 from logging import config as logging_config
 
+from core import logger
 from pydantic import BaseSettings
 
-from core import logger
-
 logging_config.dictConfig(logger.LOGGING)
+
+
+class YandexSettings(BaseSettings):
+    CLIENT_ID: str
+    CLIENT_SECRET: str
+    YANDEX_REDIRECT_URI: str
+
+    class Config:
+        case_sensitive = True
+        env_file = "config.env"
 
 
 class Settings(BaseSettings):
@@ -29,3 +38,4 @@ class Settings(BaseSettings):
 
 
 config = Settings()
+yandex_config = YandexSettings()

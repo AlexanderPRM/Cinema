@@ -1,9 +1,8 @@
 import datetime
 import uuid
 
-from sqlalchemy.dialects.postgresql import UUID
-
 from db.postgres import db
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class User(db.Model):
@@ -20,6 +19,22 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.email}>"
+
+
+class SocialAccount(db.Model):
+    __tablename__ = "social_account"
+
+    id = db.Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, nullable=False)
+    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"), nullable=False)
+    user = db.relationship(User, backref=db.backref("social_accounts", lazy=True))
+
+    social_id = db.Column(db.Text, nullable=False)
+    social_name = db.Column(db.Text, nullable=False)
+
+    __table_args__ = (db.UniqueConstraint("social_id", "social_name", name="social_pk"),)
+
+    def __repr__(self):
+        return f"<SocialAccount {self.social_name}:{self.user_id}>"
 
 
 class UserRole(db.Model):
