@@ -77,8 +77,8 @@ def create_partition(target, connection, **kw) -> None:
     ]
     for device_type in device_types:
         connection.execute(
-            f"""CREATE TABLE IF NOT EXISTS "login_history_{device_type}"
-            PARTITION OF "{target}" FOR VALUES IN ('{device_type}')"""
+            "CREATE TABLE IF NOT EXISTS login_history_%s PARTITION OF %s FOR VALUES IN (%s)",
+            (device_type, target.fullname, device_type),
         )
 
 
@@ -93,7 +93,7 @@ class UserLoginHistory(db.Model):
     )
 
     class DeviceType:
-        PC = "web"
+        PC = "desktop"
         TABLET = "tablet"
         MOBILE = "mobile"
         BOT = "bot"

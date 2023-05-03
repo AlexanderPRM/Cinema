@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     JWT_SECRET: str
     ACCESS_TOKEN_EXPIRES: int
     REFRESH_TOKEN_EXPIRES: int
+    MAX_TOKENS: int
+    SEC_FOR_TOKEN: float
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     class Config:
