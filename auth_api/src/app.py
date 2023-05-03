@@ -5,6 +5,7 @@ from api import api_blueprint_v1
 from api.v1.user_handlers import jwt
 from core.config import config
 from core.logger import LOGGING
+from core.middleware import check_rate_limit
 from db.postgres import db
 from db.redis import redis_db
 from flasgger import Swagger
@@ -47,6 +48,11 @@ def init_db(app: Flask):
     db_host = config.AUTH_POSTGRES_HOST
     app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
     db.init_app(app)
+
+
+@app.before_request
+def before_request():
+    check_rate_limit()
 
 
 if __name__ == "__main__":
