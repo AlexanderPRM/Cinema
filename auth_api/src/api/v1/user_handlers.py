@@ -3,27 +3,31 @@ from http import HTTPStatus
 import flask
 from core.config import config
 from db.redis import redis_db
-from flask import (Blueprint,
-                   Response,
-                   abort,
-                   json,
-                   jsonify,
-                   make_response,
-                   redirect,
-                   request,
-                   url_for,)
-from flask_jwt_extended import (JWTManager,
-                                create_access_token,
-                                create_refresh_token,
-                                decode_token,
-                                get_jwt,
-                                get_jwt_identity,
-                                jwt_required,
-                                set_access_cookies,
-                                set_refresh_cookies,
-                                unset_access_cookies,
-                                unset_jwt_cookies,
-                                unset_refresh_cookies,)
+from flask import (
+    Blueprint,
+    Response,
+    abort,
+    json,
+    jsonify,
+    make_response,
+    redirect,
+    request,
+    url_for,
+)
+from flask_jwt_extended import (
+    JWTManager,
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+    get_jwt,
+    get_jwt_identity,
+    jwt_required,
+    set_access_cookies,
+    set_refresh_cookies,
+    unset_access_cookies,
+    unset_jwt_cookies,
+    unset_refresh_cookies,
+)
 from jwt import decode as jwt_decode
 from openapi_core import Spec, unmarshal_response
 from openapi_core.contrib.flask.requests import FlaskOpenAPIRequest
