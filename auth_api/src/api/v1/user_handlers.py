@@ -82,7 +82,7 @@ def yandex_signin_callback():
         return abort(Response(json.dumps({"message": "[code] - Parameter was not found"})), 422)
     code = request.args["code"]
     useragent = request.headers.get("User-Agent")
-    user, email, role = yandex_provider.signin(code)
+    user, email, role = yandex_provider.signin(code, useragent)
     resp = jsonify({"message": "Successful login"})
     access_token = create_access_token(identity=email, additional_claims={"role": role.name})
     refresh_token = create_refresh_token(identity=email)

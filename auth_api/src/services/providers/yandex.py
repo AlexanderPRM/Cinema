@@ -24,7 +24,7 @@ class YandexProvider:
     def get_auth_url(self):
         return self.yandex_oauth.get_authorization_url()
 
-    def signin(self, code):
+    def signin(self, code, useagent):
         token = self.yandex_oauth.get_token_from_code(code)
         social_user = YandexID(token.access_token)
         user_data = social_user.get_user_info_json()
@@ -43,7 +43,7 @@ class YandexProvider:
             email = created_user.email
         else:
             email, _, role, created_user = user.signup(
-                user_data.default_email, generate_random_string(), user_data.first_name
+                user_data.default_email, generate_random_string(), user_data.first_name, useagent
             )
 
         social_account = SocialAccount(
