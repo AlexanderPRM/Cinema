@@ -28,15 +28,11 @@ services:
       - POSTGRES_PASSWORD=${AUTH_POSTGRES_PASSWORD}
     volumes:
       - auth_postgres_data:/var/lib/postgresql/auth_data/
-    ports:
-      - 5432:5432
     restart: always
 
   auth_redis:
     image: redis:7.0.9
     restart: always
-    ports:
-      - 6379:6379
     env_file:
       - config.env
 
