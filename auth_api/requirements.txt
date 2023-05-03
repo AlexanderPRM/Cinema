@@ -16,3 +16,9 @@ flasgger==0.9.5
 user-agents==2.2.0
 yandexid==0.3.1
 python-dotenv==0.21.0
+openapi_core==0.17.1
+opentelemetry-api==1.10.0
+opentelemetry-sdk==1.10.0
+opentelemetry-instrumentation-flask==0.29b1
+opentelemetry-exporter-jaeger==1.10.0 
+flask_wtf==1.1.1

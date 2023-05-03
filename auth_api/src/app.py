@@ -6,14 +6,20 @@ from api.v1.user_handlers import jwt
 from core.config import config
 from core.logger import LOGGING
 from core.middleware import check_rate_limit
+from core.tracer_conf import configure_tracer
 from db.postgres import db
 from db.redis import redis_db
 from flasgger import Swagger
-from flask import Flask
+from flask import Flask, request
 from flask_migrate import Migrate
+from opentelemetry import trace
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
+configure_tracer()
 
 app = Flask(__name__)
 migrate = Migrate(app, db)
+FlaskInstrumentor().instrument_app(app)
 
 app.register_blueprint(api_blueprint_v1)
 
@@ -21,6 +27,18 @@ with app.app_context():
     from cli.superuser import create_super_user  # noqa: 402
 
 swagger = Swagger(app, template_file="openapi.yaml")
+
+
+# запретить выполнять запросы без заголовка X-Request-Id
+@app.before_request
+def before_request():
+    request_id = request.headers.get("X-Request-Id")
+    tracer = trace.get_tracer(__name__)
+    span = tracer.start_span(__name__)
+    span.set_attribute("http.request_id", request_id)
+    span.end()
+    if not request_id:
+        raise RuntimeError("request id is required")
 
 
 def init_redis(app: Flask):

@@ -1,10 +1,9 @@
 from datetime import datetime
 
 import bcrypt
+from core.utils import check_device_type
 from db.models import ServiceUser, User, UserLoginHistory, UserRole
 from db.postgres import db
-from core.utils import check_device_type
-
 from pydantic import EmailError, validate_email
 
 from .exception_service import HttpExceptions
