@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import bcrypt
+from core.utils import check_device_type
 from db.models import ServiceUser, User, UserLoginHistory, UserRole
 from db.postgres import db
 from pydantic import EmailError, validate_email
@@ -16,6 +17,18 @@ class UserService:
         if "+" in email_user:
             email_user = email_user[: email_user.find("+")]
         return f"{email_user}@{email_domain}"
+
+    def add_login_history(self, user_id, useragent):
+        device_type = check_device_type(useragent)
+        login_record = UserLoginHistory(
+            authentication_date=datetime.utcnow(),
+            user_id=user_id,
+            user_agent=useragent,
+            device_type=device_type,
+        )
+        db.session.add(login_record)
+        db.session.commit()
+        return login_record
 
     def signin(self, email, password, useragent):
         try:
@@ -34,15 +47,11 @@ class UserService:
                 .filter(ServiceUser.user == user)
                 .first()
             )
-            login_record = UserLoginHistory(
-                authentication_date=datetime.utcnow(), user_id=user.id, user_agent=useragent
-            )
-            db.session.add(login_record)
-            db.session.commit()
+            self.add_login_history(user_id=user.id, useragent=useragent)
             return email, role, user
         return HttpExceptions().password_error()
 
-    def signup(self, email, password, name):
+    def signup(self, email, password, name, useragent):
         exceptions = HttpExceptions()
         try:
             validate_email(email)
@@ -58,6 +67,7 @@ class UserService:
         db.session.commit()
         role_service = RoleService()
         role = role_service.change_user_role_to_default(user=user)
+        self.add_login_history(user_id=user.id, useragent=useragent)
         return email, password, role, user
 
     def refresh(self, email):
