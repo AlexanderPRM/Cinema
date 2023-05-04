@@ -7,18 +7,9 @@ from pydantic import BaseSettings
 logging_config.dictConfig(logger.LOGGING)
 
 
-class GoogleSettings(BaseSettings):
-    GOOGLE_FILE: str
-    GOOGLE_REDIRECT_URI: str
-
-    class Config:
-        case_sensitive = True
-        env_file = "config.env"
-
-
 class YandexSettings(BaseSettings):
-    YANDEX_CLIENT_ID: str
-    YANDEX_CLIENT_SECRET: str
+    CLIENT_ID: str
+    CLIENT_SECRET: str
     YANDEX_REDIRECT_URI: str
 
     class Config:
@@ -48,4 +39,3 @@ class Settings(BaseSettings):
 
 config = Settings()
 yandex_config = YandexSettings()
-google_config = GoogleSettings()

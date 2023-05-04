@@ -1,8 +1,10 @@
 import datetime
 import uuid
 
-from db.postgres import db
+
 from sqlalchemy import UniqueConstraint
+
+from db.postgres import db
 from sqlalchemy.dialects.postgresql import UUID
 
 
@@ -78,7 +80,7 @@ def create_partition(target, connection, **kw) -> None:
     for device_type in device_types:
         connection.execute(
             "CREATE TABLE IF NOT EXISTS login_history_%s PARTITION OF %s FOR VALUES IN (%s)",
-            (device_type, target.fullname, device_type),
+            (device_type, target.fullname, device_type)
         )
 
 

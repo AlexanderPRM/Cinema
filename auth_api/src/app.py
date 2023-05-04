@@ -20,7 +20,7 @@ app.register_blueprint(api_blueprint_v1)
 with app.app_context():
     from cli.superuser import create_super_user  # noqa: 402
 
-swagger = Swagger(app, template_file="./openapi.yaml")
+swagger = Swagger(app, template_file="openapi.yaml")
 
 
 def init_redis(app: Flask):
