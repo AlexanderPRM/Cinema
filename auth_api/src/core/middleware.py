@@ -16,9 +16,10 @@ try:
     redis_conn = redis.Redis(host=config.AUTH_REDIS_HOST, port=config.AUTH_REDIS_PORT, db=1)
     redis_conn.set("tokens_amount", MAX_TOKENS)
     redis_conn.set("last_refill_time", time.time())
-except redis.RedisError as e:
+except redis.RedisError:
     # можно записать в логи
     redis_conn = None
+
 
 def check_rate_limit():
     if redis_conn is None:
@@ -40,10 +41,14 @@ def check_rate_limit():
             redis_conn.set("last_refill_time", time.time() - float(remainder))
 
         if tokens_amount < 1:
-            abort(Response(json.dumps({"error": "Too Many Requests"}), status=HTTPStatus.TOO_MANY_REQUESTS))
+            abort(
+                Response(
+                    json.dumps({"error": "Too Many Requests"}), status=HTTPStatus.TOO_MANY_REQUESTS
+                )
+            )
         redis_conn.set("tokens_amount", tokens_amount - 1)
 
-    except redis.RedisError as e:
+    except redis.RedisError:
         # в случае ошибки Redis, отключаем rate limiting
         # можно записать в логи
         return

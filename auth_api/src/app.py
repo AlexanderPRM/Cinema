@@ -29,9 +29,10 @@ with app.app_context():
 swagger = Swagger(app, template_file="openapi.yaml")
 
 
-# запретить выполнять запросы без заголовка X-Request-Id
+# запретить выполнять запросы без заголовка X-Request-Id + rate limit
 @app.before_request
 def before_request():
+    check_rate_limit()
     request_id = request.headers.get("X-Request-Id")
     tracer = trace.get_tracer(__name__)
     span = tracer.start_span(__name__)
@@ -66,11 +67,6 @@ def init_db(app: Flask):
     db_host = config.AUTH_POSTGRES_HOST
     app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
     db.init_app(app)
-
-
-@app.before_request
-def before_request():
-    check_rate_limit()
 
 
 if __name__ == "__main__":
