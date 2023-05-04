@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     ELASTIC_PORT: str
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     JWT_SECRET: str
+    AUTH_REDIS_HOST: str
+    AUTH_REDIS_PORT: str
 
     class Config:
         case_sensitive = True
