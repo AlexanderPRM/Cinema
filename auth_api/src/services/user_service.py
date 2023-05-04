@@ -21,7 +21,7 @@ class UserService:
     def add_login_history(self, user_id, useragent):
         device_type = check_device_type(useragent)
         login_record = UserLoginHistory(
-            authentication_date=datetime.utcnow(),
+            authentication_date=datetime.now().isoformat(),
             user_id=user_id,
             user_agent=useragent,
             device_type=device_type,
@@ -43,7 +43,9 @@ class UserService:
         if bcrypt.checkpw(password.encode(), user.password.encode()):
             role = self.get_user_role(user)
             login_record = UserLoginHistory(
-                authentication_date=datetime.utcnow(), user_id=user.id, user_agent=useragent
+                authentication_date=datetime.now().isoformat(),
+                user_id=user.id,
+                user_agent=useragent,
             )
             db.session.add(login_record)
             db.session.commit()
