@@ -1,10 +1,9 @@
 from datetime import datetime
 
 import bcrypt
+from core.utils import check_device_type, normalize_email
 from db.models import ServiceUser, User, UserLoginHistory, UserRole
 from db.postgres import db
-from core.utils import check_device_type
-
 from pydantic import EmailError, validate_email
 
 from .exception_service import HttpExceptions
@@ -12,13 +11,6 @@ from .role_service import RoleService
 
 
 class UserService:
-    @classmethod
-    def normalize_email(self, email):
-        email_user, email_domain = email.lower().strip().split("@")
-        if "+" in email_user:
-            email_user = email_user[: email_user.find("+")]
-        return f"{email_user}@{email_domain}"
-
     def add_login_history(self, user_id, useragent):
         device_type = check_device_type(useragent)
         login_record = UserLoginHistory(
@@ -36,7 +28,7 @@ class UserService:
             validate_email(email)
         except EmailError:
             return HttpExceptions().email_error()
-        email = self.normalize_email(email)
+        email = normalize_email(email)
         user = db.session.query(User).filter_by(email=email).first()
         if not user:
             return HttpExceptions().not_exists("User", email)
@@ -53,7 +45,7 @@ class UserService:
             validate_email(email)
         except EmailError:
             return exceptions.already_exists("User", email)
-        email = self.normalize_email(email)
+        email = normalize_email(email)
         if db.session.query(User).filter_by(email=email).first():
             return exceptions.email_error()
 
