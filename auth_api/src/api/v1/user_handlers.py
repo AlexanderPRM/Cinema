@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 from core.config import config
-from core.utils import set_tokens
 from db.redis import redis_db
 from flask import (
     Blueprint,
@@ -29,7 +28,6 @@ from flask_jwt_extended import (
     unset_refresh_cookies,
 )
 from jwt import decode as jwt_decode
-from services.providers.google import google_provider
 from services.providers.yandex import yandex_provider
 from services.user_service import UserService
 
@@ -52,7 +50,7 @@ def data_validate(request):
         )
 
 
-@user_bp.route("/signin/", methods=["POST"])
+@user_bp.route("/signin", methods=["POST"])
 def signin():
     data_validate(request)
     service = UserService()
@@ -63,26 +61,13 @@ def signin():
     access_token = create_access_token(identity=email, additional_claims={"role": role.name})
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify({"tokens": {"access_token": access_token, "refresh_token": refresh_token}})
-    set_tokens(resp, user, useragent, access_token, refresh_token)
-    return resp, HTTPStatus.OK
-
-
-@user_bp.route("/signin/google/", methods=["POST"])
-def google_signin():
-    return redirect(google_provider.get_auth_url())
-
-
-@user_bp.route("signin/google/callback/", methods=["GET"])
-def google_signin_callback():
-    if "code" not in request.args:
-        return abort(Response(json.dumps({"message": "[code] - Parameter was not found"})), 422)
-    useragent = request.headers.get("User-Agent")
-    user_data = google_provider.signin(request.url, useragent)
-    user, email, role = user_data[0], user_data[1], user_data[2]
-    access_token = create_access_token(identity=email, additional_claims={"role": role.name})
-    refresh_token = create_refresh_token(identity=email)
-    resp = jsonify({"message": "Succesfully login"})
-    set_tokens(resp, user, useragent, access_token, refresh_token)
+    set_access_cookies(resp, access_token)
+    set_refresh_cookies(resp, refresh_token)
+    redis_db.setex(
+        str(user.id) + "_" + useragent + "_refresh",
+        config.REFRESH_TOKEN_EXPIRES,
+        refresh_token,
+    )
     return resp, HTTPStatus.OK
 
 
@@ -97,35 +82,43 @@ def yandex_signin_callback():
         return abort(Response(json.dumps({"message": "[code] - Parameter was not found"})), 422)
     code = request.args["code"]
     useragent = request.headers.get("User-Agent")
-    user_data = yandex_provider.signin(code, useragent)
-    user, email, role = user_data[0], user_data[1], user_data[2]
+    user, email, role = yandex_provider.signin(code)
+    resp = jsonify({"message": "Successful login"})
     access_token = create_access_token(identity=email, additional_claims={"role": role.name})
     refresh_token = create_refresh_token(identity=email)
-    resp = jsonify({"message": "Successful login"})
-    set_tokens(resp, user, useragent, access_token, refresh_token)
+    set_access_cookies(resp, access_token)
+    set_refresh_cookies(resp, refresh_token)
+    redis_db.setex(
+        str(user.id) + "_" + useragent + "_refresh",
+        config.REFRESH_TOKEN_EXPIRES,
+        refresh_token,
+    )
     return resp, HTTPStatus.OK
 
 
-@user_bp.route("/signup/", methods=["POST"])
+@user_bp.route("/signup", methods=["POST"])
 def signup():
     data_validate(request)
     email, password = request.json["email"], request.json["password"]
     name = request.json["name"] if "name" in request.json else None
     useragent = request.headers.get("User-Agent")
 
-    email, password, role, user = service.signup(
-        email=email, password=password, name=name, useragent=useragent
-    )
+    email, password, role, user = service.signup(email=email, password=password, name=name, useragent=useragent)
     access_token = create_access_token(identity=email, additional_claims={"role": role.name})
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify(
         {"id": user.id, "tokens": {"access_token": access_token, "refresh_token": refresh_token}}
     )
-    set_tokens(resp, user, useragent, access_token, refresh_token)
+    set_access_cookies(resp, access_token)
+    set_refresh_cookies(resp, refresh_token)
+    user_agent = request.headers.get("User-Agent")
+    redis_db.setex(
+        str(user.id) + "_" + user_agent + "_refresh", config.REFRESH_TOKEN_EXPIRES, refresh_token
+    )
     return resp, HTTPStatus.CREATED
 
 
-@user_bp.route("/login_history/", methods=["GET"])
+@user_bp.route("/login_history", methods=["GET"])
 @jwt_required()
 def login_history():
     page_number = request.args.get("page_number", default=1, type=int)
@@ -147,7 +140,7 @@ def login_history():
     return resp, HTTPStatus.OK
 
 
-@user_bp.route("/refresh/", methods=["POST"])  # POST
+@user_bp.route("/refresh", methods=["POST"])  # POST
 @jwt_required(locations=["headers", "cookies"], refresh=True)
 def refresh():
     jti = get_jwt()["jti"]
@@ -180,6 +173,10 @@ def refresh():
     # Создаем новые токены
     access_token = create_access_token(identity=current_user, additional_claims={"role": role})
     refresh_token = create_refresh_token(identity=current_user)
+    redis_db.setex(
+        str(user.id) + "_" + user_agent + "_refresh", config.REFRESH_TOKEN_EXPIRES, refresh_token
+    )
+
     resp = jsonify(
         {
             "old_refresh": refresh_token_cookie,
@@ -188,12 +185,12 @@ def refresh():
         }
     )
     unset_refresh_cookies(resp)
-    set_tokens(resp, user, user_agent, access_token, refresh_token)
-
+    set_access_cookies(resp, access_token)
+    set_refresh_cookies(resp, refresh_token)
     return resp, HTTPStatus.OK
 
 
-@user_bp.route("/profile/", methods=["GET"])  # GET
+@user_bp.route("/profile", methods=["GET"])  # GET
 @jwt_required(locations=["headers", "cookies"])
 def personal_info():
     access_token_cookie = request.cookies.get("access_token_cookie")
@@ -205,7 +202,7 @@ def personal_info():
     return resp, HTTPStatus.OK
 
 
-@user_bp.route("/profile/name/", methods=["POST"])  # POST
+@user_bp.route("/profile/name", methods=["POST"])  # POST
 @jwt_required(locations=["headers", "cookies"])
 def change_user_name():
     new_name = request.json["name"]
@@ -217,7 +214,7 @@ def change_user_name():
     return jsonify({"Your name: ": name}), HTTPStatus.OK
 
 
-@user_bp.route("/profile/password/", methods=["POST"])  # POST
+@user_bp.route("/profile/password", methods=["POST"])  # POST
 @jwt_required(locations=["headers", "cookies"])
 def change_user_password():
     new_password = request.json["new_password"]
@@ -229,7 +226,7 @@ def change_user_password():
     return abort(Response(json.dumps({"error_message": "WRONG Password"}), HTTPStatus.FORBIDDEN))
 
 
-@user_bp.route("/profile/email/", methods=["POST"])  # POST
+@user_bp.route("/profile/email", methods=["POST"])  # POST
 @jwt_required(locations=["headers", "cookies"])
 def change_user_email():
     access_token_cookie = request.cookies.get("access_token_cookie")
@@ -260,7 +257,7 @@ def change_user_email():
     return abort(Response(json.dumps({"error_message": "WRONG Password"}), HTTPStatus.FORBIDDEN))
 
 
-@user_bp.route("/profile/logout/", methods=["POST"])  # POST
+@user_bp.route("/profile/logout", methods=["POST"])  # POST
 @jwt_required(optional=True)
 def logout():
     jti = get_jwt()["jti"]
@@ -286,7 +283,7 @@ def logout():
     return resp, HTTPStatus.OK
 
 
-@user_bp.route("/profile/delete/", methods=["POST"])  # POST
+@user_bp.route("/profile/delete", methods=["POST"])  # POST
 @jwt_required(locations=["headers", "cookies"])
 def delete():
     password = request.json["password"]
