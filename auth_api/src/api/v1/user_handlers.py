@@ -1,3 +1,4 @@
+from datetime import datetime
 from http import HTTPStatus
 
 import flask
@@ -12,8 +13,7 @@ from flask import (
     make_response,
     redirect,
     request,
-    url_for,
-)
+    url_for,)
 from flask_jwt_extended import (
     JWTManager,
     create_access_token,
@@ -26,8 +26,7 @@ from flask_jwt_extended import (
     set_refresh_cookies,
     unset_access_cookies,
     unset_jwt_cookies,
-    unset_refresh_cookies,
-)
+    unset_refresh_cookies,)
 from jwt import decode as jwt_decode
 from openapi_core import Spec, unmarshal_response
 from openapi_core.contrib.flask.requests import FlaskOpenAPIRequest
@@ -147,7 +146,11 @@ def login_history():
         email=user_email, page_size=page_size, page_number=page_number - 1
     )
     login_history_data = [
-        {"user": h.user.email, "user_agent": h.user_agent, "auth_date": h.authentication_date}
+        {
+            "user": h.user.email,
+            "user_agent": h.user_agent,
+            "auth_date": h.authentication_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+        }
         for h in login_history
     ]
     resp = jsonify({"login_history": login_history_data})
@@ -283,7 +286,7 @@ def change_user_email():
 
 
 @user_bp.route("/profile/logout", methods=["POST"])  # POST
-@jwt_required(optional=True)
+@jwt_required()
 def logout():
     jti = get_jwt()["jti"]
     # Получаем id пользователя и юзер агент
