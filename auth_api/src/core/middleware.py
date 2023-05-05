@@ -5,8 +5,9 @@ from decimal import Decimal
 from http import HTTPStatus
 
 import redis
-from core.config import config
 from flask import Response, abort
+
+from core.config import config
 
 MAX_TOKENS = config.MAX_TOKENS
 SEC_FOR_TOKEN = config.SEC_FOR_TOKEN

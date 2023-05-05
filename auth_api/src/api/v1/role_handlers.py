@@ -1,14 +1,15 @@
+import json
 from http import HTTPStatus
 
-import flask
+from flask import Blueprint, Response, abort, jsonify, make_response, request
+from openapi_core import Spec
+from openapi_core.contrib.flask.requests import FlaskOpenAPIRequest
+from openapi_core.contrib.flask.responses import FlaskOpenAPIResponse
+
 from core.permissions import superuser_required
 from core.utils import is_uuid_valid
 from db.models import User, UserRole
 from db.postgres import db
-from flask import Blueprint, Response, abort, json, jsonify, make_response, request
-from openapi_core import Spec, unmarshal_response
-from openapi_core.contrib.flask.requests import FlaskOpenAPIRequest
-from openapi_core.contrib.flask.responses import FlaskOpenAPIResponse
 from services.exception_service import HttpExceptions
 from services.role_service import RoleService
 

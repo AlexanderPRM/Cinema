@@ -1,11 +1,12 @@
 import bcrypt
+from pydantic import EmailError, validate_email
+from flask_jwt_extended import create_access_token, create_refresh_token
+
 from app import app
 from core import config
 from db.models import ServiceUser, User
 from db.postgres import db
 from db.redis import redis_db
-from flask_jwt_extended import create_access_token, create_refresh_token
-from pydantic import EmailError, validate_email
 from services.role_service import RoleService
 
 

@@ -1,9 +1,10 @@
+from yandexid import YandexID, YandexOAuth
+
 from core.config import yandex_config
 from core.utils import check_social_account, generate_random_string, normalize_email
 from db.models import SocialAccount, User
 from db.postgres import db
 from services.user_service import UserService
-from yandexid import YandexID, YandexOAuth
 
 
 class YandexProvider:
