@@ -21,3 +21,9 @@ google-api-python-client==2.86.0
 google-auth-oauthlib==1.0.0
 google-auth==2.17.3
 google-auth-httplib2==0.1.0
+openapi_core==0.17.1
+opentelemetry-api==1.10.0
+opentelemetry-sdk==1.10.0
+opentelemetry-instrumentation-flask==0.29b1
+opentelemetry-exporter-jaeger==1.10.0 
+flask_wtf==1.1.1
