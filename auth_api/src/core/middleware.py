@@ -1,12 +1,12 @@
 import json
+import logging
 import time
 from decimal import Decimal
 from http import HTTPStatus
 
 import redis
-from flask import Response, abort
-
 from core.config import config
+from flask import Response, abort
 
 MAX_TOKENS = config.MAX_TOKENS
 SEC_FOR_TOKEN = config.SEC_FOR_TOKEN
@@ -16,8 +16,8 @@ try:
     redis_conn = redis.Redis(host=config.AUTH_REDIS_HOST, port=config.AUTH_REDIS_PORT, db=1)
     redis_conn.set("tokens_amount", MAX_TOKENS)
     redis_conn.set("last_refill_time", time.time())
-except redis.RedisError:
-    # можно записать в логи
+except redis.RedisError as err:
+    logging.error(err)
     redis_conn = None
 
 
@@ -48,7 +48,6 @@ def check_rate_limit():
             )
         redis_conn.set("tokens_amount", tokens_amount - 1)
 
-    except redis.RedisError:
-        # в случае ошибки Redis, отключаем rate limiting
-        # можно записать в логи
+    except redis.RedisError as err:
+        logging.error(err)
         return

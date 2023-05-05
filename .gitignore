@@ -1,6 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,linux,visualstudiocode,redis
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,linux,visualstudiocode,redis
 
+google_client_secret.json
 ### Linux ###
 *~
 requests.http
