@@ -2,8 +2,9 @@ import json
 from collections.abc import Generator  # используется для тайпингов
 from functools import wraps
 
-from psycopg2.extras import DictRow
 from pydantic import BaseModel
+
+from psycopg2.extras import DictRow
 
 
 def coroutine(func):
