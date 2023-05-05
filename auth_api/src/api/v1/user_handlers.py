@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+import flask
 from core.config import config
 from db.redis import redis_db
 from flask import (
@@ -11,8 +12,7 @@ from flask import (
     make_response,
     redirect,
     request,
-    url_for,
-)
+    url_for,)
 from flask_jwt_extended import (
     JWTManager,
     create_access_token,
@@ -25,13 +25,16 @@ from flask_jwt_extended import (
     set_refresh_cookies,
     unset_access_cookies,
     unset_jwt_cookies,
-    unset_refresh_cookies,
-)
+    unset_refresh_cookies,)
 from jwt import decode as jwt_decode
+from openapi_core import Spec, unmarshal_response
+from openapi_core.contrib.flask.requests import FlaskOpenAPIRequest
+from openapi_core.contrib.flask.responses import FlaskOpenAPIResponse
 from services.providers.yandex import yandex_provider
 from services.user_service import UserService
 
 user_bp = Blueprint("user", __name__, url_prefix="/user")
+spec = Spec.from_file_path("openapi.yaml")
 jwt = JWTManager()
 service = UserService()
 
@@ -61,6 +64,10 @@ def signin():
     access_token = create_access_token(identity=email, additional_claims={"role": role.name})
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify({"tokens": {"access_token": access_token, "refresh_token": refresh_token}})
+    # провеяем валидность ответа
+    resp = make_response(resp, HTTPStatus.OK)
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
     redis_db.setex(
@@ -68,7 +75,7 @@ def signin():
         config.REFRESH_TOKEN_EXPIRES,
         refresh_token,
     )
-    return resp, HTTPStatus.OK
+    return resp
 
 
 @user_bp.route("/signin/yandex/", methods=["POST"])
@@ -103,19 +110,24 @@ def signup():
     name = request.json["name"] if "name" in request.json else None
     useragent = request.headers.get("User-Agent")
 
-    email, password, role, user = service.signup(email=email, password=password, name=name, useragent=useragent)
+    email, password, role, user = service.signup(
+        email=email, password=password, name=name, useragent=useragent
+    )
     access_token = create_access_token(identity=email, additional_claims={"role": role.name})
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify(
         {"id": user.id, "tokens": {"access_token": access_token, "refresh_token": refresh_token}}
     )
+    resp = make_response(resp, HTTPStatus.CREATED)
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
     user_agent = request.headers.get("User-Agent")
     redis_db.setex(
         str(user.id) + "_" + user_agent + "_refresh", config.REFRESH_TOKEN_EXPIRES, refresh_token
     )
-    return resp, HTTPStatus.CREATED
+    return resp
 
 
 @user_bp.route("/login_history", methods=["GET"])
@@ -133,11 +145,17 @@ def login_history():
         email=user_email, page_size=page_size, page_number=page_number - 1
     )
     login_history_data = [
-        {"user": h.user.email, "user_agent": h.user_agent, "auth_date": h.authentication_date}
+        {
+            "user": h.user.email,
+            "user_agent": h.user_agent,
+            "auth_date": h.authentication_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+        }
         for h in login_history
     ]
     resp = jsonify({"login_history": login_history_data})
-    return resp, HTTPStatus.OK
+    resp = make_response(resp, HTTPStatus.OK)
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+    return resp
 
 
 @user_bp.route("/refresh", methods=["POST"])  # POST
@@ -184,6 +202,9 @@ def refresh():
             "tokens": {"access_token": access_token, "refresh_token": refresh_token},
         }
     )
+    resp = make_response(resp, HTTPStatus.OK)
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+
     unset_refresh_cookies(resp)
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
@@ -199,6 +220,7 @@ def personal_info():
     current_user = get_jwt_identity()
     user_info = service.get_profile_info(current_user)
     resp = {"name": user_info.name, "email": current_user, "role": role}
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
     return resp, HTTPStatus.OK
 
 
@@ -246,6 +268,11 @@ def change_user_email():
                 "NEWtokens": {"access_token": access_token, "refresh_token": refresh_token},
             }
         )
+        resp = make_response(resp, HTTPStatus.OK)
+        unmarshal_response(
+            FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
+        )
+
         unset_access_cookies(resp)
         unset_refresh_cookies(resp)
         # Изменение email
@@ -258,7 +285,7 @@ def change_user_email():
 
 
 @user_bp.route("/profile/logout", methods=["POST"])  # POST
-@jwt_required(optional=True)
+@jwt_required()
 def logout():
     jti = get_jwt()["jti"]
     # Получаем id пользователя и юзер агент
@@ -279,6 +306,9 @@ def logout():
             "tokens": {"access_token": access_token_cookie},
         }
     )
+    resp = make_response(resp, HTTPStatus.OK)
+    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+
     unset_jwt_cookies(resp)
     return resp, HTTPStatus.OK
 

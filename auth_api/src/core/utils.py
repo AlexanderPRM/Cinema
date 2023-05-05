@@ -1,8 +1,7 @@
 import uuid
 
-from user_agents import parse
-
 from db.models import UserLoginHistory
+from user_agents import parse
 
 
 def is_uuid_valid(val):
@@ -26,5 +25,5 @@ def check_device_type(user_agent: str):
         user_device_type = device_types.BOT
     else:
         user_device_type = device_types.UNKNOWN
- 
+
     return user_device_type

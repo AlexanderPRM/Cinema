@@ -4,6 +4,7 @@ from uuid import UUID
 from core.config import CommonQueryParams
 from fastapi import APIRouter, Depends, HTTPException, Request
 from models.film import Person, PersonList
+from services.base import verify_jwt
 from services.persons import PersonService, get_person_service
 
 router = APIRouter()
@@ -17,9 +18,11 @@ router = APIRouter()
     response_description="Список персон",
 )
 async def list_persons(
+    request: Request,
     person_service: PersonService = Depends(get_person_service),
     commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> list[PersonList]:
+    await verify_jwt(request)
     persons = await person_service.get_data_list(
         page_number=commons.page_number, page_size=commons.page_size
     )
@@ -42,10 +45,12 @@ async def list_persons(
     response_description="Список персон",
 )
 async def search_persons(
+    request: Request,
     query: str = "",
     person_service: PersonService = Depends(get_person_service),
     commons: CommonQueryParams = Depends(CommonQueryParams),
 ) -> list[Person]:
+    await verify_jwt(request)
     persons = await person_service.search_data(query, commons.page_number, commons.page_size)
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
@@ -69,6 +74,7 @@ async def search_persons(
 async def person_details(
     request: Request, person_id: UUID, person_service: PersonService = Depends(get_person_service)
 ) -> Person:
+    await verify_jwt(request)
     person = await person_service.get_data_by_id(url=str(request.url), id=str(person_id))
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
