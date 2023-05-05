@@ -27,3 +27,4 @@ opentelemetry-sdk==1.10.0
 opentelemetry-instrumentation-flask==0.29b1
 opentelemetry-exporter-jaeger==1.10.0 
 flask_wtf==1.1.1
+click==8.1.3
