@@ -45,6 +45,21 @@
 
     pre-commit install
 
+### Для правильной работы сервиса Auth, нужно создать Google приложение
+
+    Необходимо заменить этот файл или убрать расширение .example
+    И внести свои данные из полученного файла при создании приложения
+
+    ├── auth_api
+        ├── src
+            ├── google_client_secret.json.example
+
+    Также в config.env есть настройка GOOGLE_FILE, там
+    вы можете указать свой путь до нужного файла Google.
+
+    Создать Google OAuth Client можно тут:
+    https://console.cloud.google.com/apis/credentials
+
 ### Запустите docker-compose
 
     docker-compose --env-file config.env up --build
@@ -53,17 +68,22 @@
 
 ### Функциональные тесты*
 
-#### Настройте переменные окружения для тестов
+#### Настройте переменные окружения для тестов Films API
 
     Уберите .example у файла config_tests.env.example и измените переменные, если нужно.
+    ├── films_api
+        ├── tests
+            ├── functional
+                ├── config_tests.env.example
 
-    ├── tests
-        ├── functional
-            ├── config_tests.env.example
+#### Команда для запуска функциональных тестов Films API
 
-#### Команда для запуска функциональных тестов
+    docker-compose -f films_api/tests/functional/docker-compose.yml --env-file films_api/tests/functional/config_tests.env up --build
 
-    docker-compose -f tests/functional/docker-compose.yml --env-file tests/functional/config_tests.env up --build
+#### Команда для запуска функциональных тестов Auth API
+
+    docker-compose -f auth_api/tests/functional/docker-compose.yml --env-file config.env up --build
+
 
 ## Полезные команды*
 
