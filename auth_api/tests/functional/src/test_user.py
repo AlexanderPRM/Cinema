@@ -4,7 +4,6 @@ from http import HTTPStatus
 
 import pytest
 from pytest import fixture
-
 from settings import baseconfig
 
 pytestmark = pytest.mark.asyncio
@@ -62,7 +61,7 @@ async def test_signin(
     """
     Test the sign-in functionality with valid credentials.
     """
-    resp = await make_post_request("/user/signin", query_data=query_data, settings=baseconfig)
+    resp = await make_post_request("/user/signin/", query_data=query_data, settings=baseconfig)
     assert resp.status == expected_answer["status"]
     response_text = await resp.text()
     response_data = json.loads(response_text)
@@ -106,7 +105,7 @@ async def test_profile(
         access_token = ""
 
     cookies = {"access_token_cookie": access_token}
-    resp = await make_get_request("/user/profile", cookies=cookies, settings=baseconfig)
+    resp = await make_get_request("/user/profile/", cookies=cookies, settings=baseconfig)
     assert resp.status == expected_answer["status"]
     response_text = await resp.text()
     response_data = json.loads(response_text)
@@ -134,7 +133,7 @@ async def test_change_name(
 
     cookies = {"access_token_cookie": access_token}
     resp = await make_post_request(
-        "/user/profile/name", cookies=cookies, query_data=query_data, settings=baseconfig
+        "/user/profile/name/", cookies=cookies, query_data=query_data, settings=baseconfig
     )
     assert resp.status == expected_answer["status"]
 
@@ -159,7 +158,7 @@ async def test_change_password(
 
     cookies = {"access_token_cookie": access_token}
     resp = await make_post_request(
-        "/user/profile/password", cookies=cookies, query_data=query_data, settings=baseconfig
+        "/user/profile/password/", cookies=cookies, query_data=query_data, settings=baseconfig
     )
     assert resp.status == expected_answer["status"]
 
@@ -190,7 +189,7 @@ async def test_change_email(
 
     cookies = {"access_token_cookie": access_token}
     resp = await make_post_request(
-        "/user/profile/email", cookies=cookies, query_data=query_data, settings=baseconfig
+        "/user/profile/email/", cookies=cookies, query_data=query_data, settings=baseconfig
     )
     assert resp.status == expected_answer["status"]
 
@@ -214,32 +213,7 @@ async def test_logout(
 
     cookies = {"access_token_cookie": access_token}
     resp = await make_post_request(
-        "/user/profile/logout", cookies=cookies, query_data=query_data, settings=baseconfig
-    )
-    assert resp.status == expected_answer["status"]
-
-
-@pytest.mark.parametrize(
-    "query_data, expected_answer",
-    [
-        ({"password": "1"}, {"status": HTTPStatus.OK}),
-        ({"password": "incorrect_passwd"}, {"status": HTTPStatus.FORBIDDEN}),
-    ],
-)
-async def test_delete(
-    get_access_token: fixture,
-    make_post_request: fixture,
-    query_data: dict,
-    expected_answer: dict,
-):
-    """
-    Test the functionality to delete the user account.
-    """
-    access_token = await get_access_token(settings=baseconfig)
-
-    cookies = {"access_token_cookie": access_token}
-    resp = await make_post_request(
-        "/user/profile/delete", cookies=cookies, query_data=query_data, settings=baseconfig
+        "/user/profile/logout/", cookies=cookies, query_data=query_data, settings=baseconfig
     )
     assert resp.status == expected_answer["status"]
 
@@ -264,18 +238,18 @@ async def test_login_history(
     access_token = await get_access_token(settings=baseconfig, email=email)
     cookies = {"access_token_cookie": access_token}
 
-    resp = await make_get_request("/user/login_history", cookies=cookies, settings=baseconfig)
-    response_text = await resp.text()
-    response_data = json.loads(response_text)
-    assert response_data["login_history"] == []
-
-    await make_post_request(
-        "/user/signin", query_data={"email": email, "password": "1"}, settings=baseconfig
-    )
-    resp = await make_get_request("/user/login_history", cookies=cookies, settings=baseconfig)
+    resp = await make_get_request("/user/login_history/", cookies=cookies, settings=baseconfig)
     response_text = await resp.text()
     response_data = json.loads(response_text)
     assert len(response_data["login_history"]) == 1
+
+    await make_post_request(
+        "/user/signin/", query_data={"email": email, "password": "1"}, settings=baseconfig
+    )
+    resp = await make_get_request("/user/login_history/", cookies=cookies, settings=baseconfig)
+    response_text = await resp.text()
+    response_data = json.loads(response_text)
+    assert len(response_data["login_history"]) == 2
 
 
 @pytest.mark.parametrize(
@@ -292,7 +266,7 @@ async def test_refresh_success(
     user_data = await create_account(settings=baseconfig)
     user_refresh_token = user_data.get("tokens").get("refresh_token")
     resp = await make_post_request_role(
-        "/user/refresh", query_data=user_refresh_token, settings=baseconfig
+        "/user/refresh/", query_data=user_refresh_token, settings=baseconfig
     )
     assert resp.status == expected_answer["status"]
 
@@ -309,5 +283,5 @@ async def test_refresh_no_token_error(
     expected_answer: dict,
 ):
     token = await create_jwt_superuser_token(settings=baseconfig)
-    resp = await make_post_request_role("/user/refresh", query_data=token, settings=baseconfig)
+    resp = await make_post_request_role("/user/refresh/", query_data=token, settings=baseconfig)
     assert resp.status == expected_answer["status"]

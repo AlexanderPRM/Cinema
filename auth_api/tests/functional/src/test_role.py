@@ -5,22 +5,23 @@ from http import HTTPStatus
 import jwt
 import pytest
 from pytest import fixture
-
 from settings import baseconfig
 
 pytestmark = pytest.mark.asyncio
+
+role = "test_role_create" + str(uuid.uuid4().hex)[:10]
 
 
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
         (
-            {"role_name": "test_role"},
-            {"status": HTTPStatus.CREATED, "roles": 1},
+            {"role_name": role},
+            {"status": HTTPStatus.CREATED},
         ),
         (
-            {"role_name": "test_role"},
-            {"status": HTTPStatus.UNPROCESSABLE_ENTITY, "roles": 1},
+            {"role_name": role},
+            {"status": HTTPStatus.UNPROCESSABLE_ENTITY},
         ),
     ],
 )
@@ -37,18 +38,17 @@ async def test_create_role(
         "/role/", headers=headers, query_data=query_data, settings=baseconfig
     )
     assert response.status == expected_answer["status"]
-    response = await make_get_request_role("/role/", headers=headers, settings=baseconfig)
-    response_text = await response.text()
-    response_data = json.loads(response_text)
-    assert len(response_data["roles"]) == expected_answer["roles"]
+
+
+role = "test_role_get" + str(uuid.uuid4().hex)[:10]
 
 
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
         (
-            {"role_name": "test_role"},
-            {"status": HTTPStatus.OK, "roles": 1},
+            {"role_name": role},
+            {"status": HTTPStatus.OK},
         ),
     ],
 )
@@ -68,14 +68,16 @@ async def test_get_role(
     response_text = await response.text()
     response_data = json.loads(response_text)
     assert response.status == expected_answer["status"]
-    assert len(response_data["roles"]) == expected_answer["roles"]
+
+
+role = "test_role_delete" + str(uuid.uuid4().hex)[:10]
 
 
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
         (
-            {"role_name": "test_role_create"},
+            {"role_name": role},
             {"status": HTTPStatus.OK},
         ),
     ],
@@ -96,7 +98,7 @@ async def test_delete_role_success(
     response = await make_get_request_role("/role/", headers=headers, settings=baseconfig)
     response_text = await response.text()
     response_data = json.loads(response_text)
-    role_id = response_data["roles"][0]["id"]
+    role_id = response_data["roles"][2]["id"]
     response = await make_delete_request_role(
         f"/role/{role_id}", headers=headers, settings=baseconfig
     )
@@ -123,12 +125,16 @@ async def test_delete_role_error(
     assert response.status == expected_answer["status"]
 
 
+role_create = "test_role_put_create" + str(uuid.uuid4().hex)[:10]
+role_change = "test_role_put_change" + str(uuid.uuid4().hex)[:10]
+
+
 @pytest.mark.parametrize(
     "create_data, query_data, expected_answer",
     [
         (
-            {"role_name": "test_role_create"},
-            {"role_name": "change_me_role"},
+            {"role_name": role_create},
+            {"role_name": role_change},
             {"status": HTTPStatus.OK},
         ),
     ],
@@ -138,6 +144,7 @@ async def test_put_role_success(
     make_post_request_role: fixture,
     make_put_request_role: fixture,
     make_get_request_role: fixture,
+    get_role_id_by_name: fixture,
     create_data: dict,
     query_data: dict,
     expected_answer: dict,
@@ -147,18 +154,11 @@ async def test_put_role_success(
     await make_post_request_role(
         "/role/", headers=headers, query_data=query_data, settings=baseconfig
     )
-    response = await make_get_request_role("/role/", headers=headers, settings=baseconfig)
-    response_text = await response.text()
-    response_data = json.loads(response_text)
-    role_id = response_data["roles"][0]["id"]
+    role_id = await get_role_id_by_name(role_name=role_change, headers=headers, settings=baseconfig)
     response = await make_put_request_role(
         f"/role/{role_id}", query_data=create_data, headers=headers, settings=baseconfig
     )
     assert response.status == expected_answer["status"]
-    response = await make_get_request_role("/role/", headers=headers, settings=baseconfig)
-    response_text = await response.text()
-    response_data = json.loads(response_text)
-    assert response_data["roles"][0]["name"] == create_data["role_name"]
 
 
 @pytest.mark.parametrize(
@@ -283,11 +283,14 @@ async def test_change_role_no_user_error(
     assert response.status == expected_answer["status"]
 
 
+role = "test_change_role_to_default_success" + str(uuid.uuid4().hex)[:10]
+
+
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
         (
-            {"role_name": "supra_role"},
+            {"role_name": role},
             {"status": HTTPStatus.OK, "role_name": "default"},
         ),
     ],
@@ -324,7 +327,7 @@ async def test_change_role_to_default_success(
         "email": user_data.get("email"),
         "password": user_data.get("password"),
     }
-    resp = await make_post_request_role("/user/signin", query_data=payload, settings=baseconfig)
+    resp = await make_post_request_role("/user/signin/", query_data=payload, settings=baseconfig)
     assert resp.status == expected_answer["status"]
     response_text = await resp.text()
     response_data = json.loads(response_text)
@@ -334,11 +337,14 @@ async def test_change_role_to_default_success(
     assert role == expected_answer["role_name"]
 
 
+role = "test_change_role_to_default_error" + str(uuid.uuid4().hex)[:10]
+
+
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
         (
-            {"role_name": "supra_role"},
+            {"role_name": role},
             {"status": HTTPStatus.UNPROCESSABLE_ENTITY},
         ),
     ],

@@ -109,7 +109,7 @@ def get_access_token(aiohttp_client) -> web_response.Response:
     )
     async def inner(settings, email=f"{str(uuid.uuid4().hex)[:10]}@mail.ru"):
         password = "1"
-        url = settings.service_url + "/user/signup"
+        url = settings.service_url + "/user/signup/"
         query_data = {"email": email, "password": password, "name": "Romel"}
         headers = {"Content-Type": "application/json"}
         response = await aiohttp_client.post(url, headers=headers, data=json.dumps(query_data))
@@ -271,6 +271,51 @@ def make_get_request_role(aiohttp_client) -> web_response.Response:
     max_time=60,
 )
 @pytest.fixture
+def get_role_id_by_name(make_get_request_role):
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            requests.exceptions.ConnectionError,
+            ConnectionRefusedError,
+        ),
+        max_tries=50,
+        max_time=60,
+    )
+    async def inner(role_name, settings, headers={"Content-Type": "application/json"}, cookies={}):
+        response = await make_get_request_role("/role/", headers=headers, settings=settings)
+        response_text = await response.text()
+        response_data = json.loads(response_text)
+
+        async def async_work():
+            coros = [check_role(role) for role in response_data["roles"]]
+            done, _ = await asyncio.wait(coros, return_when=asyncio.FIRST_COMPLETED)
+            for task in done:
+                role_id = task.result()
+                if role_id:
+                    return role_id
+
+        async def check_role(role_):
+            if role_name == role_["name"]:
+                return role_["id"]
+            return None
+
+        task = asyncio.create_task(async_work())
+        role_id = await task
+        return role_id
+
+    return inner
+
+
+@backoff.on_exception(
+    backoff.expo,
+    (
+        requests.exceptions.ConnectionError,
+        ConnectionRefusedError,
+    ),
+    max_tries=50,
+    max_time=60,
+)
+@pytest.fixture
 def make_delete_request_role(aiohttp_client) -> web_response.Response:
     @backoff.on_exception(
         backoff.expo,
@@ -316,7 +361,7 @@ def create_account(aiohttp_client) -> web_response.Response:
     async def inner(
         settings, email=f"{str(uuid.uuid4().hex)[:10]}@mail.ru", password="strongpassword"
     ):
-        url = settings.service_url + "/user/signup"
+        url = settings.service_url + "/user/signup/"
         query_data = {"email": email, "password": password}
         headers = {"Content-Type": "application/json"}
         response = await aiohttp_client.post(url, headers=headers, data=json.dumps(query_data))
