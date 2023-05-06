@@ -1,4 +1,5 @@
 import bcrypt
+import click
 from app import app
 from core import config
 from db.models import ServiceUser, User
@@ -46,6 +47,6 @@ def create_super_user():
         config.config.REFRESH_TOKEN_EXPIRES,
         refresh_token,
     )
-    print("\nNow creating superuser:", email)
-    print(f"Your access_token: \n{access_token}")
-    print(f"\nYour refresh_token: \n{refresh_token}")
+    click.echo(f"\nNow creating superuser: {email}")
+    click.echo(f"Your access_token: \n{access_token}")
+    click.echo(f"\nYour refresh_token: \n{refresh_token}")
