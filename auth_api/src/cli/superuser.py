@@ -1,4 +1,6 @@
 import bcrypt
+import click
+
 from pydantic import EmailError, validate_email
 from flask_jwt_extended import create_access_token, create_refresh_token
 
@@ -47,6 +49,6 @@ def create_super_user():
         config.config.REFRESH_TOKEN_EXPIRES,
         refresh_token,
     )
-    print("\nNow creating superuser:", email)
-    print(f"Your access_token: \n{access_token}")
-    print(f"\nYour refresh_token: \n{refresh_token}")
+    click.echo(f"\nNow creating superuser: {email}")
+    click.echo(f"Your access_token: \n{access_token}")
+    click.echo(f"\nYour refresh_token: \n{refresh_token}")

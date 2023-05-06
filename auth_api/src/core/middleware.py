@@ -11,7 +11,7 @@ from core.config import config
 
 MAX_TOKENS = config.MAX_TOKENS
 SEC_FOR_TOKEN = config.SEC_FOR_TOKEN
-
+RATE_LIMIT_ENABLED = config.RATE_LIMIT_ENABLED
 
 try:
     redis_conn = redis.Redis(host=config.AUTH_REDIS_HOST, port=config.AUTH_REDIS_PORT, db=1)
@@ -23,6 +23,9 @@ except redis.RedisError as err:
 
 
 def check_rate_limit():
+    if not RATE_LIMIT_ENABLED:
+        return
+
     if redis_conn is None:
         # если Redis недоступен, отключаем rate limiting
         # можно записать в логи
