@@ -1,8 +1,9 @@
 from http import HTTPStatus
 from uuid import UUID
 
-from core.config import CommonQueryParams
 from fastapi import APIRouter, Depends, HTTPException, Request
+
+from core.config import CommonQueryParams
 from models.film import Person, PersonList
 from services.base import verify_jwt
 from services.persons import PersonService, get_person_service

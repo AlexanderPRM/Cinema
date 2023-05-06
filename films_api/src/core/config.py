@@ -1,9 +1,10 @@
 import os
 from logging import config as logging_config
 
-from core.logger import LOGGING
-from fastapi import Query
 from pydantic import BaseSettings
+from fastapi import Query
+
+from core.logger import LOGGING
 
 # Применяем настройки логирования
 logging_config.dictConfig(LOGGING)

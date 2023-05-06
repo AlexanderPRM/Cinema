@@ -1,19 +1,20 @@
 import logging
 
 import uvicorn
-from api import api_blueprint_v1
-from api.v1.user_handlers import jwt
+from flasgger import Swagger
+from flask import Flask, request
+from flask_migrate import Migrate
+from opentelemetry import trace
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
 from core.config import config
 from core.logger import LOGGING
 from core.middleware import check_rate_limit
 from core.tracer_conf import configure_tracer
 from db.postgres import db
 from db.redis import redis_db
-from flasgger import Swagger
-from flask import Flask, request
-from flask_migrate import Migrate
-from opentelemetry import trace
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from api import api_blueprint_v1
+from api.v1.user_handlers import jwt
 
 configure_tracer()
 
