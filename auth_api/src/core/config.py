@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRES: int
     MAX_TOKENS: int
     SEC_FOR_TOKEN: float
+    RATE_LIMIT_ENABLED: bool
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     class Config:
