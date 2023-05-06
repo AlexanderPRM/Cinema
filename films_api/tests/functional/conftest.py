@@ -28,8 +28,8 @@ def event_loop():
         ConnectionRefusedError,
         elasticsearch.exceptions.ConnectionError,
     ),
-    max_tries=1,
-    max_time=6,
+    max_tries=5,
+    max_time=30,
 )
 @pytest.fixture
 def make_get_request(aiohttp_client) -> web_response.Response:
