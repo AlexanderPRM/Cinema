@@ -28,8 +28,8 @@ def event_loop():
         ConnectionRefusedError,
         elasticsearch.exceptions.ConnectionError,
     ),
-    max_tries=50,
-    max_time=60,
+    max_tries=1,
+    max_time=6,
 )
 @pytest.fixture
 def make_get_request(aiohttp_client) -> web_response.Response:
@@ -40,8 +40,8 @@ def make_get_request(aiohttp_client) -> web_response.Response:
             ConnectionRefusedError,
             elasticsearch.exceptions.ConnectionError,
         ),
-        max_tries=50,
-        max_time=60,
+        max_tries=1,
+        max_time=6,
     )
     async def inner(url, settings, query_data={}):
         url = settings.service_url + url
@@ -61,8 +61,8 @@ def make_get_request_id(aiohttp_client):
             ConnectionRefusedError,
             elasticsearch.exceptions.ConnectionError,
         ),
-        max_tries=50,
-        max_time=60,
+        max_tries=1,
+        max_time=6,
     )
     async def inner(url, query_data, settings):
         url = settings.service_url + url + query_data
