@@ -1,10 +1,9 @@
 import os
 from logging import config as logging_config
 
-from pydantic import BaseSettings
-from fastapi import Query
-
 from core.logger import LOGGING
+from fastapi import Query
+from pydantic import BaseSettings
 
 # Применяем настройки логирования
 logging_config.dictConfig(LOGGING)
@@ -31,6 +30,7 @@ class Settings(BaseSettings):
     JWT_SECRET: str
     AUTH_REDIS_HOST: str
     AUTH_REDIS_PORT: str
+    JWT_REQUIER: bool
 
     class Config:
         case_sensitive = True
