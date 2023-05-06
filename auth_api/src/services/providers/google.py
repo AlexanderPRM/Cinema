@@ -4,11 +4,13 @@ from db.models import SocialAccount, User
 from db.postgres import db
 from google_auth_oauthlib import flow
 from googleapiclient import discovery
+from services.providers.base import OAuthSignIn
 from services.user_service import UserService
 
 
-class GoogleProvider:
+class GoogleProvider(OAuthSignIn):
     def __init__(self) -> None:
+        super(GoogleProvider, self).__init__("google")
         self.flow = flow.Flow.from_client_secrets_file(
             google_config.GOOGLE_FILE,
             scopes=[

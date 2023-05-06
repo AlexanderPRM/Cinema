@@ -2,7 +2,8 @@ from gevent import monkey
 
 monkey.patch_all()
 
-from app import app, init_db, init_jwt, init_redis  # noqa: 402
+from app import app  # noqa: 402
+from app import init_db, init_jwt, init_redis  # noqa: 402
 
 
 def wsgi_run():

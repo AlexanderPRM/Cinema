@@ -2,12 +2,14 @@ from core.config import yandex_config
 from core.utils import check_social_account, generate_random_string, normalize_email
 from db.models import SocialAccount, User
 from db.postgres import db
+from services.providers.base import OAuthSignIn
 from services.user_service import UserService
 from yandexid import YandexID, YandexOAuth
 
 
-class YandexProvider:
+class YandexProvider(OAuthSignIn):
     def __init__(self) -> None:
+        super(YandexProvider, self).__init__("yandex")
         self.yandex_oauth = YandexOAuth(
             client_id=yandex_config.YANDEX_CLIENT_ID,
             client_secret=yandex_config.YANDEX_CLIENT_SECRET,

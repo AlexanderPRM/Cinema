@@ -33,6 +33,7 @@ from jwt import decode as jwt_decode
 from openapi_core import Spec, unmarshal_response
 from openapi_core.contrib.flask.requests import FlaskOpenAPIRequest
 from openapi_core.contrib.flask.responses import FlaskOpenAPIResponse
+from services.providers.base import OAuthSignIn
 from services.providers.google import google_provider
 from services.providers.yandex import yandex_provider
 from services.user_service import UserService
@@ -76,12 +77,16 @@ def signin():
     return resp, HTTPStatus.OK
 
 
-@user_bp.route("/signin/google/", methods=["POST"])
-def google_signin():
-    return redirect(google_provider.get_auth_url())
+@user_bp.route("/signin/<provider>/", methods=["POST"])
+def provider_signin(provider):
+    provider = OAuthSignIn.get_provider(provider)
+    if provider:
+        return redirect(provider.get_auth_url())
+    resp = jsonify({"message": "Entered provider was not found"})
+    return resp, HTTPStatus.NOT_FOUND
 
 
-@user_bp.route("signin/google/callback/", methods=["GET"])
+@user_bp.route("/signin/google/callback/", methods=["GET"])
 def google_signin_callback():
     if "code" not in request.args:
         return abort(Response(json.dumps({"message": "[code] - Parameter was not found"})), 422)
@@ -93,11 +98,6 @@ def google_signin_callback():
     resp = jsonify({"message": "Succesfully login"})
     set_tokens(resp, user, useragent, access_token, refresh_token)
     return resp
-
-
-@user_bp.route("/signin/yandex/", methods=["POST"])
-def yandex_signin():
-    return redirect(yandex_provider.get_auth_url())
 
 
 @user_bp.route("/signin/yandex/callback/", methods=["GET"])
