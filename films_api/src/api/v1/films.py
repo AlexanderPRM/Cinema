@@ -2,8 +2,9 @@ from http import HTTPStatus
 from typing import Dict, List, Optional
 from uuid import UUID
 
-from core.config import CommonQueryParams
 from fastapi import APIRouter, Depends, HTTPException, Request
+
+from core.config import CommonQueryParams
 from models.film import Film, FilmDetail
 from services.film import FilmService, get_film_service
 

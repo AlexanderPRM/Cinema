@@ -1,10 +1,11 @@
 from abc import abstractmethod
 from typing import Any
 
-from core.config import config
 from fastapi import HTTPException
 from jose import jwt
 from redis.asyncio import Redis
+
+from core.config import config
 
 
 class BaseService:

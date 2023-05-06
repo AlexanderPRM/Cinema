@@ -3,6 +3,7 @@ from typing import Dict, List, Optional
 from uuid import UUID
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
+
 from storage.base import BaseStorage
 
 

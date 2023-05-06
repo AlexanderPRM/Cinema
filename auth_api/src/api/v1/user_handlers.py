@@ -1,20 +1,7 @@
+import json
 from http import HTTPStatus
 
-import flask
-from core.config import config
-from core.utils import set_tokens
-from db.redis import redis_db
-from flask import (
-    Blueprint,
-    Response,
-    abort,
-    json,
-    jsonify,
-    make_response,
-    redirect,
-    request,
-    url_for,
-)
+from flask import Blueprint, Response, abort, jsonify, make_response, redirect, request, url_for
 from flask_jwt_extended import (
     JWTManager,
     create_access_token,
@@ -33,6 +20,10 @@ from jwt import decode as jwt_decode
 from openapi_core import Spec, unmarshal_response
 from openapi_core.contrib.flask.requests import FlaskOpenAPIRequest
 from openapi_core.contrib.flask.responses import FlaskOpenAPIResponse
+
+from core.config import config
+from core.utils import set_tokens
+from db.redis import redis_db
 from services.providers.google import google_provider
 from services.providers.yandex import yandex_provider
 from services.user_service import UserService
@@ -70,7 +61,7 @@ def signin():
     resp = jsonify({"tokens": {"access_token": access_token, "refresh_token": refresh_token}})
     # провеяем валидность ответа
     resp = make_response(resp, HTTPStatus.OK)
-    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+    unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
 
     set_tokens(resp, user, useragent, access_token, refresh_token)
     return resp, HTTPStatus.OK
@@ -134,7 +125,7 @@ def signup():
         {"id": user.id, "tokens": {"access_token": access_token, "refresh_token": refresh_token}}
     )
     resp = make_response(resp, HTTPStatus.CREATED)
-    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+    unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
 
     set_tokens(resp, user, useragent, access_token, refresh_token)
     return resp
@@ -164,7 +155,7 @@ def login_history():
     ]
     resp = jsonify({"login_history": login_history_data})
     resp = make_response(resp, HTTPStatus.OK)
-    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+    unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
     return resp
 
 
@@ -209,7 +200,7 @@ def refresh():
         }
     )
     resp = make_response(resp, HTTPStatus.OK)
-    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+    unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
 
     unset_refresh_cookies(resp)
     set_tokens(resp, user, user_agent, access_token, refresh_token)
@@ -226,7 +217,7 @@ def personal_info():
     current_user = get_jwt_identity()
     user_info = service.get_profile_info(current_user)
     resp = {"name": user_info.name, "email": current_user, "role": role}
-    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+    unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
     return resp, HTTPStatus.OK
 
 
@@ -276,7 +267,7 @@ def change_user_email():
         )
         resp = make_response(resp, HTTPStatus.OK)
         unmarshal_response(
-            FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
+            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
         )
 
         unset_access_cookies(resp)
@@ -313,7 +304,7 @@ def logout():
         }
     )
     resp = make_response(resp, HTTPStatus.OK)
-    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+    unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
 
     unset_jwt_cookies(resp)
     return resp, HTTPStatus.OK

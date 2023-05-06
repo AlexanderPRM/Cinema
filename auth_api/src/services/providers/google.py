@@ -1,9 +1,10 @@
+from google_auth_oauthlib import flow
+from googleapiclient import discovery
+
 from core.config import google_config
 from core.utils import check_social_account, generate_random_string, normalize_email
 from db.models import SocialAccount, User
 from db.postgres import db
-from google_auth_oauthlib import flow
-from googleapiclient import discovery
 from services.user_service import UserService
 
 

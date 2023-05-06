@@ -1,14 +1,15 @@
+import json
 from http import HTTPStatus
 
-import flask
+from flask import Blueprint, Response, abort, jsonify, make_response, request
+from openapi_core import Spec, unmarshal_response
+from openapi_core.contrib.flask.requests import FlaskOpenAPIRequest
+from openapi_core.contrib.flask.responses import FlaskOpenAPIResponse
+
 from core.permissions import superuser_required
 from core.utils import is_uuid_valid
 from db.models import User, UserRole
 from db.postgres import db
-from flask import Blueprint, Response, abort, json, jsonify, make_response, request
-from openapi_core import Spec, unmarshal_response
-from openapi_core.contrib.flask.requests import FlaskOpenAPIRequest
-from openapi_core.contrib.flask.responses import FlaskOpenAPIResponse
 from services.exception_service import HttpExceptions
 from services.role_service import RoleService
 
@@ -30,7 +31,7 @@ def get_roles():
     resp = jsonify({"roles": roles})
     # провеяем валидность ответа
     resp = make_response(resp, HTTPStatus.OK)
-    unmarshal_response(FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec)
+    unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
     return resp
 
 
@@ -59,7 +60,7 @@ def delete_role(id):
         resp = HttpExceptions().not_exists("Role", id)
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
         unmarshal_response(
-            FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
+            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
         )
         return resp
 
@@ -80,7 +81,7 @@ def update_role(id):
         resp = HttpExceptions().not_exists("Role", id)
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
         unmarshal_response(
-            FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
+            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
         )
         return resp
 
@@ -102,7 +103,7 @@ def change_role(id):
         resp = HttpExceptions().not_exists("Role", role_name)
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
         unmarshal_response(
-            FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
+            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
         )
         return resp
     user = db.session.query(User).filter_by(id=id).first()
@@ -110,7 +111,7 @@ def change_role(id):
         resp = HttpExceptions().not_exists("User", id)
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
         unmarshal_response(
-            FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
+            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
         )
         return resp
     RoleService().change_user_role(role=role, user=user)
@@ -125,7 +126,7 @@ def change_role_to_default(id):
         resp = HttpExceptions().not_valid_uuid()
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
         unmarshal_response(
-            FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
+            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
         )
         return resp
     user = db.session.query(User).filter_by(id=id).first()
@@ -133,7 +134,7 @@ def change_role_to_default(id):
         resp = HttpExceptions().not_exists("User", id)
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
         unmarshal_response(
-            FlaskOpenAPIRequest(flask.request), FlaskOpenAPIResponse(resp), spec=spec
+            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
         )
         return resp
     RoleService().change_user_role_to_default(user=user)
