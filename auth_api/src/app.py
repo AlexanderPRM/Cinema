@@ -16,11 +16,13 @@ from db.redis import redis_db
 from api import api_blueprint_v1
 from api.v1.user_handlers import jwt
 
-configure_tracer()
 
 app = Flask(__name__)
 migrate = Migrate(app, db)
-FlaskInstrumentor().instrument_app(app)
+
+if config.TRACER:
+    configure_tracer()
+    FlaskInstrumentor().instrument_app(app)
 
 app.register_blueprint(api_blueprint_v1)
 
