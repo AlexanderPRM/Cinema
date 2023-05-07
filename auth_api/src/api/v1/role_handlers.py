@@ -59,9 +59,7 @@ def delete_role(id):
     if not role:
         resp = HttpExceptions().not_exists("Role", id)
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
-        unmarshal_response(
-            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
-        )
+        unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
         return resp
 
     db.session.delete(role)
@@ -80,9 +78,7 @@ def update_role(id):
     if not role:
         resp = HttpExceptions().not_exists("Role", id)
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
-        unmarshal_response(
-            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
-        )
+        unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
         return resp
 
     role.name = request.json["role_name"]
@@ -102,17 +98,13 @@ def change_role(id):
     if not role:
         resp = HttpExceptions().not_exists("Role", role_name)
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
-        unmarshal_response(
-            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
-        )
+        unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
         return resp
     user = db.session.query(User).filter_by(id=id).first()
     if not user:
         resp = HttpExceptions().not_exists("User", id)
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
-        unmarshal_response(
-            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
-        )
+        unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
         return resp
     RoleService().change_user_role(role=role, user=user)
     resp = jsonify({"message": f"{user.email}'s role updated to {role.name} successfully"})
@@ -125,17 +117,13 @@ def change_role_to_default(id):
     if not is_uuid_valid(id):
         resp = HttpExceptions().not_valid_uuid()
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
-        unmarshal_response(
-            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
-        )
+        unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
         return resp
     user = db.session.query(User).filter_by(id=id).first()
     if not user:
         resp = HttpExceptions().not_exists("User", id)
         resp = make_response(resp, HTTPStatus.UNPROCESSABLE_ENTITY)
-        unmarshal_response(
-            FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec
-        )
+        unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
         return resp
     RoleService().change_user_role_to_default(user=user)
     resp = jsonify({"message": f"{user.email}'s role updated to default successfully"})

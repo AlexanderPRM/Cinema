@@ -115,9 +115,6 @@ def signup():
     email, password, role, user = service.signup(
         email=email, password=password, name=name, useragent=useragent
     )
-    email, password, role, user = service.signup(
-        email=email, password=password, name=name, useragent=useragent
-    )
     access_token = create_access_token(identity=email, additional_claims={"role": role.name})
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify(
@@ -131,7 +128,7 @@ def signup():
 
 
 @user_bp.route("/login_history/", methods=["GET"])
-@jwt_required()
+@jwt_required(locations=["headers", "cookies"])
 def login_history():
     page_number = request.args.get("page_number", default=1, type=int)
     page_size = request.args.get("page_size", default=10, type=int)
@@ -215,7 +212,7 @@ def personal_info():
     role = jwt_data["role"]
     current_user = get_jwt_identity()
     user_info = service.get_profile_info(current_user)
-    resp = {"name": user_info.name, "email": current_user, "role": role}
+    resp = jsonify({"name": user_info.name, "email": current_user, "role": role})
     unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
     return resp, HTTPStatus.OK
 
@@ -279,7 +276,7 @@ def change_user_email():
 
 
 @user_bp.route("/profile/logout/", methods=["POST"])  # POST
-@jwt_required(optional=True)
+@jwt_required(locations=["headers", "cookies"])
 def logout():
     jti = get_jwt()["jti"]
     # Получаем id пользователя и юзер агент
