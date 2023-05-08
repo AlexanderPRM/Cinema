@@ -1,9 +1,8 @@
 import os
 from logging import config as logging_config
 
-from pydantic import BaseSettings
-
 from core import logger
+from pydantic import BaseSettings
 
 logging_config.dictConfig(logger.LOGGING)
 
@@ -36,6 +35,7 @@ class Settings(BaseSettings):
     AUTH_POSTGRES_PORT: str
     AUTH_POSTGRES_DB: str
     JWT_SECRET: str
+    TRACER: str
     ACCESS_TOKEN_EXPIRES: int
     REFRESH_TOKEN_EXPIRES: int
     MAX_TOKENS: int
