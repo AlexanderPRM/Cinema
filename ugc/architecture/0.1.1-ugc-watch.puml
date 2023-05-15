@@ -12,8 +12,10 @@ alt #LightBlue Просмотр разрешен
     Service -> Kafka: Запись события
     Kafka --> Service: Записано
     Service -> WebClient: Запрос удовлетворен
+    activate Redis
     Service -> Redis: Запись данных
     Redis --> Service: Записано
+    deactivate Redis
 else #Pink Пользователь не имеет доступ к фильму
     Service -> WebClient: Запрос отклонен
 end
@@ -36,7 +38,9 @@ activate ClickHouse
 ETL -> ClickHouse: Запись в ClickHouse
 ClickHouse --> ETL: Успешно
 deactivate ClickHouse
+activate Redis
 Service -> Redis: Перезапись последних данных
 Redis --> Service: Записано
+deactivate Redis
 deactivate ETL
 @enduml
