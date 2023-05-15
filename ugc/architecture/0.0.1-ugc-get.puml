@@ -1,0 +1,17 @@
+@startuml ugc-watch-film
+== Старт просмотра ==
+autonumber
+activate WebClient
+WebClient -> Service: GET watch/<UUID:film_id>
+note over Service: Проверка JWT токенов
+alt #LightBlue Успешно
+    activate Service
+    database Redis
+    Service -> Redis: Получить данные пользователя для фильма
+    Redis -> Service: Вернувшиеся данные
+    Service -> WebClient: Успешно
+else #Pink Ошибка
+    Service -> WebClient:  JWT отсутствует или не валиден.
+end
+activate Redis
+@enduml

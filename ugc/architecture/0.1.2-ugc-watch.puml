@@ -5,20 +5,20 @@ activate WebClient
 WebClient -> Service: POST watch/<UUID:film_id>
 activate Service
 database Redis
-database Kafka
+note over Service: Проверка JWT токенов
 alt #LightBlue Просмотр разрешен
-    database Kafka
-    activate Kafka
-    Service -> Kafka: Запись события
-    Kafka --> Service: Записано
-    Service -> WebClient: Запрос удовлетворен
-    activate Redis
-    Service -> Redis: Запись данных
-    Redis --> Service: Записано
-    deactivate Redis
-else #Pink Пользователь не имеет доступ к фильму
-    Service -> WebClient: Запрос отклонен
-end
+        database Kafka
+        activate Kafka
+        Service -> Kafka: Запись события
+        Kafka --> Service: Записано
+        Service -> WebClient: Запрос удовлетворен
+        activate Redis
+        Service -> Redis: Запись данных
+        Redis --> Service: Записано
+        deactivate Redis
+    else #Pink Пользователь не имеет доступ к фильму
+        Service -> WebClient: Запрос отклонен
+    end
 deactivate Kafka
 deactivate Service
 
