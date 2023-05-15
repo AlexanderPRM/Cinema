@@ -2,15 +2,18 @@
 == Старт просмотра ==
 autonumber
 activate WebClient
-database Kafka
 WebClient -> Service: POST watch/<UUID:film_id>
 activate Service
+database Redis
+database Kafka
 alt #LightBlue Просмотр разрешен
     database Kafka
-    Service -> WebClient: Запрос удовлетворен
     activate Kafka
     Service -> Kafka: Запись события
     Kafka --> Service: Записано
+    Service -> WebClient: Запрос удовлетворен
+    Service -> Redis: Запись данных
+    Redis --> Service: Записано
 else #Pink Пользователь не имеет доступ к фильму
     Service -> WebClient: Запрос отклонен
 end
@@ -22,20 +25,18 @@ WebClient -> Service: Новые данные о просмотре
 activate Service
 activate Kafka
 Service -> Kafka: Запись события
-database Redis
-alt Пользователь перестал смотреть фильм
-    activate ETL
-    database ClickHouse
-    ETL -> Kafka: Запрос данных
-    Kafka -> ETL: Отдача данных
-    deactivate Kafka
-    ETL -> ETL: Трансформация данных
-    activate ClickHouse
-    ETL -> ClickHouse: Запись в ClickHouse
-    ClickHouse --> ETL: Успешно
-    deactivate ClickHouse
-    ETL --> Service: ETL процесс окончен
-    Service -> Redis: Запись последнего времени
-    deactivate ETL
-end
+Kafka --> Service: Записано
+activate ETL
+database ClickHouse
+ETL -> Kafka: Запрос данных
+Kafka -> ETL: Отдача данных
+deactivate Kafka
+ETL -> ETL: Трансформация данных
+activate ClickHouse
+ETL -> ClickHouse: Запись в ClickHouse
+ClickHouse --> ETL: Успешно
+deactivate ClickHouse
+Service -> Redis: Перезапись последних данных
+Redis --> Service: Записано
+deactivate ETL
 @enduml
