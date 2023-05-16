@@ -1,0 +1,24 @@
+load data in ClickHouse (50): 0.007190704345703125;
+Shard 1: 21 || Shard 2: 29
+load data in ClickHouse (1000): 0.006969928741455078;
+Shard 1: 508 || Shard 2: 492
+load data in ClickHouse (10000): 0.04494333267211914;
+Shard 1: 5044 || Shard 2: 4956
+load data in ClickHouse (100000): 0.5122618675231934;
+Shard 1: 49986 || Shard 2: 50014
+load data in ClickHouse (1000000): 4.504546642303467;
+Shard 1: 500100 || Shard 2: 499900
+load data in ClickHouse (10000000): 47.654757022857666;
+Shard 1: 5000196 || Shard 2: 4999804
+load data in ClickHouse (50): 0.0031392574310302734;
+Shard 1: 5000242 || Shard 2: 4999858
+load data in ClickHouse (1000): 0.007566690444946289;
+Shard 1: 5000242 || Shard 2: 4999858
+load data in ClickHouse (10000): 0.0495600700378418;
+Shard 1: 5000242 || Shard 2: 4999858
+load data in ClickHouse (100000): 0.4733545780181885;
+Shard 1: 5000266 || Shard 2: 4999884
+load data in ClickHouse (1000000): 4.878518581390381;
+Shard 1: 5055703 || Shard 2: 5055447
+load data in ClickHouse (50): 13.73046064376831;
+Shard 1: 5000196 || Shard 2: 4999830
