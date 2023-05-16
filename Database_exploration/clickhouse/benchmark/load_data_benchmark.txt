@@ -20,5 +20,5 @@ load data in ClickHouse (100000): 0.4733545780181885;
 Shard 1: 5000266 || Shard 2: 4999884
 load data in ClickHouse (1000000): 4.878518581390381;
 Shard 1: 5055703 || Shard 2: 5055447
-load data in ClickHouse (50): 13.73046064376831;
-Shard 1: 5000196 || Shard 2: 4999830
+load data in ClickHouse (10000000): 52.23155665397644;
+Shard 1: 9999392 || Shard 2: 10000658
