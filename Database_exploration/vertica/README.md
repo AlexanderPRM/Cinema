@@ -1,5 +1,5 @@
 # Исследование Vertica
-результаты представлены на графике chart.jpg и в vertica.log
+результаты представлены на графике chart.jpg и в vertica.txt в директории benchmark
 ## Запуск docker-compose
 
 ```sh
