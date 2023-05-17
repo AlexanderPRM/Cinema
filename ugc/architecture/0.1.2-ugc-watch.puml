@@ -11,10 +11,10 @@ alt #LightBlue Просмотр разрешен
         activate Kafka
         Service -> Kafka: Запись события
         Kafka --> Service: Записано
-        Service -> WebClient: Запрос удовлетворен
         activate Redis
         Service -> Redis: Запись данных
         Redis --> Service: Записано
+        Service -> WebClient: Запрос удовлетворен
         deactivate Redis
     else #Pink Пользователь не имеет доступ к фильму
         Service -> WebClient: Запрос отклонен
