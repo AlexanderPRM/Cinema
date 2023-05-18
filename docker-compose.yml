@@ -149,6 +149,12 @@ services:
     restart: always
     depends_on:
       - zookeeper
+      
+  ugc_redis:
+    image: redis:7.0.9
+    restart: always
+    env_file:
+      - config.env
     
 volumes:
   postgres_data:
