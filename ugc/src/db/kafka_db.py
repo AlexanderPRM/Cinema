@@ -49,12 +49,10 @@ class Kafka(BaseStorage):
 
     def save_entries(self, messages: list[dict]):
         for message in messages:
-            val = message["value"]
-            key = message["key"]
             self.save_entry(
                 topic=message["topic"],
-                value=bytes(val, encoding="utf-8"),
-                key=bytes(key, encoding="utf-8"),
+                value=message["value"],
+                key=message["key"],
             )
 
     def save_entry(self, topic, value, key):
