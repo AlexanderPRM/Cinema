@@ -128,6 +128,27 @@ services:
     ports:
       - "6831:6831/udp"
       - "16686:16686"
+
+  ugc:
+    build: ugc
+    ports:
+      - 8001:8000
+    env_file:
+      - config.env
+    restart: always
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    restart: always
+  
+  kafka:
+    image: wurstmeister/kafka
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=${KAFKA_ADVERTISED_HOST_NAME}
+      - KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT}
+    restart: always
+    depends_on:
+      - zookeeper
     
 volumes:
   postgres_data:

@@ -10,4 +10,13 @@ class UGCSettings(BaseSettings):
         env_file = "config.env"
 
 
+class KafkaSettings(BaseSettings):
+    BOOTSTRAP_SERVERS: list
+
+    class Config:
+        case_sensitive = True
+        env_file = "config.env"
+
+
 config = UGCSettings()
+kafka_config = KafkaSettings()

@@ -1,11 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class Storage(ABC):
-    @abstractmethod
-    def get_entry():
-        pass
-
+class BaseStorage(ABC):
     @abstractmethod
     def get_entries():
         pass
