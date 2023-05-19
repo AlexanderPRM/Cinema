@@ -1,7 +1,8 @@
-from load_data_benchmark import load_data_benchmark
-from time import sleep
-from remove_data import delete_from_all_shards
 import asyncio
+from time import sleep
+
+from load_data_benchmark import load_data_benchmark
+from remove_data import delete_from_all_shards
 
 w_file = "films_progress.csv"
 

@@ -1,5 +1,5 @@
-import uuid
 import csv
+import uuid
 
 
 def gen_data():

@@ -12,4 +12,5 @@ class VerticaConfig(BaseSettings):
     class Config:
         env_file = "config.env"
 
+
 vertica_config = VerticaConfig()
