@@ -1,5 +1,6 @@
-from clickhouse_driver import Client
 from time import sleep
+
+from clickhouse_driver import Client
 from settings import baseconfig
 
 client = Client(host=baseconfig.client_host_1)

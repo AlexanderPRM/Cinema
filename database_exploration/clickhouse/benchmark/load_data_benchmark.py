@@ -1,9 +1,7 @@
-import time
-from clickhouse_driver import Client
 import csv
-from clickhouse_driver.errors import Error
-from time import sleep
-import asyncio
+import time
+
+from clickhouse_driver import Client
 from settings import baseconfig
 
 client = Client(host=baseconfig.client_host_1)
@@ -54,5 +52,6 @@ async def load_data_benchmark(count, w_file):
 
     with open("load_data_benchmark.txt", "a") as file:
         file.write(
-            f"load data in ClickHouse ({count}): {str(elapsed_time)};\nShard 1: {shard_1} || Shard 2: {shard_2}\n"
+            f"load data in ClickHouse ({count}):"
+            + f"{str(elapsed_time)};\nShard 1: {shard_1} || Shard 2: {shard_2}\n"
         )
