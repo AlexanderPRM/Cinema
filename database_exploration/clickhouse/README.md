@@ -9,7 +9,7 @@ docker-compose --env-file config.env up --build
 ## Создание датасета films_progress.csv
 
 ```sh
-docker exec -it clickhouse_python_1 python generate_data.py
+docker exec -it clickhouse_python_1 python ./src/generate_data.py
 ```
 
 ## Создание БД и таблиц ClickHouse
