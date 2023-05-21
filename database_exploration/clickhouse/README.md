@@ -1,5 +1,5 @@
 # Исследование ClickHouse
-результаты представлены на графике chart_1.jpg и в load_data_benchmark.txt
+результаты представлены в /benchmark/chart.jpg и в /benchmark/output/load_benchmark_results.xlsx
 ## Запуск docker-compose
 
 ```sh
