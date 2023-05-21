@@ -20,5 +20,15 @@ class KafkaSettings(BaseSettings):
         env_file = "config.env"
 
 
+class ClickHouseSettings(BaseSettings):
+    CLICKHOUSE_HOST: str
+    CLICKHOUSE_PORT: int
+
+    class Config:
+        case_sensitive = True
+        env_file = "config.env"
+
+
 config = UGCSettings()
 kafka_config = KafkaSettings()
+ch_config = ClickHouseSettings()

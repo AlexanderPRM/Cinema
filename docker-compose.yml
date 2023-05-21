@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 services:
   db:
     image: postgres:13.0-alpine
@@ -149,13 +149,46 @@ services:
     restart: always
     depends_on:
       - zookeeper
-      
+
   ugc_redis:
     image: redis:7.0.9
     restart: always
     env_file:
       - config.env
-    
+
+  zookeeper_ch:
+    image: zookeeper:3.5
+    container_name: zookeeper_ch
+    hostname: zookeeper_ch
+
+  clickhouse-node1:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node1
+    hostname: clickhouse-node1
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ./clickhouse_config/node1:/etc/clickhouse-server
+    depends_on:
+      - zookeeper_ch
+
+  clickhouse-node3:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node3
+    hostname: clickhouse-node3
+    volumes:
+      - ./clickhouse_config/node3:/etc/clickhouse-server
+    depends_on:
+      - zookeeper_ch
+
+
 volumes:
+  clickhouse_config:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './clickhouse_config'
   postgres_data:
   elasticdata:
