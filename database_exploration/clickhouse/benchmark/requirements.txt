@@ -1,3 +1,0 @@
-clickhouse-driver 
-asyncio
-pydantic==1.10.5
