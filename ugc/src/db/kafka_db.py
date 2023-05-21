@@ -56,12 +56,11 @@ class Kafka(BaseStorage):
             )
 
     def save_entry(self, topic, value, key):
-        logging.info(
-            self.producer.send(
-                topic=topic, value=bytes(value, encoding="utf-8"), key=bytes(key, encoding="utf-8")
-            )
+        self.producer.send(
+            topic=topic, value=bytes(value, encoding="utf-8"), key=bytes(key, encoding="utf-8")
         )
         self.producer.flush()
+        return "OK"
 
 
 def init_kafka():
