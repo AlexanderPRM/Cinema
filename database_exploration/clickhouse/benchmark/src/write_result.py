@@ -15,7 +15,7 @@ class Excel_Writer:
         self.sheet["A1"] = "row_count"
         self.sheet["B1"] = "batch_length"
         self.sheet["C1"] = "insert_time"
-        self.sheet["D1"] = "rows per sec"
+        self.sheet["D1"] = "speed"
         self.sheet["E1"] = "shard 1"
         self.sheet["F1"] = "shard 2"
         self.sheet["R1"] = "батчи по 10.000"
