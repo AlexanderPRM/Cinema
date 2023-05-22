@@ -8,8 +8,10 @@ from openpyxl.styles import Alignment, Border, Color, NamedStyle, PatternFill, S
 
 class Excel_Writer:
     def __init__(self):
+        self.filename = "./output/benchmark_results.xlsx"
         self.workbook = openpyxl.Workbook()
         self.sheet = self.workbook.active
+        self.sheet.title = "WRITE"
         self.sheet["A1"] = "row_count"
         self.sheet["B1"] = "batch_length"
         self.sheet["C1"] = "insert_time"
@@ -42,12 +44,48 @@ class Excel_Writer:
         self.sheet["Q1"].fill = fill
         fill = PatternFill(patternType="solid", fgColor=Color(rgb="00FF0000"))
         self.sheet["T1"].fill = fill
-        self.workbook.save("./output/load_benchmark_results.xlsx")
 
-    def write(self, row_count, batch_length, insert_time, speed, shard_1, shard_2):
+        self.sheet_1 = self.workbook.create_sheet(title="REED")
+        self.sheet_1["A1"] = "rows_count"
+        self.sheet_1["B1"] = "speed"
+        self.sheet_1["C1"] = "stress"
+        self.sheet_1["D1"] = "all data DB cnt"
+        self.sheet_1.column_dimensions["A"].adjust_column_width = True
+        self.sheet_1.column_dimensions["B"].adjust_column_width = True
+        self.sheet_1.column_dimensions["C"].adjust_column_width = True
+        self.sheet_1.column_dimensions["D"].adjust_column_width = True
+        self.sheet_1["A1"].style = style
+        self.sheet_1["B1"].style = style
+        self.sheet_1["C1"].style = style
+        self.sheet_1["D1"].style = style
+
+        self.workbook.save(self.filename)
+
+    def write_load_result(self, row_count, batch_length, insert_time, speed, shard_1, shard_2):
         self.sheet.append([row_count, batch_length, insert_time, speed, shard_1, shard_2])
         self.update_charts()
-        self.workbook.save("./output/load_benchmark_results.xlsx")
+        self.workbook.save(self.filename)
+
+    def write_reed_result(self, count, speed, stress, all_data):
+        self.sheet_1.append([count, speed, stress, all_data])
+        self.update_charts_sheet_2()
+        self.workbook.save(self.filename)
+
+    def update_charts_sheet_2(self):
+        chart = BarChart()
+        data = Reference(
+            self.sheet_1, min_col=2, max_col=2, min_row=1, max_row=self.sheet_1.max_row
+        )
+        chart.add_data(data, titles_from_data=True)
+        cats = Reference(
+            self.sheet_1, min_col=1, min_row=2, max_col=1, max_row=self.sheet_1.max_row
+        )
+        chart.set_categories(cats)
+        chart.title = "Скорость чтения"
+        chart.x_axis.title = "кол-во записей"
+        chart.y_axis.title = "скорость записи/сек"
+        chart.grouping = "standard"
+        self.sheet_1.add_chart(chart, "H1")
 
     def update_charts(self):
         chart = BarChart()

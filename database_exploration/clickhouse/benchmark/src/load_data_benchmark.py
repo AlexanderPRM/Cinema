@@ -53,4 +53,21 @@ async def load_data_benchmark(count, w_file, batch):
     print(f"Shard 1: {shard_1} || Shard 2: {shard_2}")
 
     speed = round(count / elapsed_time)
-    writer.write(count, batch, elapsed_time, speed, shard_1, shard_2)
+    writer.write_load_result(count, batch, elapsed_time, speed, shard_1, shard_2)
+
+
+async def reed_data_benchmark(count, stress):
+    start_ts = time.time()
+    data = client.execute(f"SELECT * FROM default.test WHERE timestamp < {count};")
+    while True:
+        if len(data) == count:
+            break
+        print(len(data))
+    end_ts = time.time()
+    elapsed_time = end_ts - start_ts
+    speed = round(count / elapsed_time)
+    print("Reed time elapsed: {} seconds | Speed: {}".format(elapsed_time, speed))
+    all_data = client.execute(f"SELECT COUNT(*) as count FROM default.test;")
+    all_data = all_data[0][0]
+    writer.write_reed_result(count, speed, stress, all_data)
+    time.sleep(2)
