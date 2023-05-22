@@ -19,10 +19,9 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
-
-if __name__ == "__main__":
-    kafka = Kafka(kafka_config.BOOTSTRAP_SERVERS)
-    init_kafka()
+#вынести в отдельный контейнер
+def run_etl():
+    kafka = init_kafka()
     storage = State(
         redis.Redis(host=config.UGC_ETL_REDIS_HOST, port=config.UGC_ETL_REDIS_PORT, db=0)
     )
@@ -35,4 +34,7 @@ if __name__ == "__main__":
             print(entry_to_save)
             #запись в клик
 
+
+if __name__ == "__main__":
+    run_etl()
     uvicorn.run("main:app", port=8001, log_level=logging.DEBUG)
