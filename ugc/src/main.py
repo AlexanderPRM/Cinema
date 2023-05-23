@@ -4,10 +4,12 @@ import redis
 import uvicorn
 from api.v1 import film_view
 from db import redis_db
-from core.config import config, kafka_config
-from db.kafka_db import Kafka, init_kafka
+from core.config import config
+from db.kafka_db import init_kafka
+from db.clickhouse_db import init_clickhouse
 from etl.extract import Extract
 from etl.transform import Transform
+from etl.load import Loader
 from etl.utils.state import State
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -25,17 +27,17 @@ app = FastAPI(
 #вынести в отдельный контейнер
 def run_etl():
     kafka = init_kafka()
+    clickhouse = init_clickhouse()
     storage = State(
         redis.Redis(host=config.UGC_ETL_REDIS_HOST, port=config.UGC_ETL_REDIS_PORT, db=0)
     )
     exctractor = Extract(kafka, 100, storage)
     exctractor.gen_data()
     transformer = Transform()
+    loader = Loader(clickhouse)
     for entries in exctractor.extract():
         entries_to_save = transformer.transform(entries)
-        for entry_to_save in entries_to_save:
-            print(entry_to_save)
-            #запись в клик
+        loader.load_data_to_ch(entries_to_save)
 
 
 @app.on_event("startup")
