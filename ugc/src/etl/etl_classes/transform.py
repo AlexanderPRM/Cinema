@@ -22,6 +22,3 @@ class Transform:
                 )
             )
         return data_to_save
-
-
-

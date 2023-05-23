@@ -27,6 +27,7 @@ class KafkaSettings(BaseSettings):
 class ClickHouseSettings(BaseSettings):
     CLICKHOUSE_HOST: str
     CLICKHOUSE_PORT: int
+    CLICKHOUSE_NODE_1: str
     CLICKHOUSE_TABLE_NAME: str
 
     class Config:

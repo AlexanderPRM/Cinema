@@ -5,8 +5,9 @@ from db.base import BaseStorage
 
 
 class ClickHouse(BaseStorage):
-    def __init__(self, host, port) -> None:
+    def __init__(self, host, port, node_1) -> None:
         self.client = Client(host=host, port=port)
+        self.client_node_1 = Client(host=node_1)
 
     def get_client(self):
         return self.client
@@ -22,6 +23,7 @@ class ClickHouse(BaseStorage):
         """
         client = self.get_client()
         client.execute(query)
+        self.client_node_1.execute(query)
 
     def get_entries(self, table_name: str = ch_config.CLICKHOUSE_TABLE_NAME, limit: int = 1000):
         query = "SELECT * FROM {} LIMIT {}".format(table_name, limit)
@@ -40,6 +42,10 @@ class ClickHouse(BaseStorage):
 
 
 def init_clickhouse():
-    clickhouse = ClickHouse(host=ch_config.CLICKHOUSE_HOST, port=ch_config.CLICKHOUSE_PORT)
+    clickhouse = ClickHouse(
+        host=ch_config.CLICKHOUSE_HOST,
+        port=ch_config.CLICKHOUSE_PORT,
+        node_1=ch_config.CLICKHOUSE_NODE_1
+    )
     clickhouse.create_tables()
     return clickhouse

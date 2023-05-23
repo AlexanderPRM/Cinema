@@ -1,16 +1,9 @@
 import logging
 
-import redis
 import uvicorn
 from api.v1 import film_view
 from db import redis_db
 from core.config import config
-from db.kafka_db import init_kafka
-from db.clickhouse_db import init_clickhouse
-from etl.extract import Extract
-from etl.transform import Transform
-from etl.load import Loader
-from etl.utils.state import State
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from redis import Redis
@@ -23,21 +16,6 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
     default_response_class=ORJSONResponse,
 )
-
-#вынести в отдельный контейнер
-def run_etl():
-    kafka = init_kafka()
-    clickhouse = init_clickhouse()
-    storage = State(
-        redis.Redis(host=config.UGC_ETL_REDIS_HOST, port=config.UGC_ETL_REDIS_PORT, db=0)
-    )
-    exctractor = Extract(kafka, 100, storage)
-    exctractor.gen_data()
-    transformer = Transform()
-    loader = Loader(clickhouse)
-    for entries in exctractor.extract():
-        entries_to_save = transformer.transform(entries)
-        loader.load_data_to_ch(entries_to_save)
 
 
 @app.on_event("startup")
@@ -53,5 +31,4 @@ app.include_router(
 
 
 if __name__ == "__main__":
-    run_etl()
     uvicorn.run("main:app", port=8001, log_level=logging.DEBUG)

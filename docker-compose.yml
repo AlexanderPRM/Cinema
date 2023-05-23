@@ -137,6 +137,12 @@ services:
       - config.env
     restart: always
 
+  ugc_etl:
+    build: ugc/src
+    env_file:
+      - config.env
+    restart: always
+
   zookeeper:
     image: wurstmeister/zookeeper
     restart: always
@@ -149,6 +155,12 @@ services:
     restart: always
     depends_on:
       - zookeeper
+
+  ugc_redis:
+    image: redis:7.0.9
+    restart: always
+    env_file:
+      - config.env
 
   zookeeper_ch:
     image: zookeeper:3.5
