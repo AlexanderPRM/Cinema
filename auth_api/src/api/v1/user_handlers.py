@@ -56,7 +56,9 @@ def signin():
     useragent = request.headers.get("User-Agent")
     password = request.json.get("password")
     email, role, user = service.signin(email=email, password=password, useragent=useragent)
-    access_token = create_access_token(identity=email, additional_claims={"role": role.name})
+    access_token = create_access_token(
+        identity=email, additional_claims={"role": role.name, "user_id": user.id}
+    )
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify({"tokens": {"access_token": access_token, "refresh_token": refresh_token}})
     # провеяем валидность ответа
@@ -83,7 +85,9 @@ def google_signin_callback():
     useragent = request.headers.get("User-Agent")
     user_data = google_provider.signin(request.url, useragent)
     user, email, role = user_data[0], user_data[1], user_data[2]
-    access_token = create_access_token(identity=email, additional_claims={"role": role.name})
+    access_token = create_access_token(
+        identity=email, additional_claims={"role": role.name, "user_id": user.id}
+    )
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify({"message": "Succesfully login"})
     set_tokens(resp, user, useragent, access_token, refresh_token)
@@ -98,7 +102,9 @@ def yandex_signin_callback():
     useragent = request.headers.get("User-Agent")
     user_data = yandex_provider.signin(code, useragent)
     user, email, role = user_data[0], user_data[1], user_data[2]
-    access_token = create_access_token(identity=email, additional_claims={"role": role.name})
+    access_token = create_access_token(
+        identity=email, additional_claims={"role": role.name, "user_id": user.id}
+    )
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify({"message": "Successful login"})
     set_tokens(resp, user, useragent, access_token, refresh_token)
@@ -115,7 +121,9 @@ def signup():
     email, password, role, user = service.signup(
         email=email, password=password, name=name, useragent=useragent
     )
-    access_token = create_access_token(identity=email, additional_claims={"role": role.name})
+    access_token = create_access_token(
+        identity=email, additional_claims={"role": role.name, "user_id": user.id}
+    )
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify(
         {"id": user.id, "tokens": {"access_token": access_token, "refresh_token": refresh_token}}
@@ -186,7 +194,9 @@ def refresh():
     role = jwt_data.get("role")
 
     # Создаем новые токены
-    access_token = create_access_token(identity=current_user, additional_claims={"role": role})
+    access_token = create_access_token(
+        identity=current_user, additional_claims={"role": role, "user_id": user.id}
+    )
     refresh_token = create_refresh_token(identity=current_user)
     resp = jsonify(
         {
@@ -252,7 +262,9 @@ def change_user_email():
     current_user = get_jwt_identity()
     if service.check_password(current_user, password):
         # создание токенов
-        access_token = create_access_token(identity=new_email, additional_claims={"role": role})
+        access_token = create_access_token(
+            identity=new_email, additional_claims={"role": role, "user_id": current_user.id}
+        )
         refresh_token = create_refresh_token(identity=new_email)
         # удаление access и refresh токенов
         resp = jsonify(

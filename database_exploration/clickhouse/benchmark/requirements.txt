@@ -1,3 +1,4 @@
-clickhouse-driver 
+clickhouse-driver
 asyncio
 pydantic==1.10.5
+openpyxl

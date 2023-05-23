@@ -12,7 +12,7 @@ class Extract:
         # только на время разработки
         self.state.set_state("last_updated", "2022-05-18 08:35:33.140691")  # это удалить
         # -----
-        data = self.db.get_entries("users_films", 1000)
+        data = self.db.get_entries(topic = "users_films", limit = 1000)
         data_list = []
         for entry in data:
             key = entry["key"].decode("utf-8")
@@ -46,4 +46,4 @@ class Extract:
 
             dct = {"key": key, "value": value, "topic": "users_films"}
             lst.append(dct)
-            self.db.save_entry("users_films", value, key)
+            self.db.save_entry(topic = "users_films", value = value, key = key)

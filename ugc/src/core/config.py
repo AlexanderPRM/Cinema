@@ -4,6 +4,10 @@ from pydantic import BaseSettings
 class UGCSettings(BaseSettings):
     UGC_PROJECT_NAME: str
     UGC_PROJECT_VERSION: str
+    JWT_SECRET: str
+    UGC_REDIS_HOST: str
+    UGC_REDIS_PORT: str
+    FILM_WATCH_TIME_EXPIRED: str
     UGC_ETL_REDIS_HOST: str
     UGC_ETL_REDIS_PORT: int
 
