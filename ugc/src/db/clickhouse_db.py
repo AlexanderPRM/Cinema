@@ -7,6 +7,7 @@ from db.base import BaseStorage
 class ClickHouse(BaseStorage):
     def __init__(self, host, port) -> None:
         self.client = Client(host=host, port=port)
+
     def get_client(self):
         return self.client
 
@@ -22,18 +23,18 @@ class ClickHouse(BaseStorage):
         client = self.get_client()
         client.execute(query)
 
-    def get_entries(self, table_name=ch_config.CLICKHOUSE_TABLE_NAME, limit=1000):
+    def get_entries(self, table_name: str = ch_config.CLICKHOUSE_TABLE_NAME, limit: int = 1000):
         query = "SELECT * FROM {} LIMIT {}".format(table_name, limit)
         client = self.get_client()
         result = client.execute(query)
         return result
 
-    def save_entries(self, query, batch_values):
-        for batch in batch_values:
-            self.save_entry(query, batch)
-
-    def save_entry(self, query, batch):
+    def save_entries(self, query: str, batch_values: list):
         client = self.get_client()
+        for batch in batch_values:
+            self.save_entry(query, batch, client)
+
+    def save_entry(self, query, batch, client: Client):
         query_full = query + ",".join(batch)
         client.execute(query_full)
 

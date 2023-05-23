@@ -8,7 +8,7 @@ class Loader:
     def __init__(self, clickhouse):
         self.clickhouse = clickhouse
 
-    def load_data_to_ch(self, data, ch_database="default", table_name=ch_config.CLICKHOUSE_TABLE_NAME, batch_size=1000):
+    def load_data_to_ch(self, data: list, ch_database="default", table_name=ch_config.CLICKHOUSE_TABLE_NAME, batch_size=1000):
         columns = ("user_id", "movie_id", "updated_at", "timestamp")
         query = "INSERT INTO {}.{} ({}) VALUES".format(ch_database, table_name, ', '.join(columns))
         values_list = list()
