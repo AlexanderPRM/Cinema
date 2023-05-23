@@ -4,6 +4,8 @@ from pydantic import BaseSettings
 class UGCSettings(BaseSettings):
     UGC_PROJECT_NAME: str
     UGC_PROJECT_VERSION: str
+    UGC_ETL_REDIS_HOST: str
+    UGC_ETL_REDIS_PORT: int
 
     class Config:
         case_sensitive = True
