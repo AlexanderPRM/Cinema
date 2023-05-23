@@ -8,6 +8,8 @@ class UGCSettings(BaseSettings):
     UGC_REDIS_HOST: str
     UGC_REDIS_PORT: str
     FILM_WATCH_TIME_EXPIRED: str
+    UGC_ETL_REDIS_HOST: str
+    UGC_ETL_REDIS_PORT: int
 
     class Config:
         case_sensitive = True

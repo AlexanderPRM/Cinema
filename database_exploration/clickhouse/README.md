@@ -1,5 +1,5 @@
 # Исследование ClickHouse
-результаты представлены на графике chart_1.jpg и в load_data_benchmark.txt
+результаты представлены в /benchmark/chart.jpg и в /benchmark/output/load_benchmark_results.xlsx
 ## Запуск docker-compose
 
 ```sh
@@ -9,7 +9,7 @@ docker-compose --env-file config.env up --build
 ## Создание датасета films_progress.csv
 
 ```sh
-docker exec -it clickhouse_python_1 python generate_data.py
+docker exec -it clickhouse_python_1 python ./src/generate_data.py
 ```
 
 ## Создание БД и таблиц ClickHouse
