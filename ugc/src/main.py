@@ -2,6 +2,8 @@ import logging
 
 import redis
 import uvicorn
+from api.v1 import film_view
+from db import redis_db
 from core.config import config, kafka_config
 from db.kafka_db import Kafka, init_kafka
 from etl.extract import Extract
@@ -9,6 +11,7 @@ from etl.transform import Transform
 from etl.utils.state import State
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+from redis import Redis
 
 app = FastAPI(
     title=config.UGC_PROJECT_NAME,
@@ -33,6 +36,18 @@ def run_etl():
         for entry_to_save in entries_to_save:
             print(entry_to_save)
             #запись в клик
+
+
+@app.on_event("startup")
+async def startup():
+    redis_db.redis = Redis(host=config.UGC_REDIS_HOST, port=config.UGC_REDIS_PORT)
+
+
+app.include_router(
+    film_view.router,
+    prefix="/api/v1/films/watch",
+    tags=["Отслеживание просмотра фильмов пользователями"],
+)
 
 
 if __name__ == "__main__":
