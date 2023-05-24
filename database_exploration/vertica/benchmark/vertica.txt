@@ -4,54 +4,63 @@
 100,000 loaded in 0.07 seconds
 1,000,000 loaded in 0.36 seconds
 10,000,000 loaded in 19.38 seconds
+
 50 loaded in 0.02 seconds
 1,000 loaded in 0.01 seconds
 10,000 loaded in 0.04 seconds
 100,000 loaded in 0.08 seconds
 1,000,000 loaded in 0.58 seconds
 10,000,000 loaded in 19.22 seconds
+
 50 loaded in 0.04 seconds
 1,000 loaded in 0.01 seconds
 10,000 loaded in 0.02 seconds
 100,000 loaded in 0.06 seconds
 1,000,000 loaded in 0.32 seconds
 10,000,000 loaded in 20.42 seconds
+
 50 loaded in 0.01 seconds
 1,000 loaded in 0.01 seconds
 10,000 loaded in 0.02 seconds
 100,000 loaded in 0.04 seconds
 1,000,000 loaded in 0.29 seconds
 10,000,000 loaded in 17.66 seconds
+
 50 loaded in 0.01 seconds
 1,000 loaded in 0.01 seconds
 10,000 loaded in 0.02 seconds
 100,000 loaded in 0.06 seconds
 1,000,000 loaded in 0.28 seconds
 10,000,000 loaded in 12.09 seconds
+
 50 loaded in 0.07 seconds
 1,000 loaded in 0.02 seconds
 10,000 loaded in 0.02 seconds
 100,000 loaded in 0.07 seconds
 1,000,000 loaded in 0.39 seconds
 10,000,000 loaded in 13.61 seconds
+
 50 loaded in 0.01 seconds
 1,000 loaded in 0.01 seconds
 10,000 loaded in 0.02 seconds
 100,000 loaded in 0.05 seconds
 1,000,000 loaded in 0.28 seconds
 10,000,000 loaded in 12.88 seconds
+
 50 loaded in 0.01 seconds
 1,000 loaded in 0.01 seconds
 10,000 loaded in 0.03 seconds
 100,000 loaded in 0.05 seconds
 1,000,000 loaded in 0.29 seconds
 10,000,000 loaded in 12.88 seconds
+
 50 loaded in 0.01 seconds
 1,000 loaded in 0.01 seconds
 10,000 loaded in 0.02 seconds
 100,000 loaded in 0.05 seconds
 1,000,000 loaded in 0.35 seconds
 10,000,000 loaded in 18.80 seconds
+
 50 loaded in 0.01 seconds
 1,000 loaded in 0.02 seconds
 10,000 loaded in 0.02 seconds

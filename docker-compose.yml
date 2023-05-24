@@ -119,6 +119,7 @@ services:
       - auth_db
       - auth_redis
       - auth_api
+    restart: always
     ports:
       - 80:80
       
@@ -129,15 +130,7 @@ services:
       - "6831:6831/udp"
       - "16686:16686"
 
-  ugc:
-    build: ugc
-    ports:
-      - 8001:8000
-    env_file:
-      - config.env
-    restart: always
-
-  zookeeper:
+  zookeeper-kafka:
     image: wurstmeister/zookeeper
     restart: always
   
@@ -148,7 +141,25 @@ services:
       - KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT}
     restart: always
     depends_on:
-      - zookeeper
+      - zookeeper-kafka
+  
+  ugc-redis:
+    image: redis:7.0.9
+    restart: always
+    env_file:
+      - config.env
+
+  ugc:
+    build: ugc
+    ports:
+      - 8001:8000
+    env_file:
+      - config.env
+    restart: always
+    depends_on:
+      - kafka
+      - zookeeper-kafka
+      - ugc-redis
 
   zookeeper_ch:
     image: zookeeper:3.5
@@ -185,3 +196,5 @@ volumes:
       device: './clickhouse_config'
   postgres_data:
   elasticdata:
+  zookeeper_1_data:
+  broker_1_data:
