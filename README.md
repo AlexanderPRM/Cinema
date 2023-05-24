@@ -1,127 +1,41 @@
-# Проектная работа 4 спринта: Async API
+# Онлайн-кинотеатр
 
 [![linters](https://github.com/AlexanderPRM/Async_API/actions/workflows/linters.yml/badge.svg)](https://github.com/AlexanderPRM/Async_API/actions/workflows/linters.yml)
 
-## Документация Auth API
+[**Инструкция по запуску здесь**](https://github.com/AlexanderPRM/Cinema/blob/main/start_instruction.md)
 
-    https://app.swaggerhub.com/apis/AlexanderPRM/auth_api/1.0.0#/
+Данные проект **Cinema** разбит на микросервисы, которые в совокупности
+образуют полноценный онлайн-кинотеатр.
 
-    Также в папке auth_api лежит openapi.yaml
+В проект входят такие сервисы как:
 
-## Инструкция по настройке проекта*
+- Авторизация пользователей (auth_api)
+- API для работы с фильмами, жанрами и персонами (films_api)
+- Три ETL процесса которые отдельно перегружают персон, жанры и фильмы
+из PostgreSQL в ElasticSearch для работы films_api с постоянно обновляющимися данными.
+- Сервис который отслеживает просмотр фильма пользователем и позволяет
+ему продолжить с места остановки (ugc)
 
-### Создайте виртуальное окружение
+**films_api** и **auth_api** обрабатывают запросы через Nginx.
 
-#### (Linux\MacOS)
+## Технологии используемые в проекте
 
-    python3 -m venv venv
-    source venv/bin/activate
+Фреймворки:
 
-### Установите зависимости
+- FastAPI, Flask
 
-##### (Для работы с API)
+Авторизация:
 
-    pip install -r requirements.txt
+- JWT, OAuth2.0
 
-##### (Для работы с ETL)
+Хранилища:
 
-    pip install -r etl_genres/requirements.txt
-    pip install -r etl_persons/requirements.txt
-    pip install -r etl_movies/requirements.txt
+- SQLite, PostgreSQL, ElasticSearch, Redis, Kafka, ClickHouse
 
-##### (Инструменты разработки)
+Контейнеренизация:
 
-    pip install -r requirements_dev.txt
+- Docker, Docker-Compose
 
-### Настройте переменные окружения
+Веб-сервера\Прокси:
 
-#### Достаточно убрать расширение .example у файла config.env.example.
-
-#### Если нужно, укажите свои значения
-
-    mv config.env.example config.env
-
-### Если вы собираетесь работать с Git, установите pre-commit hock
-
-    pre-commit install
-
-### Для правильной работы сервиса Auth, нужно создать Google приложение
-
-    Необходимо заменить этот файл или убрать расширение .example
-    И внести свои данные из полученного файла при создании приложения
-
-    ├── auth_api
-        ├── src
-            ├── google_client_secret.json.example
-
-    Также в config.env есть настройка GOOGLE_FILE, там
-    вы можете указать свой путь до нужного файла Google.
-
-    Создать Google OAuth Client можно тут:
-    https://console.cloud.google.com/apis/credentials
-
-### Запустите docker-compose
-
-    docker-compose --env-file config.env up --build
-
-## Тесты
-
-### Функциональные тесты*
-
-#### Настройте переменные окружения для тестов Films API
-
-    Уберите .example у файла config_tests.env.example и измените переменные, если нужно.
-    ├── films_api
-        ├── tests
-            ├── functional
-                ├── config_tests.env.example
-
-#### Команда для запуска функциональных тестов Films API
-
-    docker-compose -f films_api/tests/functional/docker-compose.yml --env-file films_api/tests/functional/config_tests.env up --build
-
-#### Команда для запуска функциональных тестов Auth API
-
-    docker-compose -f auth_api/tests/functional/docker-compose.yml --env-file config.env up --build
-
-
-## Полезные команды*
-
-### Не через докер контейнер. (Если прокинуты порты у БД)
-
-<br>
-
-**Создание суперюзера**
-
-    flask --app auth_api/src/wsgi_run:run create-superuser
-
-**Миграции**
-
-    # Создание
-
-    flask --app auth_api/src/wsgi_run:run db migrate -m "<comment>" --directory auth_api/migrations
-
-    # Применение
-
-    flask --app auth_api/src/wsgi_run:gunicorn_run db upgrade --directory auth_api/migrations
-
-<br>
-
-### Через докер контейнер
-
-    docker-compose exec auth_api
-
-**Создание суперюзера**
-
-    flask --app wsgi_run:run create-superuser
-
-**Миграции**
-
-    # Применение
-
-    flask --app wsgi_run:run db upgrade
-
-    # Создание
-
-    При разработке, миграции создавать не через контейнер.
-
+- Gunicorn, Uvicorn, Nginx
