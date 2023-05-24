@@ -7,6 +7,8 @@
 ![top-language](https://img.shields.io/github/languages/top/AlexanderPRM/Cinema)
 
 ![watchers](https://img.shields.io/github/watchers/AlexanderPRM/Cinema?style=social)
+![forks](https://img.shields.io/github/forks/AlexanderPRM/Cinema?style=social)
+![start](https://img.shields.io/github/stars/AlexanderPRM/Cinema?style=social)
 
 ---
 
