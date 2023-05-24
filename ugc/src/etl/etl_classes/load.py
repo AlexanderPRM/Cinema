@@ -13,7 +13,7 @@ class Loader:
         query = "INSERT INTO {}.{} ({}) VALUES".format(ch_database, table_name, ', '.join(columns))
         values_list = list()
         for item in data:
-            if type(item) != Entry:
+            if not isinstance(item, Entry):
                 logging.info(
                     "ClickHouse saving method get invalidated data: type={}, data={}".format(
                         type(item), item
