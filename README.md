@@ -8,7 +8,10 @@
 
 ![watchers](https://img.shields.io/github/watchers/AlexanderPRM/Cinema?style=social)
 
+---
+
 [**Инструкция по запуску здесь**](https://github.com/AlexanderPRM/Cinema/blob/main/start_instruction.md)
+
 
 Данные проект **Cinema** разбит на микросервисы, которые в совокупности
 образуют полноценный онлайн-кинотеатр.
