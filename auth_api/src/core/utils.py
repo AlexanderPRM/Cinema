@@ -2,13 +2,12 @@ import string
 import uuid
 from secrets import choice as secrets_choice
 
-from flask_jwt_extended import set_access_cookies, set_refresh_cookies
-from user_agents import parse
-
 from core.config import config
 from db.models import SocialAccount, UserLoginHistory
 from db.postgres import db
 from db.redis import redis_db
+from flask_jwt_extended import set_access_cookies, set_refresh_cookies
+from user_agents import parse
 
 
 def is_uuid_valid(val):

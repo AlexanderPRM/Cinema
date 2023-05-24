@@ -1,14 +1,13 @@
 from functools import lru_cache
 from typing import Dict, List, Optional
 
-from elasticsearch import AsyncElasticsearch
-from redis.asyncio import Redis
-from fastapi import Depends
-
 from cache.base import BaseCache
 from cache.redis_cache import RedisCache
 from db.elastic import get_elastic
 from db.redis_db import get_redis
+from elasticsearch import AsyncElasticsearch
+from fastapi import Depends
+from redis.asyncio import Redis
 from storage.genres import GenreBaseStorage, GenreElasticStorage
 
 

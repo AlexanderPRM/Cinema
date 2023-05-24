@@ -12,7 +12,7 @@ from redis import Redis
 router = APIRouter()
 
 
-@router.post{film_id}", status_code=201)
+@router.post("/{film_id}", status_code=201)
 def film_watch(film_id: str, access_token_cookie: Optional[str] = Cookie()):
     try:
         payload = jwt.decode(access_token_cookie, config.JWT_SECRET, algorithms=["HS256"])
@@ -42,7 +42,6 @@ def get_timestamp(film_id: str, access_token_cookie: Optional[str] = Cookie()):
     key = str(payload["user_id"] + film_id)
 
     redis: Redis = get_redis()
-    redis= get_redis()
 
     timestamp = redis.get(key).decode("utf-8")
     return {"message": "OK", "timestamp": timestamp}

@@ -7,7 +7,6 @@ import pytest
 import pytest_asyncio
 import requests
 from elasticsearch import AsyncElasticsearch
-
 from settings import baseconfig
 
 
