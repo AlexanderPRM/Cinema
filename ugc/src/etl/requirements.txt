@@ -1,0 +1,5 @@
+clickhouse-driver==0.2.6
+kafka-python==2.0.2
+pydantic[dotenv]==1.10.5
+redis==4.4.2
+uvloop==0.17.0; sys_platform != "win32" and implementation_name == "cpython"

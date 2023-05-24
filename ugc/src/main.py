@@ -2,8 +2,8 @@ import logging
 
 import uvicorn
 from api.v1 import film_view
-from core.config import config
 from db import redis_db
+from core.config import config
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from redis import Redis
@@ -31,4 +31,4 @@ app.include_router(
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", port=8010, log_level=logging.DEBUG)
+    uvicorn.run("main:app", port=8001, log_level=logging.DEBUG)

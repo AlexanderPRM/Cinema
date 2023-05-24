@@ -2,10 +2,12 @@ import csv
 import time
 
 from clickhouse_driver import Client
-from settings import baseconfig
+from core.settings import baseconfig
+from src.write_result import Excel_Writer
 
 client = Client(host=baseconfig.client_host_1)
 client_2 = Client(host=baseconfig.client_host_2)
+writer = Excel_Writer()
 
 
 async def write_to_ch(data):
@@ -22,20 +24,18 @@ async def write_to_ch(data):
     client.execute(query_full)
 
 
-async def load_data_benchmark(count, w_file):
+async def load_data_benchmark(count, w_file, batch):
     with open(w_file, mode="r") as file:
         reader = csv.DictReader(file)
         lst = []
         cnt = 0
-        n = 1000000
         start_ts = time.time()
         for row in reader:
             cnt += 1
             if cnt > count:
                 break
             lst.append(row)
-            if len(lst) == n:
-                print(f"{cnt} writing: " + str(len(lst)))
+            if len(lst) == batch:
                 await write_to_ch(data=lst)
                 lst = []
         if lst != []:
@@ -44,14 +44,30 @@ async def load_data_benchmark(count, w_file):
 
     end_ts = time.time()
     elapsed_time = end_ts - start_ts
+    time.sleep(4)
     shard_1 = client.execute("SELECT COUNT(*) as count FROM shard.test;")
     shard_2 = client_2.execute("SELECT COUNT(*) as count FROM shard.test;")
     shard_1 = shard_1[0][0]
     shard_2 = shard_2[0][0]
     print("Time elapsed: {} seconds".format(elapsed_time))
+    print(f"Shard 1: {shard_1} || Shard 2: {shard_2}")
 
-    with open("load_data_benchmark.txt", "a") as file:
-        file.write(
-            f"load data in ClickHouse ({count}):"
-            + f"{str(elapsed_time)};\nShard 1: {shard_1} || Shard 2: {shard_2}\n"
-        )
+    speed = round(count / elapsed_time)
+    writer.write_load_result(count, batch, elapsed_time, speed, shard_1, shard_2)
+
+
+async def reed_data_benchmark(count, stress):
+    start_ts = time.time()
+    data = client.execute(f"SELECT * FROM default.test WHERE timestamp < {count};")
+    while True:
+        if len(data) == count:
+            break
+        print(len(data))
+    end_ts = time.time()
+    elapsed_time = end_ts - start_ts
+    speed = round(count / elapsed_time)
+    print("Reed time elapsed: {} seconds | Speed: {}".format(elapsed_time, speed))
+    all_data = client.execute(f"SELECT COUNT(*) as count FROM default.test;")
+    all_data = all_data[0][0]
+    writer.write_reed_result(count, speed, stress, all_data)
+    time.sleep(2)
