@@ -1,6 +1,12 @@
 # Онлайн-кинотеатр
 
 [![linters](https://github.com/AlexanderPRM/Async_API/actions/workflows/linters.yml/badge.svg)](https://github.com/AlexanderPRM/Async_API/actions/workflows/linters.yml)
+![closed_issues](https://img.shields.io/github/issues-closed/AlexanderPRM/Cinema)
+![commits/month](https://img.shields.io/github/commit-activity/m/AlexanderPRM/Cinema)
+![repo-size](https://img.shields.io/github/repo-size/AlexanderPRM/Cinema)
+![top-language](https://img.shields.io/github/languages/top/AlexanderPRM/Cinema)
+
+![watchers](https://img.shields.io/github/watchers/AlexanderPRM/Cinema?style=social)
 
 [**Инструкция по запуску здесь**](https://github.com/AlexanderPRM/Cinema/blob/main/start_instruction.md)
 
