@@ -65,7 +65,7 @@ services:
       - db
 
   etl_movies:
-    build: etl_movies
+    build: films_api/etl/etl_movies
     restart: always
     env_file:
       - config.env
@@ -75,7 +75,7 @@ services:
       - transfer
 
   etl_persons:
-    build: etl_persons
+    build: films_api/etl/etl_persons
     restart: always
     env_file:
       - config.env
@@ -85,7 +85,7 @@ services:
       - transfer
 
   etl_genres:
-    build: etl_genres
+    build: films_api/etl/etl_genres
     restart: always
     env_file:
       - config.env
