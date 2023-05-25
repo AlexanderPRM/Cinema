@@ -1,9 +1,11 @@
 import logging
 
-from core.config import kafka_config
-from db.base import BaseStorage
+import backoff
 from kafka import KafkaAdminClient, KafkaConsumer, KafkaProducer
 from kafka.admin import NewTopic
+
+from core.config import kafka_config
+from db.base import BaseStorage
 
 
 class Kafka(BaseStorage):
@@ -12,6 +14,7 @@ class Kafka(BaseStorage):
         self.admin = KafkaAdminClient(bootstrap_servers=servers)
         self.producer = KafkaProducer(bootstrap_servers=servers)
 
+    @backoff.backoff(backoff.expo, max_time=30, max_tries=5)
     def create_topics_with_partitions(self, partitions, *topics):
         result = []
         topics_exists = set(self.admin.list_topics())
@@ -26,6 +29,7 @@ class Kafka(BaseStorage):
                 )
         logging.info(self.admin.create_topics(result))
 
+    @backoff.backoff(backoff.expo, max_time=30, max_tries=5)
     def get_entries(self, topic, limit=float("inf")):
         consumer = KafkaConsumer(
             topic,
@@ -55,6 +59,7 @@ class Kafka(BaseStorage):
                 key=message["key"],
             )
 
+    @backoff.backoff(backoff.expo, max_time=30, max_tries=5)
     def save_entry(self, topic, value, key):
         self.producer.send(
             topic=topic, value=bytes(value, encoding="utf-8"), key=bytes(key, encoding="utf-8")

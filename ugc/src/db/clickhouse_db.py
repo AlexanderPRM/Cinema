@@ -1,3 +1,4 @@
+import backoff
 from clickhouse_driver import Client
 
 from core.config import ch_config
@@ -12,6 +13,7 @@ class ClickHouse(BaseStorage):
     def get_client(self):
         return self.client
 
+    @backoff.backoff(backoff.expo, max_time=30, max_tries=5)
     def create_tables(self):
         query = """
                 CREATE TABLE IF NOT EXISTS users_films (
@@ -25,6 +27,7 @@ class ClickHouse(BaseStorage):
         client.execute(query)
         self.client_node_1.execute(query)
 
+    @backoff.backoff(backoff.expo, max_time=30, max_tries=5)
     def get_entries(self, table_name: str = ch_config.CLICKHOUSE_TABLE_NAME, limit: int = 1000):
         query = "SELECT * FROM {} LIMIT {}".format(table_name, limit)
         client = self.get_client()
@@ -36,6 +39,7 @@ class ClickHouse(BaseStorage):
         for batch in batch_values:
             self.save_entry(query, batch, client)
 
+    @backoff.backoff(backoff.expo, max_time=30, max_tries=5)
     def save_entry(self, query, batch, client: Client):
         query_full = query + ",".join(batch)
         client.execute(query_full)
