@@ -136,12 +136,18 @@ services:
     env_file:
       - config.env
     restart: always
+    depends_on:
+      - kafka
+      - ugc_redis
 
   ugc_etl:
     build: ugc
     env_file:
       - config.env
     restart: always
+    depends_on:
+      - kafka
+      - ugc_redis
 
   zookeeper-kafka:
     image: wurstmeister/zookeeper
