@@ -1,7 +1,7 @@
 import logging
 
 from core.config import ch_config
-from etl.utils.models import Entry
+from utils.models import Entry
 
 
 class Loader:

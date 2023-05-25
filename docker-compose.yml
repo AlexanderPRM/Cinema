@@ -130,7 +130,7 @@ services:
       - "16686:16686"
 
   ugc:
-    build: ugc
+    build: ugc/src
     ports:
       - 8001:8000
     env_file:
@@ -138,7 +138,7 @@ services:
     restart: always
 
   ugc_etl:
-    build: ugc/src
+    build: ugc
     env_file:
       - config.env
     restart: always

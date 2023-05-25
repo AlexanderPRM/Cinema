@@ -3,10 +3,10 @@ from redis import Redis
 from core.config import config
 from db.kafka_db import init_kafka
 from db.clickhouse_db import init_clickhouse
-from etl.utils.state import State
-from etl.etl_classes.extract import Extract
-from etl.etl_classes.transform import Transform
-from etl.etl_classes.load import Loader
+from utils.state import State
+from etl_classes.extract import Extract
+from etl_classes.transform import Transform
+from etl_classes.load import Loader
 
 
 
