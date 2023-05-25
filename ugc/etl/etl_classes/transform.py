@@ -12,7 +12,7 @@ class Transform:
             user_id = ids[0].split("=")[1]
             times = value.split("_")
             updated_at = times[1]
-            timestamp=times[0]
+            timestamp = times[0]
             data_to_save.append(
                 Entry(
                     movie_id=movie_id,

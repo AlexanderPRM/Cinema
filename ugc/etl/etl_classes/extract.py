@@ -8,35 +8,29 @@ class Extract:
         self.limit = limit
         self.state = state
 
-    def extract(self):
-        # только на время разработки
-        self.state.set_state("last_updated", "2022-05-18 08:35:33.140691")  # это удалить
-        # -----
-        data = self.db.get_entries(topic = "users_films", limit = 1000)
+    async def extract(self):
+        data = await self.db.get_entries(topic="users_films", limit=1000)
         data_list = []
         for entry in data:
             key = entry["key"].decode("utf-8")
             value = entry["value"].decode("utf-8")
             updated_at = datetime.strptime(value.split("_")[1], "%Y-%m-%d %H:%M:%S.%f")
-            last_updated = self.state.get_state("last_updated")
+            last_updated = await self.state.get_state("last_updated")
             if (
                 last_updated is None
                 or datetime.strptime(
-                    self.state.get_state("last_updated").decode("utf-8"), "%Y-%m-%d %H:%M:%S.%f"
+                    await self.state.get_state("last_updated").decode("utf-8"),
+                    "%Y-%m-%d %H:%M:%S.%f",
                 )
                 < updated_at
             ):
-                # только на время разработки
-                # self.state.set_state('last_updated', value.split('_')[1]) это оставить
-                self.state.set_state("last_updated", "2022-05-18 08:35:33.140691")  # это удалить
-                # -----
+                await self.state.set_state("last_updated", value.split("_")[1])
                 data_list.append([key, value])
             if len(data_list) == self.limit or data[-1] == entry:
                 yield data_list
                 data_list = []
 
-    # добавляем тестовые данные для etl
-    def gen_data(self):
+    async def gen_data(self):
         n = 100
         lst = []
 
@@ -46,4 +40,4 @@ class Extract:
 
             dct = {"key": key, "value": value, "topic": "users_films"}
             lst.append(dct)
-            self.db.save_entry(topic = "users_films", value = value, key = key)
+            await self.db.save_entry(topic="users_films", value=value, key=key)

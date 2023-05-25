@@ -6,7 +6,7 @@ from core.config import config
 from db import redis_db
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from redis import Redis
+from redis.asyncio import Redis
 
 app = FastAPI(
     title=config.UGC_PROJECT_NAME,
@@ -25,7 +25,7 @@ async def startup():
 
 @app.on_event("shutdown")
 async def shutdown():
-    redis_db.redis.close()
+    await redis_db.redis.close()
 
 
 app.include_router(

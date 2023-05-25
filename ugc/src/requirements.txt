@@ -1,5 +1,5 @@
 clickhouse-driver==0.2.6
-kafka-python==2.0.2
+aiokafka==0.8.0
 pydantic[dotenv]==1.10.5
 fastapi==0.94.1
 gunicorn==20.1.0
