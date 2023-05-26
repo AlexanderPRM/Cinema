@@ -65,7 +65,7 @@ services:
       - db
 
   etl_movies:
-    build: etl_movies
+    build: films_api/etl/etl_movies
     restart: always
     env_file:
       - config.env
@@ -75,7 +75,7 @@ services:
       - transfer
 
   etl_persons:
-    build: etl_persons
+    build: films_api/etl/etl_persons
     restart: always
     env_file:
       - config.env
@@ -85,7 +85,7 @@ services:
       - transfer
 
   etl_genres:
-    build: etl_genres
+    build: films_api/etl/etl_genres
     restart: always
     env_file:
       - config.env
@@ -130,31 +130,45 @@ services:
       - "16686:16686"
 
   ugc:
-    build: ugc
+    build: ugc/src
     ports:
       - 8001:8000
     env_file:
       - config.env
     restart: always
+    depends_on:
+      - kafka
+      - ugc_redis
 
   ugc_etl:
-    build: ugc/src
+    build: ugc
     env_file:
       - config.env
     restart: always
+    depends_on:
+      - kafka
+      - ugc_redis
 
-  zookeeper:
+  zookeeper-kafka:
     image: wurstmeister/zookeeper
     restart: always
-  
+    ports:
+      - 2181:2181
+
   kafka:
     image: wurstmeister/kafka
     environment:
-      - KAFKA_ADVERTISED_HOST_NAME=${KAFKA_ADVERTISED_HOST_NAME}
-      - KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT}
+        KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
+        KAFKA_ADVERTISED_HOST_NAME: ${KAFKA_ADVERTISED_HOST_NAME}
+        KAFKA_LISTENERS: INSIDE://:9093,OUTSIDE://:9092
+        KAFKA_ADVERTISED_LISTENERS: INSIDE://:9093,OUTSIDE://kafka:9092
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+        KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
     restart: always
     depends_on:
-      - zookeeper
+      - zookeeper-kafka
 
   ugc_redis:
     image: redis:7.0.9

@@ -2,11 +2,11 @@ import logging
 
 import uvicorn
 from api.v1 import film_view
-from db import redis_db
 from core.config import config
+from db import redis_db
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from redis import Redis
+from redis.asyncio import Redis
 
 app = FastAPI(
     title=config.UGC_PROJECT_NAME,
@@ -21,6 +21,11 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup():
     redis_db.redis = Redis(host=config.UGC_REDIS_HOST, port=config.UGC_REDIS_PORT)
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await redis_db.redis.close()
 
 
 app.include_router(

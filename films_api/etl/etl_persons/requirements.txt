@@ -3,7 +3,7 @@ elastic-transport==8.4.0
 elasticsearch==7.17.9
 psycopg2-binary==2.9.5
 pydantic==1.10.2
-python-dotenv==0.21.0
+python-dotenv==1.0.0
 python-stdnum==1.17
 typing_extensions==4.3.0
 urllib3==1.26.12

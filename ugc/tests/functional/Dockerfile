@@ -1,6 +1,6 @@
 FROM python:3.10
 
-WORKDIR /opt/ugc
+WORKDIR /opt/tests
 
 RUN apt-get update && apt-get install -y \
      python3-dev  \
@@ -11,8 +11,8 @@ COPY requirements.txt .
 RUN pip install --upgrade pip --no-cache-dir \
      && pip install -r requirements.txt --no-cache-dir
 
-COPY run_api.sh .
+COPY run_tests.sh .
 COPY . .
 
-RUN chmod +x /opt/ugc/run_api.sh
-ENTRYPOINT [ "/opt/ugc/run_api.sh" ]
+RUN chmod +x /opt/tests/run_tests.sh
+ENTRYPOINT [ "/opt/tests/run_tests.sh" ]
