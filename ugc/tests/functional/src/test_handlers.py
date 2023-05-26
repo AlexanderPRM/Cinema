@@ -1,10 +1,11 @@
-import json
 import datetime
+import json
 import uuid
 from http import HTTPStatus
 
 import pytest
 from pytest import fixture
+
 from settings import baseconfig
 
 pytestmark = pytest.mark.asyncio
@@ -118,6 +119,7 @@ async def test_get_film_timestamp_no_token(
         f"/films/watch/{film_id}/", headers=headers, settings=baseconfig
     )
     assert response.status == expected_status
+
 
 @pytest.mark.parametrize(
     "expected_status",
