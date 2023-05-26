@@ -1,5 +1,5 @@
 services:
-  ugc:
+  ugc_functional:
     build: ../../src
     ports:
       - 8001:8000
@@ -74,7 +74,7 @@ services:
   tests:
     build: .
     depends_on:
-      - ugc
+      - ugc_functional
       - ugc_etl
       - ugc_redis
       - kafka

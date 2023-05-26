@@ -2,18 +2,20 @@
 
 echo "Waiting for Kafka..."
 while ! nc -z $KAFKA_HOST $KAFKA_PORT; do
-    sleep 0.1
+    sleep 35
 done
 
 echo "Kafka started"
 
-echo "Waiting for ZooKeeper..."
+echo "Waiting for UGC..."
 
-while ! nc -z $ZOOKEEPER_HOST $ZOOKEEPER_PORT; do
-    sleep 0.1
+while ! curl "$UGC_URL"; do
+    sleep 35
 done
 
-echo "ZooKeeper started"
+echo "UGC Started"
+
+echo "Waiting for ZooKeeper..."
 
 echo "Waiting for Clickhouse..."
 
