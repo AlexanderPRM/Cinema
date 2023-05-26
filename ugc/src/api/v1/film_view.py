@@ -1,10 +1,11 @@
 import datetime
+from http import HTTPStatus
 
 from core.config import config
 from core.jwt import JWTBearer
 from db.kafka_db import Kafka, init_kafka
 from db.redis_db import get_redis
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from redis.asyncio import Redis
 
 router = APIRouter()
@@ -31,6 +32,7 @@ async def get_timestamp(
 ):
     key = str(payload["user_id"] + film_id)
     timestamp = await redis.get(key)
-    if timestamp:
-        timestamp = timestamp.decode("utf-8")
+    if not timestamp:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Not Found")
+    timestamp = timestamp.decode("utf-8")
     return {"message": "OK", "timestamp": timestamp}
