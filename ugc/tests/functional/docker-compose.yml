@@ -7,8 +7,10 @@ services:
       - config_tests.env
     restart: always
     depends_on:
-      - kafka
-      - ugc_redis
+      kafka:
+        condition: service_started
+      ugc_redis:
+        condition: service_started
 
   ugc_etl:
     build: ../../.
@@ -16,14 +18,22 @@ services:
       - config_tests.env
     restart: always
     depends_on:
-      - kafka
-      - ugc_redis
+      kafka:
+        condition: service_healthy
+      ugc_redis:
+        condition: service_started
 
   zookeeper-kafka:
     image: wurstmeister/zookeeper
     restart: always
     ports:
       - 2181:2181
+    healthcheck:
+      test: nc -z localhost 2181 || exit -1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
 
   kafka:
     image: wurstmeister/kafka
@@ -36,8 +46,15 @@ services:
         KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     restart: always
+    healthcheck:
+      test: nc -z localhost 9092 || exit -1
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 7s
     depends_on:
-      - zookeeper-kafka
+      zookeeper-kafka:
+        condition: service_healthy
 
   ugc_redis:
     image: redis:7.0.9

@@ -2,7 +2,7 @@
 
 echo "Waiting for Kafka..."
 while ! nc -z $KAFKA_HOST $KAFKA_PORT; do
-    sleep 35
+    sleep 0.2
 done
 
 echo "Kafka started"
@@ -10,7 +10,7 @@ echo "Kafka started"
 echo "Waiting for UGC..."
 
 while ! curl "$UGC_URL"; do
-    sleep 35
+    sleep 0.2
 done
 
 echo "UGC Started"
