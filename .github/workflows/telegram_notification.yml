@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: send telegram message on push\pull
         uses: appleboy/telegram-action@master
+        if: ${{ job.status == 'success' }}
         with:
           to: ${{ secrets.SAVED_MESSAGES }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
