@@ -1,8 +1,5 @@
-from datetime import date
-
 import openpyxl
-from openpyxl import load_workbook
-from openpyxl.chart import BarChart, LineChart, Reference, Series
+from openpyxl.chart import BarChart, LineChart, Reference
 from openpyxl.styles import Alignment, Border, Color, NamedStyle, PatternFill, Side, colors
 
 

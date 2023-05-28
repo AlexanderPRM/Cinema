@@ -282,6 +282,6 @@ async def test_refresh_no_token_error(
     make_post_request_role: fixture,
     expected_answer: dict,
 ):
-    token = await create_jwt_superuser_token(settings=baseconfig)
+    await create_jwt_superuser_token(settings=baseconfig)
     resp = await make_post_request_role("/user/refresh/", settings=baseconfig)
     assert resp.status == expected_answer["status"]

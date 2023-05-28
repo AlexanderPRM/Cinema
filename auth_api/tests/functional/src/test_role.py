@@ -66,7 +66,7 @@ async def test_get_role(
     )
     response = await make_get_request_role("/role/", headers=headers, settings=baseconfig)
     response_text = await response.text()
-    response_data = json.loads(response_text)
+    json.loads(response_text)
     assert response.status == expected_answer["status"]
 
 
