@@ -14,17 +14,19 @@ jobs:
         uses: appleboy/telegram-action@master
         if: ${{ job.status == 'success' }}
         with:
-          to: ${{ secrets.SAVED_MESSAGES }}
+          to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             ${{ github.actor }} создал ${{ github.event_name }}:
-            Сообщение: ${{ github.event.head_commit.id }}  ╮(︶︿︶)╭
             Сообщение: ${{ github.event.head_commit.message }}
-            
-            Репозиторий: ${{ github.repository }}
             Статус: ${{ job.status  }}
-            Ветка: ${{ github.ref_name }}
+            Ветка\Тэг: ${{ github.ref_name }}
+
             Коммит: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
-            Время: ${{ github.event.pull_request.created_at }}
+
+            (Если это пулл)
+            Пулл создан: ${{ github.event.pull_request.created_at }}
+            Пулл обновлен: ${{ github.event.pull_request.updated_at }}
+
             Зайти в репозиторий: https://github.com/${{ github.repository }}
 
