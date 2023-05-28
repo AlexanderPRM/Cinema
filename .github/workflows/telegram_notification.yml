@@ -22,10 +22,8 @@ jobs:
             Репозиторий: ${{ github.repository }}
         
             Посмотреть: ${{ github.event.name }}: https://github.com/${{ github.repository }}/pull/${{github.sha}}
-            ${{ github.action }}
-            ${{ github.action_repository }}
-            ${{ github.run_attempt }}
-            ${{ github.workspace }}
-            ${{ github.action_status }}
-            Зайти в репозиторий: ${{ github }}
+            ${{ github.event.created }}
+            ${{ github.event.pull_request }}
+            ${{ github.event.commits }}
+            Зайти в репозиторий: https://github.com/${{ github.repository }}
 
