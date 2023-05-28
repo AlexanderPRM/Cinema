@@ -13,10 +13,10 @@ jobs:
       - name: send telegram message on push\pull
         uses: appleboy/telegram-action@master
         with:
-          to: ${{ secrets.TELEGRAM_TO }}
+          to: ${{ secrets.SAVED_MESSAGES }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            ${{ github.actor }} создал ${{ github.event.name }}:
+            ${{ github.actor }} создал ${{ github.event_name }}:
             Сообщение: ${{ github.event.commits[0].message }}  ╮(︶︿︶)╭
             
             Репозиторий: ${{ github.repository }}
