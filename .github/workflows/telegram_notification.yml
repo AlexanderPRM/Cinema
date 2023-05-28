@@ -1,6 +1,8 @@
 name: linters
 
 on:
+  workflow_run:
+    types: completed
   push:
     branches: ["main"]
   pull_request:
@@ -28,5 +30,6 @@ jobs:
             ${{ github.event.commits.added.message }}
             ${{ github.event_path }}
             ${{ github.event.head_commit.message }}
+            ${{ github.event.workflow_run.status }}
             Зайти в репозиторий: https://github.com/${{ github.repository }}
 
