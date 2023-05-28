@@ -1,7 +1,7 @@
 """partition
 
 Revision ID: 62e0c03078dd
-Revises: 
+Revises:
 Create Date: 2023-04-28 17:53:39.841688
 
 """
