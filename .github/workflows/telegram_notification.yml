@@ -22,6 +22,7 @@ jobs:
             Репозиторий: ${{ github.repository }}
         
             Посмотреть: ${{ github.event.name }}: https://github.com/${{ github.repository }}/pull/${{github.sha}}
+            Ветка: ${{ github.ref_name }}
             ${{ github.event.created }}
             ${{ github.event.pull_request.created_at }}
             ${{ github.event.pull_request.url }}
@@ -29,6 +30,6 @@ jobs:
             ${{ github.event_path }}
             ${{ github.event.head_commit.message }}
             ${{ github.event.workflow_run.status[0] }}
-            ${{ github.event.pull_request._links.self.href }}
+            ${{ runner. }}
             Зайти в репозиторий: https://github.com/${{ github.repository }}
 
