@@ -23,7 +23,8 @@ jobs:
         
             Посмотреть: ${{ github.event.name }}: https://github.com/${{ github.repository }}/pull/${{github.sha}}
             ${{ github.event.created }}
-            ${{ github.event.pull_request }}
-            ${{ github.event.commits }}
+            ${{ github.event.pull_request.created_at }}
+            ${{ github.event.pull_request.url }}
+            ${{ github.event.commits.added }}
             Зайти в репозиторий: https://github.com/${{ github.repository }}
 
