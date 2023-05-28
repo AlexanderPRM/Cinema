@@ -23,13 +23,7 @@ jobs:
         
             Посмотреть: ${{ github.event.name }}: https://github.com/${{ github.repository }}/pull/${{github.sha}}
             Ветка: ${{ github.ref_name }}
-            Статус: ${{ github.action_status }}
-            ${{ github.event.pull_request.re }}
-            ${{ github.event.pull_request.created_at }}
-            ${{ github.event.pull_request.url }}
-            ${{ github.event.commits.added.message }}
-            ${{ github.event_path }}
-            ${{ github.event.head_commit.message }}
-            ${{ github.event.workflow_run.status[0] }}
+            Статус: ${{ github.action_status[0] }}
+            Время: ${{ github.event.pull_request.created_at }}
             Зайти в репозиторий: https://github.com/${{ github.repository }}
 
