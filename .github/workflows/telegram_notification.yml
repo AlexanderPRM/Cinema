@@ -20,8 +20,8 @@ jobs:
             Сообщение: ${{ github.event.commits[0].message }}  ╮(︶︿︶)╭
             
             Репозиторий: ${{ github.repository }}
-            ${{ github.event.state  }}
-            Посмотреть: ${{ github.event.name }}: https://github.com/${{ github.repository }}/pull/${{github.sha}}
+            ${{ job.status  }}
+            Посмотреть: https://github.com/${{ github.repository }}/pull/${{github.sha}}
             Ветка: ${{ github.ref_name }}
             Статус: ${{ github.action_status[0] }}
             Время: ${{ github.event.pull_request.created_at }}

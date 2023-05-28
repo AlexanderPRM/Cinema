@@ -38,7 +38,7 @@ jobs:
 
       - name: send telegram message on push\pull
         uses: appleboy/telegram-action@master
-        if: ${{ github.event.state == 'success' }}
+        if: ${{ job.status == 'success' }}
         with:
           to: ${{ secrets.SAVED_MESSAGES }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
