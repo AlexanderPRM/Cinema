@@ -25,6 +25,6 @@ jobs:
             ${{ github.event.created }}
             ${{ github.event.pull_request.created_at }}
             ${{ github.event.pull_request.url }}
-            ${{ github.event.commits.added }}
+            ${{ github.event.commits.added.message }}
             Зайти в репозиторий: https://github.com/${{ github.repository }}
 
