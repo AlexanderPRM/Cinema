@@ -28,6 +28,7 @@ jobs:
             ${{ github.event.commits.added.message }}
             ${{ github.event_path }}
             ${{ github.event.head_commit.message }}
-            ${{ github.event.workflow_run.status }}
+            ${{ github.event.workflow_run.status[0] }}
+            ${{ github.event.pull_request._links.self }}
             Зайти в репозиторий: https://github.com/${{ github.repository }}
 
