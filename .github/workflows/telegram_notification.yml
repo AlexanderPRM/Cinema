@@ -1,8 +1,6 @@
 name: linters
 
 on:
-  workflow_run:
-    types: completed
   push:
     branches: ["main"]
   pull_request:
