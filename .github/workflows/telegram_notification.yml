@@ -18,13 +18,13 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             ${{ github.actor }} создал ${{ github.event_name }}:
-            Сообщение: ${{ github.event.commits[0].message }}  ╮(︶︿︶)╭
+            Сообщение: ${{ github.event.head_commit.id }}  ╮(︶︿︶)╭
+            Сообщение: ${{ github.event.head_commit.message }}
             
             Репозиторий: ${{ github.repository }}
-            ${{ job.status  }}
-            Посмотреть: https://github.com/${{ github.repository }}/pull/${{github.sha}}
+            Статус: ${{ job.status  }}
             Ветка: ${{ github.ref_name }}
-            Статус: ${{ github.action_status[0] }}
+            Коммит: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
             Время: ${{ github.event.pull_request.created_at }}
             Зайти в репозиторий: https://github.com/${{ github.repository }}
 
