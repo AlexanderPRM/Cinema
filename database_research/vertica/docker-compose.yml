@@ -1,0 +1,25 @@
+version: '3.5'
+services:
+  vertica:
+    image: jbfavre/vertica:latest
+    volumes:
+      - shared_data:/home/dbadmin/data
+    networks:
+      - my_network
+
+  python:
+    build: ./benchmark
+    volumes:
+      - shared_data:/opt/vertica/data
+    env_file:
+      - config.env
+    networks:
+      - my_network
+    depends_on:
+      - vertica
+
+volumes:
+  shared_data:
+
+networks:
+  my_network:
