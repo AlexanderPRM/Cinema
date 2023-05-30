@@ -31,10 +31,10 @@ def test_avg_film_rating(collection_likes: Collection, film_ids: list, avg_count
 
 
 def test_user_liked_films(
-        collection_likes: Collection,
-        user_ids: list,
-        avg_count: int = 100,
-        liked_min: int = core_settings.liked_min,
+    collection_likes: Collection,
+    user_ids: list,
+    avg_count: int = 100,
+    liked_min: int = core_settings.liked_min,
 ):
     avg_list = list()
 
@@ -73,14 +73,9 @@ def main(mongo_client):
 
     collection_likes = mongo.get_collection(mongo_config.db_collection)
 
-    film_ids = get_data_from_file(
-        core_settings.film_ids_filename,
-        core_settings.film_count
-    )
-    user_ids = get_data_from_file(
-        core_settings.user_ids_filename,
-        core_settings.user_count
-    )
+    film_ids = get_data_from_file(core_settings.film_ids_filename, core_settings.film_count)
+    user_ids = get_data_from_file(core_settings.user_ids_filename, core_settings.user_count)
+
     for _ in range(10):
         time_1 = test_avg_film_rating(collection_likes=collection_likes, film_ids=film_ids)
         time_2 = test_user_liked_films(collection_likes=collection_likes, user_ids=user_ids)

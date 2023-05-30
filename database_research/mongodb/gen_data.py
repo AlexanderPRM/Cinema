@@ -30,13 +30,11 @@ def get_film_id(film_list: list, film_count: int):
 
 
 def load_data_to_db(collection_likes: Collection, film_ids: list, user_ids: list, batch_size: int):
-
     mongo_dc = MongoDocCreator()
     data_list = list()
     for i, user_id in enumerate(tqdm(user_ids)):
         users_liked_films = random.randint(
-            core_settings.min_liked_films,
-            core_settings.max_liked_films
+            core_settings.min_liked_films, core_settings.max_liked_films
         )
         temp_data = list()
         for film_id in get_film_id(film_list=film_ids, film_count=users_liked_films):
@@ -54,14 +52,8 @@ def main(mongo_client):
 
     collection_likes = mongo.create_collection(mongo_config.db_collection)
 
-    film_ids = get_data_from_file(
-        core_settings.film_ids_filename,
-        core_settings.film_count
-    )
-    user_ids = get_data_from_file(
-        core_settings.user_ids_filename,
-        core_settings.user_count
-    )
+    film_ids = get_data_from_file(core_settings.film_ids_filename, core_settings.film_count)
+    user_ids = get_data_from_file(core_settings.user_ids_filename, core_settings.user_count)
 
     load_data_to_db(collection_likes, film_ids, user_ids, core_settings.batch_size)
 
