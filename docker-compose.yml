@@ -130,7 +130,7 @@ services:
       - "16686:16686"
 
   ugc:
-    build: ugc/src
+    build: films_user_timestamp/src
     ports:
       - 8001:8000
     env_file:
