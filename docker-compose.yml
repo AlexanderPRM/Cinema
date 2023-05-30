@@ -141,7 +141,7 @@ services:
       - ugc_redis
 
   ugc_etl:
-    build: ugc
+    build: films_user_timestamp
     env_file:
       - config.env
     restart: always
