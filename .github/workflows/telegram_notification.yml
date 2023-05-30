@@ -17,7 +17,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            ${{ github.actor }} создал ${{ github.event_name }}:
+            ${{ github.actor }} создал\изменил ${{ github.event_name }}:
             Сообщение: ${{ github.event.head_commit.message }}
             Статус: ${{ job.status  }}
             Ветка\Тэг: ${{ github.ref_name }}
