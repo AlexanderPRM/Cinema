@@ -7,16 +7,18 @@ on:
     branches: ["main"]
 
 jobs:
-  flake8:
-    name: flake8
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
       - run: python -m pip install flake8
       - name: flake8
         # Pinned to v2.0.0.
@@ -24,16 +26,6 @@ jobs:
         with:
           linters: flake8
           run: flake8
-
-  isort:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
       - run: python -m pip install isort
       - name: isort
         # Pinned to v2.0.0.
@@ -41,11 +33,5 @@ jobs:
         with:
           linters: isort
           run: isort --check --diff .
-
-  black:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: black
         uses: psf/black@stable

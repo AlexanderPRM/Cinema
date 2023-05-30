@@ -42,7 +42,7 @@ def get_jwt_token():
             "jti": str(uuid.uuid4()),
             "exp": datetime.utcnow() + expires_in,
             "role": "test",
-            "user_id": user_id
+            "user_id": user_id,
         }
         token = jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
         return token, user_id
