@@ -20,7 +20,7 @@ jobs:
             ${{ github.actor }} создал\изменил ${{ github.event_name }}:
             Сообщение: ${{ github.event.head_commit.message }}
             Статус: ${{ job.status  }}
-            Ветка\Тэг: ${{ github.ref_name }}
+            Ветка\Тэг: ${{ github.ref_type }}, ref: ${{ github.ref }}
 
             Коммит: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
 
