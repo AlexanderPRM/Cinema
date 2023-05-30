@@ -1,13 +1,12 @@
 import pickle
 import random
 
-from tqdm import tqdm
-from pymongo.database import Collection
-
-from src.mongodb_manager import MongoManager
-from src.docs_creator import MongoDocCreator
-from core.settings import mongo_config, core_settings
 from core.mongo_client import mongo_client
+from core.settings import core_settings, mongo_config
+from pymongo.database import Collection
+from src.docs_creator import MongoDocCreator
+from src.mongodb_manager import MongoManager
+from tqdm import tqdm
 
 
 def get_data_from_file(file_path: str, count: int):

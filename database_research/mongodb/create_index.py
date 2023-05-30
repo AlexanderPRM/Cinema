@@ -1,6 +1,6 @@
-from src.mongodb_manager import MongoManager
-from core.settings import mongo_config
 from core.mongo_client import mongo_client
+from core.settings import mongo_config
+from src.mongodb_manager import MongoManager
 
 
 def main(mongo_client):

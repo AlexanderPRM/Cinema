@@ -1,6 +1,6 @@
+import random
 import uuid
 import bson
-import random
 
 
 class MongoDocCreator:
