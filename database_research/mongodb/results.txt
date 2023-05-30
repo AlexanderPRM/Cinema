@@ -1,0 +1,40 @@
+avg_film_rating: 5.4142
+user_liked_film: 0.0074
+load_docs_in_ms: 11.5683
+=======================
+avg_film_rating: 4.5623
+user_liked_film: 0.0096
+load_docs_in_ms: 9.3021
+=======================
+avg_film_rating: 3.9817
+user_liked_film: 0.007
+load_docs_in_ms: 8.8363
+=======================
+avg_film_rating: 2.8879
+user_liked_film: 0.0072
+load_docs_in_ms: 6.3118
+=======================
+avg_film_rating: 2.5297
+user_liked_film: 0.0073
+load_docs_in_ms: 6.6733
+=======================
+avg_film_rating: 2.3907
+user_liked_film: 0.0075
+load_docs_in_ms: 6.7716
+=======================
+avg_film_rating: 1.9168
+user_liked_film: 0.0069
+load_docs_in_ms: 5.4237
+=======================
+avg_film_rating: 1.8917
+user_liked_film: 0.0071
+load_docs_in_ms: 5.8401
+=======================
+avg_film_rating: 1.8388
+user_liked_film: 0.0115
+load_docs_in_ms: 5.527
+=======================
+avg_film_rating: 2.0781
+user_liked_film: 0.0068
+load_docs_in_ms: 7.2591
+=======================
