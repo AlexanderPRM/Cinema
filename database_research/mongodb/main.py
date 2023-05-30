@@ -1,14 +1,14 @@
-import time
 import random
+import time
 
+
+from core.logger import logger
+from core.mongo_client import mongo_client
+from core.settings import core_settings, mongo_config
+from gen_data import get_data_from_file
 from pymongo.database import Collection
-
 from src.docs_creator import MongoDocCreator
 from src.mongodb_manager import MongoManager
-from core.logger import logger
-from core.settings import mongo_config, core_settings
-from core.mongo_client import mongo_client
-from gen_data import get_data_from_file
 
 
 def test_avg_film_rating(collection_likes: Collection, film_ids: list, avg_count: int = 100):
