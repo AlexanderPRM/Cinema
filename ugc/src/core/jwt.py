@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 
 import jwt
-from core.config import config
+from core.config import project_settings
 from fastapi import Cookie, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
@@ -19,7 +19,7 @@ class JWTBearer(HTTPBearer):
             )
             token = credentials.credentials
         try:
-            return jwt.decode(token, config.JWT_SECRET, algorithms=["HS256"])
+            return jwt.decode(token, project_settings.JWT_SECRET, algorithms=["HS256"])
         except (jwt.exceptions.ExpiredSignatureError, jwt.exceptions.DecodeError) as err:
             logging.error(err)
             return
