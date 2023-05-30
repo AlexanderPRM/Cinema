@@ -19,7 +19,10 @@ def test_avg_film_rating(collection_likes: Collection, film_ids: list, avg_count
 
         start_time = time.time()
         _ = collection_likes.aggregate(
-            [{"$match": {"film_id": film_id}}, {"$group": {"_id": None, "avg_value": {"$avg": "$rating"}}}]
+            [
+                {"$match": {"film_id": film_id}},
+                {"$group": {"_id": None, "avg_value": {"$avg": "$rating"}}},
+            ]
         )
         response_time = time.time() - start_time
 
@@ -28,7 +31,12 @@ def test_avg_film_rating(collection_likes: Collection, film_ids: list, avg_count
     return result
 
 
-def test_user_liked_films(collection_likes: Collection, user_ids: list, avg_count: int = 100, liked_min: int = core_settings.liked_min):
+def test_user_liked_films(
+        collection_likes: Collection,
+        user_ids: list,
+        avg_count: int = 100,
+        liked_min: int = core_settings.liked_min,
+):
     avg_list = list()
 
     for _ in range(avg_count):
