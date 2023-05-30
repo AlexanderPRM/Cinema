@@ -32,7 +32,7 @@ load_docs_in_ms: 5.8401
 =======================
 avg_film_rating: 1.8388
 user_liked_film: 0.0115
-load_docs_in_ms: 5.527
+load_docs_in_ms: 5.5271
 =======================
 avg_film_rating: 2.0781
 user_liked_film: 0.0068
