@@ -1,7 +1,6 @@
 import random
 import time
 
-
 from core.logger import logger
 from core.mongo_client import mongo_client
 from core.settings import core_settings, mongo_config
