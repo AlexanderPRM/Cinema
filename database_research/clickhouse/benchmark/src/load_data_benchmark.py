@@ -67,7 +67,7 @@ async def reed_data_benchmark(count, stress):
     elapsed_time = end_ts - start_ts
     speed = round(count / elapsed_time)
     print("Reed time elapsed: {} seconds | Speed: {}".format(elapsed_time, speed))
-    all_data = client.execute(f"SELECT COUNT(*) as count FROM default.test;")
+    all_data = client.execute("SELECT COUNT(*) as count FROM default.test;")
     all_data = all_data[0][0]
     writer.write_reed_result(count, speed, stress, all_data)
     time.sleep(2)

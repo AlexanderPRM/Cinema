@@ -5,7 +5,6 @@ from http import HTTPStatus
 
 import pytest
 from pytest import fixture
-
 from settings import baseconfig
 
 pytestmark = pytest.mark.asyncio
@@ -81,9 +80,7 @@ async def test_get_film_timestamp(
     token, _ = await get_jwt_token(settings=baseconfig)
     headers = {"Authorization": f"Bearer {token}", "content-type": "application/json"}
     film_id = uuid.uuid4()
-    await make_post_request(
-            f"/films/watch/{film_id}/", headers=headers, settings=baseconfig
-        )
+    await make_post_request(f"/films/watch/{film_id}/", headers=headers, settings=baseconfig)
     response = await make_get_request(
         f"/films/watch/{film_id}/", headers=headers, settings=baseconfig
     )
