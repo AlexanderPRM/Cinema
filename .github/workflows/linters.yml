@@ -1,4 +1,4 @@
-name: linters
+name: linters with notification
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
       - name: black
         uses: psf/black@stable
 
-  build:
+  notification:
     runs-on: ubuntu-latest
     needs: [linters]
     steps:
@@ -44,7 +44,7 @@ jobs:
         uses: appleboy/telegram-action@master
         if: ${{ job.status == 'success' }}
         with:
-          to: ${{ secrets.SAVED_MESSAGES }}
+          to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             ${{ job }}
