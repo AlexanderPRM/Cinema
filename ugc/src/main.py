@@ -1,11 +1,19 @@
 import logging
 
+import sentry_sdk
 import uvicorn
 from api.v1 import films_reviews
 from core.config import project_settings
 from db import mongo
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+
+sentry_sdk.init(
+    integrations=[FastApiIntegration()],
+    traces_sample_rate=1.0,
+)
+
 
 app = FastAPI(
     title=project_settings.UGC_PROJECT_NAME,
