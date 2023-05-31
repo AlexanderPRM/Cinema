@@ -1,9 +1,8 @@
 from functools import lru_cache
 
-import pymongo
 from core.config import collections_names
 from db.mongo import Mongo, get_db
-from fastapi import APIRouter, Depends
+from fastapi import Depends
 
 
 class RatingService:
