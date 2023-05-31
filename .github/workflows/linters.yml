@@ -7,7 +7,7 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  linters:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -35,3 +35,28 @@ jobs:
           run: isort --check --diff .
       - name: black
         uses: psf/black@stable
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [linters]
+    steps:
+      - name: send telegram message on push\pull
+        uses: appleboy/telegram-action@master
+        if: ${{ job.status == 'success' }}
+        with:
+          to: ${{ secrets.SAVED_MESSAGES }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ${{ job }}
+            ${{ github.actor }} создал\изменил ${{ github.event_name }}:
+            Сообщение: ${{ github.event.head_commit.message }}
+            Статус: ${{ job.status  }}
+            Ветка\Тэг: ${{ github.ref_type }}, ref: ${{ github.ref }}
+
+            Коммит: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+
+            (Если это пулл)
+            Пулл создан: ${{ github.event.pull_request.created_at }}
+            Пулл обновлен: ${{ github.event.pull_request.updated_at }}
+
+            Зайти в репозиторий: https://github.com/${{ github.repository }}
