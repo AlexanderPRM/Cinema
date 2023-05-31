@@ -4,37 +4,25 @@ from pydantic import BaseSettings
 class UGCSettings(BaseSettings):
     UGC_PROJECT_NAME: str
     UGC_PROJECT_VERSION: str
+    MONGO_DB: str
     JWT_SECRET: str
-    UGC_REDIS_HOST: str
-    UGC_REDIS_PORT: str
-    FILM_WATCH_TIME_EXPIRED: str
-    UGC_ETL_REDIS_HOST: str
-    UGC_ETL_REDIS_PORT: int
+    MONGOS1_HOST: str
+    MONGOS1_PORT: str
+    MONGOS2_HOST: str
+    MONGOS2_PORT: str
 
     class Config:
         case_sensitive = True
         env_file = "config.env"
 
 
-class KafkaSettings(BaseSettings):
-    BOOTSTRAP_SERVERS: list
+class MongoCollectionsNames(BaseSettings):
+    FILM_REVIEW_COLLECTION: str
 
     class Config:
         case_sensitive = True
         env_file = "config.env"
 
 
-class ClickHouseSettings(BaseSettings):
-    CLICKHOUSE_HOST: str
-    CLICKHOUSE_PORT: int
-    CLICKHOUSE_NODE_1: str
-    CLICKHOUSE_TABLE_NAME: str
-
-    class Config:
-        case_sensitive = True
-        env_file = "config.env"
-
-
-config = UGCSettings()
-kafka_config = KafkaSettings()
-ch_config = ClickHouseSettings()
+project_settings = UGCSettings()
+collections_names = MongoCollectionsNames()
