@@ -18,6 +18,7 @@ class UGCSettings(BaseSettings):
 
 class MongoCollectionsNames(BaseSettings):
     FILM_REVIEW_COLLECTION: str
+    FILM_LIKES_COLLECTION: str
 
     class Config:
         case_sensitive = True
