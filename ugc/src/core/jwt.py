@@ -1,9 +1,11 @@
 import logging
+from http import HTTPStatus
 from typing import Optional
 
 import jwt
 from core.config import project_settings
 from fastapi import Cookie, Request
+from fastapi.exceptions import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 
@@ -22,4 +24,4 @@ class JWTBearer(HTTPBearer):
             return jwt.decode(token, project_settings.JWT_SECRET, algorithms=["HS256"])
         except (jwt.exceptions.ExpiredSignatureError, jwt.exceptions.DecodeError) as err:
             logging.error(err)
-            return
+            raise HTTPException(detail="Token Invalid", status_code=HTTPStatus.FORBIDDEN)
