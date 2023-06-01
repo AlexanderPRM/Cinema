@@ -14,7 +14,9 @@ class BookmarksService:
         collection = mongodb.get_collection(collections_names.BOOKMARK_COLLECTION)
         data = collection.find_one({"user_id": user_id, "film_id": film_id})
         if data:
-            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Bookmark already exists")
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST, detail="Bookmark already exists"
+            )
         data = Bookmark(user_id=user_id, film_id=film_id, created_at=datetime.now())
         collection.insert_one(data.dict())
         return data
@@ -24,5 +26,5 @@ class BookmarksService:
         collection = mongodb.get_collection(collections_names.BOOKMARK_COLLECTION)
         data = collection.find_one({"user_id": user_id, "film_id": film_id})
         if not data:
-            raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Bookmark doesnt exists")
+            raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Bookmark doesnt exist")
         collection.delete_one({"user_id": user_id, "film_id": film_id})
