@@ -27,9 +27,7 @@ async def create_bookmark(
 
 
 @router.delete(
-    "/{film_id}/",
-    response_description="Удаление фильма из закладок",
-    status_code=HTTPStatus.OK
+    "/{film_id}/", response_description="Удаление фильма из закладок", status_code=HTTPStatus.OK
 )
 async def delete_bookmark(
     film_id: UUID,
