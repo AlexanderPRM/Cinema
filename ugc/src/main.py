@@ -2,7 +2,7 @@ import logging
 
 import sentry_sdk
 import uvicorn
-from api.v1 import films_reviews
+from api.v1 import films_reviews, bookmarks
 from core.config import project_settings
 from db import mongo
 from fastapi import FastAPI
@@ -42,6 +42,12 @@ app.include_router(
     films_reviews.router,
     prefix="/api/v1/films/review",
     tags=["Рецензии фильмов"],
+)
+
+app.include_router(
+    bookmarks.router,
+    prefix="/api/v1/films/bookmark",
+    tags=["Закладки фильмов"],
 )
 
 
