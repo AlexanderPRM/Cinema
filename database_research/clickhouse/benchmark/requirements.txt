@@ -1,0 +1,4 @@
+clickhouse-driver==0.2.6
+asyncio==3.4.3
+pydantic==1.10.5
+openpyxl==3.1.2
