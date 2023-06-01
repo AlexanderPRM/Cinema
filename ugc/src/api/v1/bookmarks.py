@@ -1,12 +1,11 @@
 from http import HTTPStatus
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
-from fastapi.responses import JSONResponse
-
-from services.bookmarks import BookmarksService
 from core.jwt import JWTBearer
 from db.mongo import Mongo, get_db
+from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
+from services.bookmarks import BookmarksService
 
 router = APIRouter()
 

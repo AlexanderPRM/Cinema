@@ -1,11 +1,10 @@
-from http import HTTPStatus
 from datetime import datetime
+from http import HTTPStatus
 
-from fastapi import HTTPException
-
-from db.mongo import Mongo
-from models.models import Bookmark
 from core.config import collections_names
+from db.mongo import Mongo
+from fastapi import HTTPException
+from models.models import Bookmark
 
 
 class BookmarksService:
