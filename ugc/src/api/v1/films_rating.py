@@ -5,7 +5,6 @@ from core.jwt import JWTBearer
 from fastapi import APIRouter, Depends
 from services.films_rating import RatingService, get_rating_service
 
-
 router = APIRouter()
 
 

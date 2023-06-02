@@ -2,7 +2,7 @@ import logging
 
 import sentry_sdk
 import uvicorn
-from api.v1 import bookmarks, films_reviews, films_rating
+from api.v1 import bookmarks, films_rating, films_reviews
 from core.config import project_settings
 from db import mongo
 from fastapi import FastAPI
