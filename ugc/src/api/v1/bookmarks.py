@@ -20,10 +20,8 @@ async def create_bookmark(
     auth: dict = Depends(JWTBearer()),
     mongodb: Mongo = Depends(get_db),
 ):
-    if not auth:
-        return JSONResponse({"message": "Token Invalid"}, status_code=HTTPStatus.FORBIDDEN)
-    BookmarksService.post_bookmark(mongodb=mongodb, user_id=auth["user_id"], film_id=str(film_id))
-    return {"message": "Success"}
+    query_res = BookmarksService.post_bookmark(mongodb=mongodb, user_id=auth["user_id"], film_id=str(film_id))
+    return {"message": "Success", "_id": str(query_res.inserted_id)}
 
 
 @router.delete(
@@ -34,7 +32,5 @@ async def delete_bookmark(
     auth: dict = Depends(JWTBearer()),
     mongodb: Mongo = Depends(get_db),
 ):
-    if not auth:
-        return JSONResponse({"message": "Token Invalid"}, status_code=HTTPStatus.FORBIDDEN)
-    BookmarksService.delete_bookmark(mongodb=mongodb, user_id=auth["user_id"], film_id=str(film_id))
-    return {"message": "Success"}
+    query_res = BookmarksService.delete_bookmark(mongodb=mongodb, user_id=auth["user_id"], film_id=str(film_id))
+    return {"message": "Success", "_id": str(query_res.inserted_id)}
