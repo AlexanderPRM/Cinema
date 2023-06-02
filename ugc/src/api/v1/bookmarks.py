@@ -33,7 +33,5 @@ async def delete_bookmark(
     auth: dict = Depends(JWTBearer()),
     mongodb: Mongo = Depends(get_db),
 ):
-    BookmarksService.delete_bookmark(
-        mongodb=mongodb, user_id=auth["user_id"], film_id=str(film_id)
-    )
+    BookmarksService.delete_bookmark(mongodb=mongodb, user_id=auth["user_id"], film_id=str(film_id))
     return {"message": "Bookmark deleted"}

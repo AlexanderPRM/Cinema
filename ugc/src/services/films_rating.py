@@ -28,7 +28,7 @@ class RatingService:
         return list(result)
 
     def count_likes_quantity(self, film_id):
-        count = self.collection.count_documents({'film_id': film_id})
+        count = self.collection.count_documents({"film_id": film_id})
         return count
 
 
