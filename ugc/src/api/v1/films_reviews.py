@@ -6,7 +6,7 @@ from uuid import UUID
 from bson.objectid import ObjectId
 from core.config import collections_names
 from core.jwt import JWTBearer
-from core.models import FilmReview
+from models.ugc_models import FilmReview
 from db.mongo import Mongo, get_db
 from fastapi import APIRouter, Body, Depends, Path
 from fastapi.exceptions import HTTPException
