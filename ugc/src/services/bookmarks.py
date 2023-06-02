@@ -4,7 +4,7 @@ from http import HTTPStatus
 from core.config import collections_names
 from db.mongo import Mongo
 from fastapi import HTTPException
-from models.models import Bookmark
+from models.ugc_models import Bookmark
 
 
 class BookmarksService:
