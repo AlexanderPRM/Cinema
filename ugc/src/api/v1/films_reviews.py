@@ -3,18 +3,15 @@ from datetime import datetime
 from http import HTTPStatus
 from uuid import UUID
 
+from bson.objectid import ObjectId
 from core.config import collections_names
 from core.jwt import JWTBearer
+from core.models import FilmReview
 from db.mongo import Mongo, get_db
-from fastapi import APIRouter, Depends
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from fastapi import APIRouter, Body, Depends, Path
+from fastapi.exceptions import HTTPException
 
 router = APIRouter()
-
-
-class FilmReview(BaseModel):
-    text: str
 
 
 @router.post(
@@ -29,8 +26,6 @@ async def film_review(
     auth: dict = Depends(JWTBearer()),
     mongodb: Mongo = Depends(get_db),
 ):
-    if not auth:
-        return JSONResponse({"message": "Token Invalid"}, status_code=HTTPStatus.FORBIDDEN)
     collection = mongodb.get_collection(collections_names.FILM_REVIEW_COLLECTION)
     doc = {
         "film_id": film_id.__str__(),
@@ -40,4 +35,61 @@ async def film_review(
     }
     query_res = collection.insert_one(doc)
     logging.info(f"Succesfully insert film review {query_res.inserted_id}")
-    return {"message": "Success"}
+    return {"message": "Success", "_id": str(query_res.inserted_id)}
+
+
+@router.post(
+    "/rate/{review_id}",
+    response_description="Оценка рецензии",
+    summary="Оценка",
+    status_code=HTTPStatus.CREATED,
+)
+async def film_review_rate(
+    review_id: str = Path(..., description="ReviewID is not Correct", regex=r"^[0-9a-f]{24}$"),
+    rate: int = Body(embed=True, ge=1, le=10),
+    auth: dict = Depends(JWTBearer()),
+    mongodb: Mongo = Depends(get_db),
+):
+    review_id = ObjectId(review_id)
+
+    review_collection = mongodb.get_collection(collections_names.FILM_REVIEW_COLLECTION)
+    if not review_collection.find_one({"_id": review_id}):
+        raise HTTPException(
+            detail="This review does not exist", status_code=HTTPStatus.UNPROCESSABLE_ENTITY
+        )
+
+    review_rate_collection = mongodb.get_collection(collections_names.FILM_REVIEW_RATE_COLLECTION)
+    if review_rate_collection.find_one({"review_id": review_id, "user_id": auth["user_id"]}):
+        raise HTTPException(
+            detail="User already rate this review", status_code=HTTPStatus.UNPROCESSABLE_ENTITY
+        )
+
+    res = review_rate_collection.insert_one(
+        {"review_id": review_id, "user_id": auth["user_id"], "rate": rate}
+    )
+
+    return {"message": "Success", "_id": str(res.inserted_id)}
+
+
+@router.put(
+    "/rate/{rate_id}",
+    response_description="Оценка рецензии",
+    summary="Оценка",
+    status_code=HTTPStatus.CREATED,
+)
+async def film_review_rate_update(
+    rate_id: str = Path(..., description="ReviewID is not Correct", regex=r"^[0-9a-f]{24}$"),
+    new_rate: int = Body(embed=True, ge=1, le=10),
+    auth: dict = Depends(JWTBearer()),
+    mongodb: Mongo = Depends(get_db),
+):
+    rate_id = ObjectId(rate_id)
+    review_rate_collection = mongodb.get_collection(collections_names.FILM_REVIEW_RATE_COLLECTION)
+    res = review_rate_collection.find_one_and_update(
+        {"_id": rate_id}, {"$set": {"rate": new_rate}}, return_document=True
+    )
+    if not res:
+        raise HTTPException(
+            detail="Rate does not exists", status_code=HTTPStatus.UNPROCESSABLE_ENTITY
+        )
+    return {"message": "Success", "_id": str(res["_id"])}
