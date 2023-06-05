@@ -7,10 +7,10 @@ from bson.objectid import ObjectId
 from core.config import CommonQueryParams, collections_names
 from core.jwt import JWTBearer
 from db.mongo import Mongo, get_db
-from fastapi import APIRouter, Body, Depends, Path
+from fastapi import APIRouter, Body, Depends, Path, Query
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
-from models.ugc_models import FilmReview, Review
+from models.ugc_models import FilmReview, Review, SortDirectionEnum
 from services.films_reviews import ReviewService, get_review_service
 
 router = APIRouter()
@@ -107,7 +107,7 @@ async def film_get_reviews(
     film_id: UUID,
     review_service: ReviewService = Depends(get_review_service),
     auth: dict = Depends(JWTBearer()),
-    sort_direction: str = "desc",  # desc / asc
+    sort_direction: SortDirectionEnum = Query(...),
     commons: CommonQueryParams = Depends(CommonQueryParams),
 ):
     if sort_direction not in ("desc", "asc"):
