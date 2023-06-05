@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
+from enum import Enum
 
 from models.base import OrjsonBaseModel
 
@@ -21,3 +22,7 @@ class Review(OrjsonBaseModel):
     author: UUID
     text: str
     created_at: str
+
+class SortDirectionEnum(str, Enum):
+    desc = "desc"
+    asc = "asc"
