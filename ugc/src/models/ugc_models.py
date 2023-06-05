@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Optional
+from uuid import UUID
 
-from base import OrjsonBaseModel
+from models.base import OrjsonBaseModel
 
 
 class Bookmark(OrjsonBaseModel):
@@ -12,3 +13,11 @@ class Bookmark(OrjsonBaseModel):
 
 class FilmReview(OrjsonBaseModel):
     text: str
+
+
+class Review(OrjsonBaseModel):
+    id: str
+    film_id: UUID
+    author: UUID
+    text: str
+    created_at: str
