@@ -10,6 +10,7 @@ from services.films_rating import RatingService, get_rating_service
 router = APIRouter()
 
 
+
 @router.post(
     "/{film_id}",
     response_description="Добавление/изменение пользовательского рейтинга к фильму",
@@ -61,10 +62,6 @@ async def remove_movie_rating(
     status_code=HTTPStatus.OK,
 )
 async def get_movie_rating(
-    film_id: UUID,
-    auth: dict = Depends(JWTBearer()),
-    rating_service: RatingService = Depends(get_rating_service),
-):
     film_id = film_id.__str__()
     rating = rating_service.get_average_rating(film_id=film_id)
     if rating == 0:
@@ -72,3 +69,16 @@ async def get_movie_rating(
     resp = JSONResponse({"Film": film_id, "Rating": rating})
     logging.info(resp)
     return resp
+
+@router.get(
+    "summary/{film_id}",
+    response_description="Получить кол-во оценок фильма",
+    status_code=HTTPStatus.OK,
+)
+async def film_like_count(
+    film_id: UUID,
+    auth: dict = Depends(JWTBearer()),
+    rating_service: RatingService = Depends(get_rating_service),
+):
+    query_res = rating_service.count_likes_quantity(film_id=(str(film_id)))
+    return {"quantity": query_res}

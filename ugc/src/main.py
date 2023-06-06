@@ -56,6 +56,11 @@ app.include_router(
     tags=["Закладки фильмов"],
 )
 
+app.include_router(
+    films_rating.router,
+    prefix="/api/v1/films/like",
+    tags=["Оценки фильмов"],
+)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=8001, log_level=logging.DEBUG)

@@ -15,6 +15,10 @@ class RatingService:
         )
         return
 
+    def add_like(self, data):
+        self.collection.insert_one(data)
+        return
+
     def delete_rating(self, film_id, user_id):
         self.collection.delete_one({"film_id": film_id, "user_id": user_id})
         return
@@ -28,6 +32,10 @@ class RatingService:
         ratings = [film["rating"] for film in result]
         average = sum(ratings) / len(ratings)
         return average
+
+    def count_likes_quantity(self, film_id):
+        count = self.collection.count_documents({"film_id": film_id})
+        return count
 
 
 @lru_cache()
