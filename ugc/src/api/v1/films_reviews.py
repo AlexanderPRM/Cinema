@@ -4,12 +4,14 @@ from http import HTTPStatus
 from uuid import UUID
 
 from bson.objectid import ObjectId
-from core.config import collections_names
+from core.config import CommonQueryParams, collections_names
 from core.jwt import JWTBearer
 from db.mongo import Mongo, get_db
-from fastapi import APIRouter, Body, Depends, Path
+from fastapi import APIRouter, Body, Depends, Path, Query
 from fastapi.exceptions import HTTPException
-from models.ugc_models import FilmReview
+from fastapi.responses import JSONResponse
+from models.ugc_models import FilmReview, Review, SortDirectionEnum
+from services.films_reviews import ReviewService, get_review_service
 
 router = APIRouter()
 
@@ -93,3 +95,40 @@ async def film_review_rate_update(
             detail="Rate does not exists", status_code=HTTPStatus.UNPROCESSABLE_ENTITY
         )
     return {"message": "Success", "_id": str(res["_id"])}
+
+
+@router.get(
+    "/{film_id}",
+    response_description="Получение списка рецензий всех пользователей",
+    summary="Рецензия",
+    status_code=HTTPStatus.OK,
+)
+async def film_get_reviews(
+    film_id: UUID,
+    review_service: ReviewService = Depends(get_review_service),
+    auth: dict = Depends(JWTBearer()),
+    sort_direction: SortDirectionEnum = Query(...),
+    commons: CommonQueryParams = Depends(CommonQueryParams),
+):
+    if sort_direction not in ("desc", "asc"):
+        return JSONResponse(
+            {"message": "Parameter sort_direction must be 'desc' or 'asc' or None"},
+            status_code=HTTPStatus.BAD_REQUEST,
+        )
+    reviews = review_service.get_reviews_list(
+        film_id=film_id.__str__(),
+        sort_direction=sort_direction,
+        page_number=commons.page_number,
+        page_size=commons.page_size,
+    )
+    response = [
+        Review(
+            id=str(review["_id"]),
+            film_id=review["film_id"],
+            author=review["author"],
+            text=review["text"],
+            created_at=str(review["created_at"]),
+        )
+        for review in reviews
+    ]
+    return {"reviews": response}
