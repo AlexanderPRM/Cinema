@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from base import OrjsonBaseModel
+from models.base import OrjsonBaseModel
 
 
 class Bookmark(OrjsonBaseModel):
