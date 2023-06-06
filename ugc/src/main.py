@@ -1,5 +1,6 @@
 import logging
 
+import logstash
 import sentry_sdk
 import uvicorn
 from api.v1 import bookmarks, films_rating, films_reviews
@@ -13,7 +14,6 @@ sentry_sdk.init(
     integrations=[FastApiIntegration()],
     traces_sample_rate=1.0,
 )
-
 
 app = FastAPI(
     title=project_settings.UGC_PROJECT_NAME,
@@ -55,7 +55,6 @@ app.include_router(
     prefix="/api/v1/films/bookmark",
     tags=["Закладки фильмов"],
 )
-
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=8001, log_level=logging.DEBUG)

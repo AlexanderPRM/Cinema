@@ -6,10 +6,10 @@ from uuid import UUID
 from bson.objectid import ObjectId
 from core.config import CommonQueryParams, collections_names
 from core.jwt import JWTBearer
+from core.logging_setup import LOGGER
 from db.mongo import Mongo, get_db
 from fastapi import APIRouter, Body, Depends, Path, Query
 from fastapi.exceptions import HTTPException
-from fastapi.responses import JSONResponse
 from models.ugc_models import FilmReview, Review, SortDirectionEnum
 from services.films_reviews import ReviewService, get_review_service
 
@@ -36,7 +36,7 @@ async def film_review(
         "created_at": datetime.now(),
     }
     query_res = collection.insert_one(doc)
-    logging.info(f"Succesfully insert film review {query_res.inserted_id}")
+    LOGGER.info(f"Succesfully insert film review {query_res.inserted_id}")
     return {"message": "Success", "_id": str(query_res.inserted_id)}
 
 
@@ -69,7 +69,7 @@ async def film_review_rate(
     res = review_rate_collection.insert_one(
         {"review_id": review_id, "user_id": auth["user_id"], "rate": rate}
     )
-
+    LOGGER.info(f"New rate {rate} for review {review_id}")
     return {"message": "Success", "_id": str(res.inserted_id)}
 
 
@@ -94,6 +94,7 @@ async def film_review_rate_update(
         raise HTTPException(
             detail="Rate does not exists", status_code=HTTPStatus.UNPROCESSABLE_ENTITY
         )
+    LOGGER.info(f"Updated rate {new_rate} for review {rate_id}")
     return {"message": "Success", "_id": str(res["_id"])}
 
 
@@ -110,11 +111,6 @@ async def film_get_reviews(
     sort_direction: SortDirectionEnum = Query(...),
     commons: CommonQueryParams = Depends(CommonQueryParams),
 ):
-    if sort_direction not in ("desc", "asc"):
-        return JSONResponse(
-            {"message": "Parameter sort_direction must be 'desc' or 'asc' or None"},
-            status_code=HTTPStatus.BAD_REQUEST,
-        )
     reviews = review_service.get_reviews_list(
         film_id=film_id.__str__(),
         sort_direction=sort_direction,
@@ -131,4 +127,4 @@ async def film_get_reviews(
         )
         for review in reviews
     ]
-    return {"reviews": response}
+    return {"reviews:": response}
