@@ -2,7 +2,7 @@ import logging
 
 import sentry_sdk
 import uvicorn
-from api.v1 import bookmarks, films_reviews
+from api.v1 import bookmarks, films_rating, films_reviews
 from core.config import project_settings
 from db import mongo
 from fastapi import FastAPI
@@ -50,6 +50,11 @@ app.include_router(
     tags=["Закладки фильмов"],
 )
 
+app.include_router(
+    films_rating.router,
+    prefix="/api/v1/films/like",
+    tags=["Оценки фильмов"],
+)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=8001, log_level=logging.DEBUG)
