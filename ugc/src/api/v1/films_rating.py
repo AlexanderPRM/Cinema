@@ -1,4 +1,3 @@
-import logging
 from http import HTTPStatus
 from uuid import UUID
 
