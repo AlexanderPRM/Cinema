@@ -28,3 +28,9 @@ class BookmarksService:
             raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Bookmark doesnt exist")
         query_res = collection.delete_one({"user_id": user_id, "film_id": film_id})
         return query_res
+
+    @staticmethod
+    def get_bookmarks(mongodb: Mongo, user_id: str):
+        collection = mongodb.get_collection(collections_names.BOOKMARK_COLLECTION)
+        data = collection.find({"user_id": user_id})
+        return [{"doc_id": str(entry["_id"]), "film_id": str(entry["film_id"])} for entry in data]
