@@ -1,5 +1,7 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
+from uuid import UUID
 
 from models.base import OrjsonBaseModel
 
@@ -12,3 +14,16 @@ class Bookmark(OrjsonBaseModel):
 
 class FilmReview(OrjsonBaseModel):
     text: str
+
+
+class Review(OrjsonBaseModel):
+    id: str
+    film_id: UUID
+    author: UUID
+    text: str
+    created_at: str
+
+
+class SortDirectionEnum(str, Enum):
+    desc = "desc"
+    asc = "asc"
