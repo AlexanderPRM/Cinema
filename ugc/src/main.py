@@ -1,6 +1,5 @@
 import logging
 
-import logstash
 import sentry_sdk
 import uvicorn
 from api.v1 import bookmarks, films_rating, films_reviews
