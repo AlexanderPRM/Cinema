@@ -9,6 +9,19 @@ from services.bookmarks import BookmarksService
 router = APIRouter()
 
 
+@router.get(
+    "/",
+    response_description="Добавление фильма в закладки",
+    status_code=HTTPStatus.OK,
+)
+async def get_bookmarks(
+    auth: dict = Depends(JWTBearer()),
+    mongodb: Mongo = Depends(get_db),
+):
+    query_res = BookmarksService.get_bookmarks(mongodb=mongodb, user_id=auth["user_id"])
+    return {"message": "Success", "user_id": auth["user_id"], "data": query_res}
+
+
 @router.post(
     "/{film_id}/",
     response_description="Добавление фильма в закладки",
