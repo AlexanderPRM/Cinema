@@ -62,6 +62,10 @@ async def remove_movie_rating(
     status_code=HTTPStatus.OK,
 )
 async def get_movie_rating(
+    film_id: UUID,
+    auth: dict = Depends(JWTBearer()),
+    rating_service: RatingService = Depends(get_rating_service),
+):
     film_id = film_id.__str__()
     rating = rating_service.get_average_rating(film_id=film_id)
     if rating == 0:
