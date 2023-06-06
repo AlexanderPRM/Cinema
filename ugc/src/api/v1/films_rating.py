@@ -10,7 +10,6 @@ from services.films_rating import RatingService, get_rating_service
 router = APIRouter()
 
 
-
 @router.post(
     "/{film_id}",
     response_description="Добавление/изменение пользовательского рейтинга к фильму",
@@ -73,6 +72,7 @@ async def get_movie_rating(
     resp = JSONResponse({"Film": film_id, "Rating": rating})
     logging.info(resp)
     return resp
+
 
 @router.get(
     "summary/{film_id}",
