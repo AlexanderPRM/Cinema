@@ -14,7 +14,6 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
 )
 
-
 app = FastAPI(
     title=project_settings.UGC_PROJECT_NAME,
     description="API для работы с пользовательским контентом",
@@ -55,7 +54,6 @@ app.include_router(
     prefix="/api/v1/films/bookmark",
     tags=["Закладки фильмов"],
 )
-
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=8001, log_level=logging.DEBUG)
