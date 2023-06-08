@@ -12,7 +12,7 @@ class UGCSettings(BaseSettings):
     MONGOS2_HOST: str
     MONGOS2_PORT: str
     LOGSTASH_HOST: str
-    LOGSTASH_PORT: str
+    LOGSTASH_PORT: int
 
     class Config:
         case_sensitive = True
