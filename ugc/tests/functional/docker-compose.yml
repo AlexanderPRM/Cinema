@@ -126,7 +126,7 @@ services:
     ports:
       - 8010:8000
     env_file:
-      - config.env
+      - config_tests.env
     restart: always
     depends_on:
       - mongos1
