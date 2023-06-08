@@ -34,18 +34,17 @@ def get_jwt_token():
         max_tries=50,
         max_time=60,
     )
-    async def inner(settings):
+    async def inner(settings, user_uuid: str = str(uuid.uuid4())):
         expires_in = timedelta(days=1)
-        user_id = str(uuid.uuid4())
         payload = {
             "sub": "1234567890",
             "jti": str(uuid.uuid4()),
             "exp": datetime.utcnow() + expires_in,
             "role": "test",
-            "user_id": user_id,
+            "user_id": user_uuid,
         }
         token = jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
-        return token, user_id
+        return token, user_uuid
 
     return inner
 
@@ -107,6 +106,38 @@ def make_get_request(aiohttp_client) -> web_response.Response:
     ):
         url = settings.service_url + url
         response = await aiohttp_client.get(
+            url, headers=headers, data=json.dumps(query_data), cookies=cookies
+        )
+        return response
+
+    return inner
+
+
+@backoff.on_exception(
+    backoff.expo,
+    (
+        requests.exceptions.ConnectionError,
+        ConnectionRefusedError,
+    ),
+    max_tries=50,
+    max_time=60,
+)
+@pytest.fixture
+def make_delete_request(aiohttp_client) -> web_response.Response:
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            requests.exceptions.ConnectionError,
+            ConnectionRefusedError,
+        ),
+        max_tries=50,
+        max_time=60,
+    )
+    async def inner(
+        url, settings, headers={"Content-Type": "application/json"}, query_data={}, cookies={}
+    ):
+        url = settings.service_url + url
+        response = await aiohttp_client.delete(
             url, headers=headers, data=json.dumps(query_data), cookies=cookies
         )
         return response
