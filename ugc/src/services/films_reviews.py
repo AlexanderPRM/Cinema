@@ -9,7 +9,7 @@ class ReviewService:
     def __init__(self, mongodb: Mongo = Depends(get_db)):
         self.collection = mongodb.get_collection(collections_names.FILM_REVIEW_COLLECTION)
 
-    def get_reviews_list(self, film_id, sort_direction, page_number, page_size):
+    async def get_reviews_list(self, film_id, sort_direction, page_number, page_size):
         reviews = (
             self.collection.find({"film_id": film_id})
             .sort("created_at", -1 if sort_direction == "desc" else 1)

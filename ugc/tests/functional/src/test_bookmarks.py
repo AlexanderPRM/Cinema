@@ -1,5 +1,6 @@
 import json
 import uuid
+import asyncio
 from http import HTTPStatus
 
 import pytest
@@ -57,6 +58,7 @@ async def test_get_bookmark(
     response = await make_post_request(
         f"films/bookmark/{film_id}/", headers=headers, settings=baseconfig
     )
+    await asyncio.sleep(2)
     assert response.status == post_status
     response = await make_get_request("films/bookmark/", headers=headers, settings=baseconfig)
     assert response.status == get_status
@@ -90,6 +92,7 @@ async def test_delete_bookmark_success(
     response = await make_post_request(
         f"films/bookmark/{film_id}/", headers=headers, settings=baseconfig
     )
+    await asyncio.sleep(2)
     assert response.status == post_status
     response = await make_delete_request(
         f"films/bookmark/{film_id}/", headers=headers, settings=baseconfig

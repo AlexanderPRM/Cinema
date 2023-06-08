@@ -110,7 +110,7 @@ async def film_get_reviews(
     sort_direction: SortDirectionEnum = Query(...),
     commons: CommonQueryParams = Depends(CommonQueryParams),
 ):
-    reviews = review_service.get_reviews_list(
+    reviews = await review_service.get_reviews_list(
         film_id=film_id.__str__(),
         sort_direction=sort_direction,
         page_number=commons.page_number,
@@ -124,6 +124,6 @@ async def film_get_reviews(
             text=review["text"],
             created_at=str(review["created_at"]),
         )
-        for review in reviews
+        async for review in reviews
     ]
-    return {"reviews:": response}
+    return {"reviews": response}

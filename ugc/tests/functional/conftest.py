@@ -102,11 +102,12 @@ def make_get_request(aiohttp_client) -> web_response.Response:
         max_time=60,
     )
     async def inner(
-        url, settings, headers={"Content-Type": "application/json"}, query_data={}, cookies={}
+        url, settings, headers={"Content-Type": "application/json"},
+        query_data={}, cookies={}, params={},
     ):
         url = settings.service_url + url
         response = await aiohttp_client.get(
-            url, headers=headers, data=json.dumps(query_data), cookies=cookies
+            url, headers=headers, data=json.dumps(query_data), cookies=cookies, params=params
         )
         return response
 
