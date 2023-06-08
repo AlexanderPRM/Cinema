@@ -1,8 +1,8 @@
-import logging
 from http import HTTPStatus
 from uuid import UUID
 
 from core.jwt import JWTBearer
+from core.logging_setup import LOGGER
 from fastapi import APIRouter, Body, Depends
 from fastapi.responses import JSONResponse
 from services.films_rating import RatingService, get_rating_service
@@ -26,7 +26,7 @@ async def update_movie_rating(
     user_id = auth["user_id"]
     rating_service.update_rating(film_id=film_id, user_id=user_id, rating=rating)
     resp = JSONResponse({"message": f"Successfully add rating {rating} to film {film_id}"})
-    logging.info(resp)
+    LOGGER.info(resp)
     return resp
 
 
@@ -50,7 +50,7 @@ async def remove_movie_rating(
         )
     rating_service.delete_rating(film_id=film_id, user_id=user_id)
     resp = JSONResponse({"message": f"Successfully remove rating from film {film_id}"})
-    logging.info(resp)
+    LOGGER.info(resp)
     return resp
 
 
@@ -70,7 +70,7 @@ async def get_movie_rating(
     if rating == 0:
         return JSONResponse({"message": f"No one has rated movie {film_id} yet"})
     resp = JSONResponse({"Film": film_id, "Rating": rating})
-    logging.info(resp)
+    LOGGER.info(resp)
     return resp
 
 
