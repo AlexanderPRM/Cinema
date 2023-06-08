@@ -59,7 +59,7 @@ async def test_get_bookmark(
     )
     assert response.status == post_status
     response = await make_get_request(
-        f"films/bookmark/", headers=headers, settings=baseconfig
+        "films/bookmark/", headers=headers, settings=baseconfig
     )
     assert response.status == get_status
     response_text = await response.text()
@@ -75,7 +75,7 @@ async def test_get_bookmark(
 @pytest.mark.parametrize(
     "post_status, delete_status, expected_message",
     [
-        (HTTPStatus.CREATED, HTTPStatus.OK,  "Success"),
+        (HTTPStatus.CREATED, HTTPStatus.OK, "Success"),
     ],
 )
 async def test_delete_bookmark_success(
@@ -106,7 +106,7 @@ async def test_delete_bookmark_success(
 @pytest.mark.parametrize(
     "delete_status, expected_message",
     [
-        (HTTPStatus.NOT_FOUND,  "Bookmark doesnt exist"),
+        (HTTPStatus.NOT_FOUND, "Bookmark doesnt exist"),
     ],
 )
 async def test_delete_bookmark_not_found(
