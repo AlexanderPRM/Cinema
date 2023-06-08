@@ -14,7 +14,6 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
 )
 
-
 app = FastAPI(
     title=project_settings.UGC_PROJECT_NAME,
     description="API для работы с пользовательским контентом",
@@ -45,15 +44,15 @@ app.include_router(
 )
 
 app.include_router(
-    bookmarks.router,
-    prefix="/api/v1/films/bookmark",
-    tags=["Закладки фильмов"],
+    films_rating.router,
+    prefix="/api/v1/films/rating",
+    tags=["Пользовательская оценка фильмов"],
 )
 
 app.include_router(
-    films_rating.router,
-    prefix="/api/v1/films/like",
-    tags=["Оценки фильмов"],
+    bookmarks.router,
+    prefix="/api/v1/films/bookmark",
+    tags=["Закладки фильмов"],
 )
 
 if __name__ == "__main__":

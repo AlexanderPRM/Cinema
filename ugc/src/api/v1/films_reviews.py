@@ -1,15 +1,16 @@
-import logging
 from datetime import datetime
 from http import HTTPStatus
 from uuid import UUID
 
 from bson.objectid import ObjectId
-from core.config import collections_names
+from core.config import CommonQueryParams, collections_names
 from core.jwt import JWTBearer
+from core.logging_setup import LOGGER
 from db.mongo import Mongo, get_db
-from fastapi import APIRouter, Body, Depends, Path
+from fastapi import APIRouter, Body, Depends, Path, Query
 from fastapi.exceptions import HTTPException
-from models.ugc_models import FilmReview
+from models.ugc_models import FilmReview, Review, SortDirectionEnum
+from services.films_reviews import ReviewService, get_review_service
 
 router = APIRouter()
 
@@ -33,8 +34,8 @@ async def film_review(
         "text": body.text,
         "created_at": datetime.now(),
     }
-    query_res = await collection.insert_one(doc)
-    logging.info(f"Succesfully insert film review {query_res.inserted_id}")
+    query_res = collection.insert_one(doc)
+    LOGGER.info(f"Succesfully insert film review {query_res.inserted_id}")
     return {"message": "Success", "_id": str(query_res.inserted_id)}
 
 
@@ -67,7 +68,7 @@ async def film_review_rate(
     res = await review_rate_collection.insert_one(
         {"review_id": review_id, "user_id": auth["user_id"], "rate": rate}
     )
-
+    LOGGER.info(f"New rate {rate} for review {review_id}")
     return {"message": "Success", "_id": str(res.inserted_id)}
 
 
@@ -92,4 +93,37 @@ async def film_review_rate_update(
         raise HTTPException(
             detail="Rate does not exists", status_code=HTTPStatus.UNPROCESSABLE_ENTITY
         )
+    LOGGER.info(f"Updated rate {new_rate} for review {rate_id}")
     return {"message": "Success", "_id": str(res["_id"])}
+
+
+@router.get(
+    "/{film_id}",
+    response_description="Получение списка рецензий всех пользователей",
+    summary="Рецензия",
+    status_code=HTTPStatus.OK,
+)
+async def film_get_reviews(
+    film_id: UUID,
+    review_service: ReviewService = Depends(get_review_service),
+    auth: dict = Depends(JWTBearer()),
+    sort_direction: SortDirectionEnum = Query(...),
+    commons: CommonQueryParams = Depends(CommonQueryParams),
+):
+    reviews = review_service.get_reviews_list(
+        film_id=film_id.__str__(),
+        sort_direction=sort_direction,
+        page_number=commons.page_number,
+        page_size=commons.page_size,
+    )
+    response = [
+        Review(
+            id=str(review["_id"]),
+            film_id=review["film_id"],
+            author=review["author"],
+            text=review["text"],
+            created_at=str(review["created_at"]),
+        )
+        for review in reviews
+    ]
+    return {"reviews:": response}
