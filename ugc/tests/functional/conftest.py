@@ -7,7 +7,7 @@ import backoff
 import jwt
 import pytest
 import requests
-from aiohttp import web_response
+from aiohttp import web_response, client_exceptions
 
 pytest_plugins = [
     "client.aiohttp",
@@ -54,6 +54,7 @@ def get_jwt_token():
     (
         requests.exceptions.ConnectionError,
         ConnectionRefusedError,
+        client_exceptions.ServerDisconnectedError,
     ),
     max_tries=50,
     max_time=60,
@@ -65,6 +66,7 @@ def make_post_request(aiohttp_client) -> web_response.Response:
         (
             requests.exceptions.ConnectionError,
             ConnectionRefusedError,
+            client_exceptions.ServerDisconnectedError,
         ),
         max_tries=50,
         max_time=60,
@@ -86,6 +88,7 @@ def make_post_request(aiohttp_client) -> web_response.Response:
     (
         requests.exceptions.ConnectionError,
         ConnectionRefusedError,
+        client_exceptions.ServerDisconnectedError,
     ),
     max_tries=50,
     max_time=60,
@@ -97,6 +100,7 @@ def make_get_request(aiohttp_client) -> web_response.Response:
         (
             requests.exceptions.ConnectionError,
             ConnectionRefusedError,
+            client_exceptions.ServerDisconnectedError,
         ),
         max_tries=50,
         max_time=60,
@@ -123,6 +127,7 @@ def make_get_request(aiohttp_client) -> web_response.Response:
     (
         requests.exceptions.ConnectionError,
         ConnectionRefusedError,
+        client_exceptions.ServerDisconnectedError,
     ),
     max_tries=50,
     max_time=60,
@@ -134,6 +139,7 @@ def make_delete_request(aiohttp_client) -> web_response.Response:
         (
             requests.exceptions.ConnectionError,
             ConnectionRefusedError,
+            client_exceptions.ServerDisconnectedError,
         ),
         max_tries=50,
         max_time=60,
@@ -143,6 +149,40 @@ def make_delete_request(aiohttp_client) -> web_response.Response:
     ):
         url = settings.service_url + url
         response = await aiohttp_client.delete(
+            url, headers=headers, data=json.dumps(query_data), cookies=cookies
+        )
+        return response
+
+    return inner
+
+
+@backoff.on_exception(
+    backoff.expo,
+    (
+        requests.exceptions.ConnectionError,
+        ConnectionRefusedError,
+        client_exceptions.ServerDisconnectedError,
+    ),
+    max_tries=50,
+    max_time=60,
+)
+@pytest.fixture
+def make_put_request(aiohttp_client) -> web_response.Response:
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            requests.exceptions.ConnectionError,
+            ConnectionRefusedError,
+            client_exceptions.ServerDisconnectedError,
+        ),
+        max_tries=50,
+        max_time=60,
+    )
+    async def inner(
+        url, settings, headers={"Content-Type": "application/json"}, query_data={}, cookies={}
+    ):
+        url = settings.service_url + url
+        response = await aiohttp_client.put(
             url, headers=headers, data=json.dumps(query_data), cookies=cookies
         )
         return response
