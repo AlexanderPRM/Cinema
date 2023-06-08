@@ -111,7 +111,10 @@ async def test_post_review_rate(
     review_id = all_reviews[0].get("id")
     query_data = {"rate": 5}
     response = await make_post_request(
-        f"films/review/rate/{review_id}/", headers=headers, settings=baseconfig, query_data=query_data
+        f"films/review/rate/{review_id}/",
+        headers=headers,
+        settings=baseconfig,
+        query_data=query_data,
     )
     assert response.status == post_status
     response_text = await response.text()
@@ -157,7 +160,10 @@ async def test_put_review_rate(
     review_id = all_reviews[0].get("id")
     query_data = {"rate": 5}
     response = await make_post_request(
-        f"films/review/rate/{review_id}/", headers=headers, settings=baseconfig, query_data=query_data
+        f"films/review/rate/{review_id}/",
+        headers=headers,
+        settings=baseconfig,
+        query_data=query_data,
     )
     assert response.status == post_status
     response_text = await response.text()
