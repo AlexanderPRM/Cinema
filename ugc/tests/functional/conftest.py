@@ -7,7 +7,7 @@ import backoff
 import jwt
 import pytest
 import requests
-from aiohttp import web_response, client_exceptions
+from aiohttp import client_exceptions, web_response
 
 pytest_plugins = [
     "client.aiohttp",
