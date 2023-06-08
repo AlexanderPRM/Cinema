@@ -73,5 +73,3 @@ async def test_get_review(
     film_id = all_reviews[0].get("film_id")
     assert user_id == expected_user_id
     assert film_id == expected_film_id
-
-
