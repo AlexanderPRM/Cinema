@@ -34,7 +34,7 @@ async def film_review(
         "text": body.text,
         "created_at": datetime.now(),
     }
-    query_res = collection.insert_one(doc)
+    query_res = await collection.insert_one(doc)
     LOGGER.info(f"Succesfully insert film review {query_res.inserted_id}")
     return {"message": "Success", "_id": str(query_res.inserted_id)}
 
