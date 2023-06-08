@@ -58,9 +58,7 @@ async def test_get_bookmark(
         f"films/bookmark/{film_id}/", headers=headers, settings=baseconfig
     )
     assert response.status == post_status
-    response = await make_get_request(
-        "films/bookmark/", headers=headers, settings=baseconfig
-    )
+    response = await make_get_request("films/bookmark/", headers=headers, settings=baseconfig)
     assert response.status == get_status
     response_text = await response.text()
     response_data = json.loads(response_text)
