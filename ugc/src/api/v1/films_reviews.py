@@ -33,7 +33,7 @@ async def film_review(
         "text": body.text,
         "created_at": datetime.now(),
     }
-    query_res = collection.insert_one(doc)
+    query_res = await collection.insert_one(doc)
     logging.info(f"Succesfully insert film review {query_res.inserted_id}")
     return {"message": "Success", "_id": str(query_res.inserted_id)}
 
@@ -53,18 +53,18 @@ async def film_review_rate(
     review_id = ObjectId(review_id)
 
     review_collection = mongodb.get_collection(collections_names.FILM_REVIEW_COLLECTION)
-    if not review_collection.find_one({"_id": review_id}):
+    if not await review_collection.find_one({"_id": review_id}):
         raise HTTPException(
             detail="This review does not exist", status_code=HTTPStatus.UNPROCESSABLE_ENTITY
         )
 
     review_rate_collection = mongodb.get_collection(collections_names.FILM_REVIEW_RATE_COLLECTION)
-    if review_rate_collection.find_one({"review_id": review_id, "user_id": auth["user_id"]}):
+    if await review_rate_collection.find_one({"review_id": review_id, "user_id": auth["user_id"]}):
         raise HTTPException(
             detail="User already rate this review", status_code=HTTPStatus.UNPROCESSABLE_ENTITY
         )
 
-    res = review_rate_collection.insert_one(
+    res = await review_rate_collection.insert_one(
         {"review_id": review_id, "user_id": auth["user_id"], "rate": rate}
     )
 
@@ -73,7 +73,7 @@ async def film_review_rate(
 
 @router.put(
     "/rate/{rate_id}",
-    response_description="Оценка рецензии",
+    response_description="Изменение оценки рецензии",
     summary="Оценка",
     status_code=HTTPStatus.CREATED,
 )
@@ -85,7 +85,7 @@ async def film_review_rate_update(
 ):
     rate_id = ObjectId(rate_id)
     review_rate_collection = mongodb.get_collection(collections_names.FILM_REVIEW_RATE_COLLECTION)
-    res = review_rate_collection.find_one_and_update(
+    res = await review_rate_collection.find_one_and_update(
         {"_id": rate_id}, {"$set": {"rate": new_rate}}, return_document=True
     )
     if not res:

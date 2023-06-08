@@ -18,5 +18,5 @@ async def film_like_count(
     auth: dict = Depends(JWTBearer()),
     rating_service: RatingService = Depends(get_rating_service),
 ):
-    query_res = rating_service.count_likes_quantity(film_id=(str(film_id)))
+    query_res = await rating_service.count_likes_quantity(film_id=(str(film_id)))
     return {"quantity": query_res}

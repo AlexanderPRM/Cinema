@@ -2,13 +2,13 @@ from typing import Optional
 
 import backoff
 from core.config import project_settings
-from pymongo import MongoClient
+from motor import motor_asyncio
 from pymongo.errors import ExecutionTimeout, NetworkTimeout, WaitQueueTimeoutError
 
 
 class Mongo:
     def __init__(self, uri) -> None:
-        self.client = MongoClient(host=uri)
+        self.client = motor_asyncio.AsyncIOMotorClient(host=uri)
         self.database = self.client[project_settings.MONGO_DB]
 
     @backoff.on_exception(
