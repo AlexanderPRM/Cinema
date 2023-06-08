@@ -1,6 +1,6 @@
+import asyncio
 import json
 import uuid
-import asyncio
 from http import HTTPStatus
 
 import pytest
