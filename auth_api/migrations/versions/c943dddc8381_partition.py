@@ -23,6 +23,7 @@ def upgrade():
         sa.Column("email", sa.String(length=255), nullable=False),
         sa.Column("password", sa.Text(), nullable=False),
         sa.Column("name", sa.String(length=155), nullable=True),
+        sa.Column("verified", sa.Boolean(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("email"),
         sa.UniqueConstraint("id"),
