@@ -1,13 +1,17 @@
 from datetime import datetime
 
 import bcrypt
+from core.config import config
 from core.utils import check_device_type, normalize_email
 from db.models import ServiceUser, User, UserLoginHistory, UserRole
 from db.postgres import db
+from itsdangerous.url_safe import URLSafeSerializer
 from pydantic import EmailError, validate_email
 
 from .exception_service import HttpExceptions
 from .role_service import RoleService
+
+s = URLSafeSerializer(config.URL_SAFE_SERIALIZER_SECRET)
 
 
 class UserService:
@@ -102,3 +106,19 @@ class UserService:
     def get_user_role(self, user):
         role = db.session.query(UserRole).join(ServiceUser).filter(ServiceUser.user == user).first()
         return role
+
+    def confirm_email(self, email):
+        db.session.query(User).filter(User.email.ilike(email)).update(
+            {"verified": True}, synchronize_session="fetch"
+        )
+        db.session.commit()
+
+    def generate_confirmation_token(self, email):
+        return s.dumps(email, salt=config.URL_SAFE_SERIALIZER_SALT)
+
+    def confirm_token(self, token, expiration=7200):
+        try:
+            email = s.loads(token, salt=config.URL_SAFE_SERIALIZER_SALT, max_age=expiration)
+        except:
+            return False
+        return email
