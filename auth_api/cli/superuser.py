@@ -27,7 +27,7 @@ def create_super_user():
             exit()
     password = input("Enter your password: ")
     hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    user = User(email=email, name='Admin', password=hashed_pass.decode(), verified=False)
+    user = User(email=email, name="Admin", password=hashed_pass.decode(), verified=False)
     db.session.add(user)
     db.session.commit()
     role_service = RoleService()
