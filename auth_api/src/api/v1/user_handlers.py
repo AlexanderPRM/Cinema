@@ -111,6 +111,13 @@ def yandex_signin_callback():
     return resp, HTTPStatus.OK
 
 
+def send_confirmation_email(user):
+    """Реализовать HTTP отчет о создании юзера в Notification сервис"""
+    token = service.generate_confirmation_token(user)
+    confirm_url = url_for("api.user.confirm_email", token=token, _external=True)
+    return confirm_url
+
+
 @user_bp.route("/signup/", methods=["POST"])
 def signup():
     data_validate(request)
@@ -125,8 +132,15 @@ def signup():
         identity=email, additional_claims={"role": role.name, "user_id": user.id}
     )
     refresh_token = create_refresh_token(identity=email)
+
+    confirm_url = send_confirmation_email(email)
+
     resp = jsonify(
-        {"id": user.id, "tokens": {"access_token": access_token, "refresh_token": refresh_token}}
+        {
+            "id": user.id,
+            "tokens": {"access_token": access_token, "refresh_token": refresh_token},
+            "confirm_url": confirm_url,
+        }
     )
     resp = make_response(resp, HTTPStatus.CREATED)
     unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
@@ -222,7 +236,14 @@ def personal_info():
     role = jwt_data["role"]
     current_user = get_jwt_identity()
     user_info = service.get_profile_info(current_user)
-    resp = jsonify({"name": user_info.name, "email": current_user, "role": role})
+    resp = jsonify(
+        {
+            "name": user_info.name,
+            "email": current_user,
+            "role": role,
+            "verified": user_info.verified,
+        }
+    )
     unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
     return resp, HTTPStatus.OK
 
@@ -342,3 +363,21 @@ def delete():
     resp = make_response(redirect(url_for("user.signup")))
     unset_jwt_cookies(resp)
     return resp, HTTPStatus.OK
+
+
+@user_bp.route("/confirm/<token>", methods=["GET"])
+def confirm_email(token):
+    email = service.confirm_token(token)
+    if email:
+        service.confirm_email(email=email)
+        resp = jsonify(
+            {
+                "message": "Successfully confirm email",
+                "email": email,
+            }
+        )
+        resp = make_response(resp, HTTPStatus.OK)
+    else:
+        resp = jsonify({"message": "Error while confirm"})
+        resp = make_response(resp, HTTPStatus.OK)
+    return resp
