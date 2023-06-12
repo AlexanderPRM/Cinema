@@ -283,12 +283,10 @@ def change_user_email():
     password = request.json["password"]
     current_user = get_jwt_identity()
     if service.check_password(current_user, password):
-
         access_token = create_access_token(
             identity=new_email, additional_claims={"role": role, "user_id": current_user.id}
         )
         refresh_token = create_refresh_token(identity=new_email)
-
         resp = jsonify(
             {
                 "NEW email: ": new_email,
