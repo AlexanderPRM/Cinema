@@ -50,7 +50,7 @@ class UserService:
             return exceptions.email_error()
 
         hashed_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-        user = User(email=email, password=hashed_pass.decode(), name=name)
+        user = User(email=email, password=hashed_pass.decode(), name=name, verified=False)
         db.session.add(user)
         db.session.commit()
         role_service = RoleService()
