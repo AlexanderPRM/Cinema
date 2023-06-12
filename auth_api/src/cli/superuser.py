@@ -31,8 +31,7 @@ def create_super_user():
     db.session.add(user)
     db.session.commit()
     role_service = RoleService()
-    role = role_service.get("superuser")
-    if role:
+    if role := role_service.get("superuser"):
         user_service = ServiceUser(user=user, role=role)
         db.session.add(user_service)
         db.session.commit()

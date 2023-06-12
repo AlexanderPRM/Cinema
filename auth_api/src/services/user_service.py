@@ -131,17 +131,14 @@ class UserService:
         return user, role_name
 
     def get_all_users_info(self):
-        users = User.query.all()
-        users_list = []
-        for user in users:
-            role = ServiceUser.query.filter_by(user_id=user.id).first()
-            role_name = UserRole.query.filter_by(id=role.role_id).first().name
-            users_list.append(
-                {
-                    "name": user.name,
-                    "email": user.email,
-                    "role": role_name,
-                }
-            )
+        users_roles = (
+            db.session.query(User.name, User.email, UserRole.name)
+            .join(ServiceUser, User.id == ServiceUser.user_id)
+            .join(UserRole, ServiceUser.role_id == UserRole.id)
+            .all()
+        )
+        users_list = [
+            {"name": name, "email": email, "role": role} for (name, email, role) in users_roles
+        ]
         data = {"users": users_list}
         return data
