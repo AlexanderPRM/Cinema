@@ -5,6 +5,7 @@ from core.config import config
 from core.utils import check_device_type, normalize_email
 from db.models import ServiceUser, User, UserLoginHistory, UserRole
 from db.postgres import db
+from itsdangerous import BadSignature
 from itsdangerous.url_safe import URLSafeSerializer
 from pydantic import EmailError, validate_email
 
@@ -119,6 +120,6 @@ class UserService:
     def confirm_token(self, token, expiration=7200):
         try:
             email = s.loads(token, salt=config.URL_SAFE_SERIALIZER_SALT, max_age=expiration)
-        except itsdangerous.BadSignature:
+        except BadSignature:
             return False
         return email
