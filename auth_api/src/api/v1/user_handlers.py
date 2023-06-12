@@ -283,12 +283,12 @@ def change_user_email():
     password = request.json["password"]
     current_user = get_jwt_identity()
     if service.check_password(current_user, password):
-        # создание токенов
+
         access_token = create_access_token(
             identity=new_email, additional_claims={"role": role, "user_id": current_user.id}
         )
         refresh_token = create_refresh_token(identity=new_email)
-        # удаление access и refresh токенов
+
         resp = jsonify(
             {
                 "NEW email: ": new_email,
@@ -300,9 +300,8 @@ def change_user_email():
 
         unset_access_cookies(resp)
         unset_refresh_cookies(resp)
-        # Изменение email
+
         service.change_email(email=current_user, new_email=new_email)
-        # отправка токенов в куки
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
         return resp, HTTPStatus.OK
@@ -313,15 +312,11 @@ def change_user_email():
 @jwt_required(locations=["headers", "cookies"])
 def logout():
     jti = get_jwt()["jti"]
-    # Получаем id пользователя и юзер агент
     current_user = get_jwt_identity()
     user = service.get_profile_info(current_user)
     user_agent = request.headers.get("User-Agent")
-    # Получаем токены
     access_token_cookie = request.cookies.get("access_token_cookie")
-    # Записываем access токен, как устаревший
     redis_db.setex(jti + "_access", config.ACCESS_TOKEN_EXPIRES, access_token_cookie)
-    # Удаляем из редис refresh
     redis_db.delete(str(user.id) + "_" + user_agent + "_refresh")
     resp = jsonify(
         {
@@ -349,14 +344,10 @@ def delete():
         )
 
     jti = get_jwt()["jti"]
-    # Получаем id пользователя и юзер агент
     user = service.get_profile_info(current_user)
     user_agent = request.headers.get("User-Agent")
-    # Получаем токены
     access_token_cookie = request.cookies.get("access_token_cookie")
-    # Записываем access токен, как устаревший
     redis_db.setex(jti + "_access", config.ACCESS_TOKEN_EXPIRES, access_token_cookie)
-    # Удаляем из редис refresh
     redis_db.delete(str(user.id) + "_" + user_agent + "_refresh")
 
     service.delete_account(current_user)
@@ -385,15 +376,8 @@ def confirm_email(token):
 
 
 @user_bp.route("/get_user_info/<user_id>", methods=["GET"])  # GET
-@jwt_required(locations=["headers", "cookies"])
+@superuser_required
 def get_user_info(user_id):
-    access_token_cookie = request.cookies.get("access_token_cookie")
-    jwt_data = jwt_decode(access_token_cookie, config.JWT_SECRET, algorithms=["HS256"])
-    role = jwt_data["role"]
-    if role != "superuser":
-        return abort(
-            Response(json.dumps({"error_message": "Only for admins!"}), HTTPStatus.FORBIDDEN)
-        )
     user_info, user_role = service.get_user_info(user_id)
     resp = jsonify(
         {
@@ -409,13 +393,6 @@ def get_user_info(user_id):
 @user_bp.route("/all_users_info", methods=["GET"])  # GET
 @superuser_required
 def all_users_info():
-    access_token_cookie = request.cookies.get("access_token_cookie")
-    jwt_data = jwt_decode(access_token_cookie, config.JWT_SECRET, algorithms=["HS256"])
-    role = jwt_data["role"]
-    if role != "superuser":
-        return abort(
-            Response(json.dumps({"error_message": "Only for admins!"}), HTTPStatus.FORBIDDEN)
-        )
     data = service.get_all_users_info()
     resp = jsonify(data)
     return resp, HTTPStatus.OK
