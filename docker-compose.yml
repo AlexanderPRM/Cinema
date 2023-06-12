@@ -213,21 +213,21 @@ services:
       - ./logstash_deploy/logstash.conf:/config/logstash.conf
     command: logstash -f /config/logstash.conf
 
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
-  #   environment:
-  #     discovery.type: single-node
-  #   ports:
-  #     - 9200:9200
-  #   volumes:
-  #     - /tmp/esdata:/tmp/elasticsearch/data
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+    environment:
+      discovery.type: single-node
+    ports:
+      - 9200:9200
+    volumes:
+      - /tmp/esdata:/tmp/elasticsearch/data
 
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:7.10.2
-  #   ports:
-  #     - "5601:5601"
-  #   depends_on:
-  #     - elasticsearch
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.10.2
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
   
 
 volumes:
