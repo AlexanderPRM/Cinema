@@ -12,14 +12,15 @@ router = APIRouter()
 
 @router.get(
     "/",
-    response_description="Добавление фильма в закладки",
+    response_description="Получение фильмов из закладок",
     status_code=HTTPStatus.OK,
 )
 async def get_bookmarks(
     auth: dict = Depends(JWTBearer()),
     mongodb: Mongo = Depends(get_db),
 ):
-    query_res = BookmarksService.get_bookmarks(mongodb=mongodb, user_id=auth["user_id"])
+    query_res = await BookmarksService.get_bookmarks(mongodb=mongodb, user_id=auth["user_id"])
+
     return {"message": "Success", "user_id": auth["user_id"], "data": query_res}
 
 
@@ -33,7 +34,7 @@ async def create_bookmark(
     auth: dict = Depends(JWTBearer()),
     mongodb: Mongo = Depends(get_db),
 ):
-    query_res = BookmarksService.post_bookmark(
+    query_res = await BookmarksService.post_bookmark(
         mongodb=mongodb, user_id=auth["user_id"], film_id=str(film_id)
     )
     LOGGER.info(f"Add bookmark | film_id: {film_id}")
@@ -48,7 +49,7 @@ async def delete_bookmark(
     auth: dict = Depends(JWTBearer()),
     mongodb: Mongo = Depends(get_db),
 ):
-    query_res = BookmarksService.delete_bookmark(
+    await BookmarksService.delete_bookmark(
         mongodb=mongodb, user_id=auth["user_id"], film_id=str(film_id)
     )
-    return {"message": "Success", "_id": str(query_res.inserted_id)}
+    return {"message": "Success"}

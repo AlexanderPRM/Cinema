@@ -9,32 +9,32 @@ class RatingService:
     def __init__(self, mongodb: Mongo = Depends(get_db)):
         self.collection = mongodb.get_collection(collections_names.FILM_RATING_COLLECTION)
 
-    def update_rating(self, film_id, user_id, rating):
-        self.collection.update_one(
+    async def update_rating(self, film_id, user_id, rating):
+        await self.collection.update_one(
             {"film_id": film_id, "user_id": user_id}, {"$set": {"rating": rating}}, upsert=True
         )
-        return
 
-    def add_like(self, data):
-        self.collection.insert_one(data)
-        return
+    async def add_like(self, data):
+        await self.collection.insert_one(data)
 
-    def delete_rating(self, film_id, user_id):
-        self.collection.delete_one({"film_id": film_id, "user_id": user_id})
-        return
+    async def delete_rating(self, film_id, user_id):
+        await self.collection.delete_one({"film_id": film_id, "user_id": user_id})
 
-    def check_rating_exists(self, film_id, user_id):
+    async def check_rating_exists(self, film_id, user_id):
         result = self.collection.find({"film_id": film_id, "user_id": user_id})
-        return list(result)
+        return [entry async for entry in result]
 
-    def get_average_rating(self, film_id):
-        result = self.collection.find({"film_id": film_id})
-        ratings = [film["rating"] for film in result]
-        average = sum(ratings) / len(ratings)
-        return average
+    async def get_average_rating(self, film_id):
+        res = self.collection.aggregate(
+            [
+                {"$match": {"film_id": film_id}},
+                {"$group": {"_id": None, "avg_rating": {"$avg": "$rating"}}},
+            ]
+        )
+        return res
 
-    def count_likes_quantity(self, film_id):
-        count = self.collection.count_documents({"film_id": film_id})
+    async def count_likes_quantity(self, film_id):
+        count = await self.collection.count_documents({"film_id": film_id})
         return count
 
 
