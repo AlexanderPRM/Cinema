@@ -381,3 +381,40 @@ def confirm_email(token):
         resp = jsonify({"message": "Error while confirm"})
         resp = make_response(resp, HTTPStatus.OK)
     return resp
+
+
+@user_bp.route("/get_user_info/<user_id>", methods=["GET"])  # GET
+@jwt_required(locations=["headers", "cookies"])
+def get_user_info(user_id):
+    access_token_cookie = request.cookies.get("access_token_cookie")
+    jwt_data = jwt_decode(access_token_cookie, config.JWT_SECRET, algorithms=["HS256"])
+    role = jwt_data["role"]
+    if role != "superuser":
+        return abort(
+            Response(json.dumps({"error_message": "Only for admins!"}), HTTPStatus.FORBIDDEN)
+        )
+    user_info, user_role = service.get_user_info(user_id)
+    resp = jsonify(
+        {
+            "name": user_info.name,
+            "email": user_id,
+            "role": user_role,
+            "verified": user_info.verified,
+        }
+    )
+    return resp, HTTPStatus.OK
+
+
+@user_bp.route("/all_users_info", methods=["GET"])  # GET
+@jwt_required(locations=["headers", "cookies"])
+def all_users_info():
+    access_token_cookie = request.cookies.get("access_token_cookie")
+    jwt_data = jwt_decode(access_token_cookie, config.JWT_SECRET, algorithms=["HS256"])
+    role = jwt_data["role"]
+    if role != "superuser":
+        return abort(
+            Response(json.dumps({"error_message": "Only for admins!"}), HTTPStatus.FORBIDDEN)
+        )
+    data = service.get_all_users_info()
+    resp = jsonify(data)
+    return resp, HTTPStatus.OK

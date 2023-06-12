@@ -123,3 +123,25 @@ class UserService:
         except BadSignature:
             return False
         return email
+
+    def get_user_info(self, email):
+        user = User.query.filter_by(email=email).first()
+        role = ServiceUser.query.filter_by(user_id=user.id).first()
+        role_name = UserRole.query.filter_by(id=role.role_id).first().name
+        return user, role_name
+
+    def get_all_users_info(self):
+        users = User.query.all()
+        users_list = []
+        for user in users:
+            role = ServiceUser.query.filter_by(user_id=user.id).first()
+            role_name = UserRole.query.filter_by(id=role.role_id).first().name
+            users_list.append(
+                {
+                    "name": user.name,
+                    "email": user.email,
+                    "role": role_name,
+                }
+            )
+        data = {"users": users_list}
+        return data
