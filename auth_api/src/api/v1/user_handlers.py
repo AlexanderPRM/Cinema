@@ -2,6 +2,7 @@ import json
 from http import HTTPStatus
 
 from core.config import config
+from core.permissions import superuser_required
 from core.utils import set_tokens
 from db.redis import redis_db
 from flask import Blueprint, Response, abort, jsonify, make_response, redirect, request, url_for
@@ -406,7 +407,7 @@ def get_user_info(user_id):
 
 
 @user_bp.route("/all_users_info", methods=["GET"])  # GET
-@jwt_required(locations=["headers", "cookies"])
+@superuser_required
 def all_users_info():
     access_token_cookie = request.cookies.get("access_token_cookie")
     jwt_data = jwt_decode(access_token_cookie, config.JWT_SECRET, algorithms=["HS256"])

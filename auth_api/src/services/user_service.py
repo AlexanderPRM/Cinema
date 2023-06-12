@@ -12,7 +12,7 @@ from pydantic import EmailError, validate_email
 from .exception_service import HttpExceptions
 from .role_service import RoleService
 
-s = URLSafeSerializer(config.URL_SAFE_SERIALIZER_SECRET)
+serializer = URLSafeSerializer(config.URL_SAFE_SERIALIZER_SECRET)
 
 
 class UserService:
@@ -115,11 +115,13 @@ class UserService:
         db.session.commit()
 
     def generate_confirmation_token(self, email):
-        return s.dumps(email, salt=config.URL_SAFE_SERIALIZER_SALT)
+        return serializer.dumps(email, salt=config.URL_SAFE_SERIALIZER_SALT)
 
     def confirm_token(self, token, expiration=7200):
         try:
-            email = s.loads(token, salt=config.URL_SAFE_SERIALIZER_SALT, max_age=expiration)
+            email = serializer.loads(
+                token, salt=config.URL_SAFE_SERIALIZER_SALT, max_age=expiration
+            )
         except BadSignature:
             return False
         return email
