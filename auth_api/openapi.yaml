@@ -606,4 +606,4 @@ servers:
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/AlexanderPRM/auth_api/1.0.0
   - description: Auth API base url
-    url: http://127.0.0.1/api/v1/
+    url: http://localhost/api/v1/
