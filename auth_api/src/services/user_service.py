@@ -119,6 +119,6 @@ class UserService:
     def confirm_token(self, token, expiration=7200):
         try:
             email = s.loads(token, salt=config.URL_SAFE_SERIALIZER_SALT, max_age=expiration)
-        except:
+        except itsdangerous.BadSignature:
             return False
         return email
