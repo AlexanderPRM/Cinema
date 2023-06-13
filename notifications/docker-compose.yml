@@ -1,0 +1,51 @@
+version: '3.5'
+services:
+  db_notifications:
+    image: postgres:13.0-alpine
+    env_file:
+      - "notf.env"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -q -d ${NOTF_POSTGRES_DB} -U ${NOTF_POSTGRES_USER}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_DB=${NOTF_POSTGRES_DB}
+      - POSTGRES_USER=${NOTF_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${NOTF_POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    restart: always
+
+  rabbitmq_notifications:
+    container_name: rabbitmq
+    image: rabbitmq:3.10.6-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=${NOTF_RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${NOTF_RABBITMQ_PASSWORD}
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  admin_panel:
+    build: components/adminpanel
+    env_file:
+      - "notf.env"
+    depends_on:
+      - db_notifications
+    ports:
+      - 9009:8000
+    restart: always
+  
+  notification_api:
+    build: components/notf_api
+    env_file:
+      - "notf.env"
+    depends_on:
+      - db_notifications
+    ports:
+      - 9010:8000
+    restart: always
+
+volumes:
+  postgres_data:

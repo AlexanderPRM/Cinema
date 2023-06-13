@@ -2,6 +2,7 @@ import json
 from http import HTTPStatus
 
 from core.config import config
+from core.permissions import superuser_required
 from core.utils import set_tokens
 from db.redis import redis_db
 from flask import Blueprint, Response, abort, jsonify, make_response, redirect, request, url_for
@@ -111,6 +112,13 @@ def yandex_signin_callback():
     return resp, HTTPStatus.OK
 
 
+def send_confirmation_email(user):
+    """Реализовать HTTP отчет о создании юзера в Notification сервис"""
+    token = service.generate_confirmation_token(user)
+    confirm_url = url_for("api.user.confirm_email", token=token, _external=True)
+    return confirm_url
+
+
 @user_bp.route("/signup/", methods=["POST"])
 def signup():
     data_validate(request)
@@ -125,8 +133,15 @@ def signup():
         identity=email, additional_claims={"role": role.name, "user_id": user.id}
     )
     refresh_token = create_refresh_token(identity=email)
+
+    confirm_url = send_confirmation_email(email)
+
     resp = jsonify(
-        {"id": user.id, "tokens": {"access_token": access_token, "refresh_token": refresh_token}}
+        {
+            "id": user.id,
+            "tokens": {"access_token": access_token, "refresh_token": refresh_token},
+            "confirm_url": confirm_url,
+        }
     )
     resp = make_response(resp, HTTPStatus.CREATED)
     unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
@@ -222,7 +237,14 @@ def personal_info():
     role = jwt_data["role"]
     current_user = get_jwt_identity()
     user_info = service.get_profile_info(current_user)
-    resp = jsonify({"name": user_info.name, "email": current_user, "role": role})
+    resp = jsonify(
+        {
+            "name": user_info.name,
+            "email": current_user,
+            "role": role,
+            "verified": user_info.verified,
+        }
+    )
     unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
     return resp, HTTPStatus.OK
 
@@ -261,12 +283,10 @@ def change_user_email():
     password = request.json["password"]
     current_user = get_jwt_identity()
     if service.check_password(current_user, password):
-        # создание токенов
         access_token = create_access_token(
             identity=new_email, additional_claims={"role": role, "user_id": current_user.id}
         )
         refresh_token = create_refresh_token(identity=new_email)
-        # удаление access и refresh токенов
         resp = jsonify(
             {
                 "NEW email: ": new_email,
@@ -278,9 +298,8 @@ def change_user_email():
 
         unset_access_cookies(resp)
         unset_refresh_cookies(resp)
-        # Изменение email
+
         service.change_email(email=current_user, new_email=new_email)
-        # отправка токенов в куки
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
         return resp, HTTPStatus.OK
@@ -291,15 +310,11 @@ def change_user_email():
 @jwt_required(locations=["headers", "cookies"])
 def logout():
     jti = get_jwt()["jti"]
-    # Получаем id пользователя и юзер агент
     current_user = get_jwt_identity()
     user = service.get_profile_info(current_user)
     user_agent = request.headers.get("User-Agent")
-    # Получаем токены
     access_token_cookie = request.cookies.get("access_token_cookie")
-    # Записываем access токен, как устаревший
     redis_db.setex(jti + "_access", config.ACCESS_TOKEN_EXPIRES, access_token_cookie)
-    # Удаляем из редис refresh
     redis_db.delete(str(user.id) + "_" + user_agent + "_refresh")
     resp = jsonify(
         {
@@ -327,18 +342,55 @@ def delete():
         )
 
     jti = get_jwt()["jti"]
-    # Получаем id пользователя и юзер агент
     user = service.get_profile_info(current_user)
     user_agent = request.headers.get("User-Agent")
-    # Получаем токены
     access_token_cookie = request.cookies.get("access_token_cookie")
-    # Записываем access токен, как устаревший
     redis_db.setex(jti + "_access", config.ACCESS_TOKEN_EXPIRES, access_token_cookie)
-    # Удаляем из редис refresh
     redis_db.delete(str(user.id) + "_" + user_agent + "_refresh")
 
     service.delete_account(current_user)
 
     resp = make_response(redirect(url_for("user.signup")))
     unset_jwt_cookies(resp)
+    return resp, HTTPStatus.OK
+
+
+@user_bp.route("/confirm/<token>", methods=["GET"])
+def confirm_email(token):
+    email = service.confirm_token(token)
+    if email:
+        service.confirm_email(email=email)
+        resp = jsonify(
+            {
+                "message": "Successfully confirm email",
+                "email": email,
+            }
+        )
+        resp = make_response(resp, HTTPStatus.OK)
+    else:
+        resp = jsonify({"message": "Error while confirm"})
+        resp = make_response(resp, HTTPStatus.OK)
+    return resp
+
+
+@user_bp.route("/get_user_info/<user_id>", methods=["GET"])  # GET
+@superuser_required
+def get_user_info(user_id):
+    user_info, user_role = service.get_user_info(user_id)
+    resp = jsonify(
+        {
+            "name": user_info.name,
+            "email": user_id,
+            "role": user_role,
+            "verified": user_info.verified,
+        }
+    )
+    return resp, HTTPStatus.OK
+
+
+@user_bp.route("/all_users_info", methods=["GET"])  # GET
+@superuser_required
+def all_users_info():
+    data = service.get_all_users_info()
+    resp = jsonify(data)
     return resp, HTTPStatus.OK

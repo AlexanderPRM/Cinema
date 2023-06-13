@@ -41,6 +41,8 @@ class Settings(BaseSettings):
     MAX_TOKENS: int
     SEC_FOR_TOKEN: float
     RATE_LIMIT_ENABLED: bool
+    URL_SAFE_SERIALIZER_SECRET: str
+    URL_SAFE_SERIALIZER_SALT: str
     BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     class Config:
