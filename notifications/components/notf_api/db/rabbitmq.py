@@ -17,8 +17,7 @@ class RabbitWorker:
         connection = await self.get_connection()
         channel = await connection.channel()
         await channel.default_exchange.publish(
-            Message(json.dumps(msg).encode("utf-8")),
-            routing_key=queue
+            Message(json.dumps(msg).encode("utf-8")), routing_key=queue
         )
         await connection.close()
 

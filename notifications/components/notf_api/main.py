@@ -17,7 +17,7 @@ app = FastAPI(
 )
 
 
-@app.on_event('startup')
+@app.on_event("startup")
 async def startup():
     await RabbitWorker().make_queues()
 
