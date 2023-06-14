@@ -10,12 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
+import sys
 from pathlib import Path
 
+from django.apps import apps
+from django.core.management import call_command
+from django.utils.safestring import mark_safe
 from dotenv import load_dotenv
 
 load_dotenv("notf.env")
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -65,7 +68,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "adminpanel.wsgi.application"
 
-
 SQLITE_SETTING = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -104,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -116,7 +117,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
@@ -127,3 +127,54 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+INSTALLED_APPS += ("django_summernote",)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+X_FRAME_OPTIONS = "SAMEORIGIN"
+SUMMERNOTE_THEME = "bs4"
+SUMMERNOTE_CONFIG = {
+    "width": "100%",
+    "height": "480",
+    "toolbar": [
+        ["style", ["style"]],
+        ["style", ["bold", "italic", "underline", "clear"]],
+        ["para", ["ul", "ol", "paragraph"]],
+        ["insert", ["link", "picture", "video"]],
+        ["view", ["fullscreen", "codeview", "help"]],
+    ],
+    "popover": {
+        "image": [
+            ["custom", ["imageAttributes", "imageShape"]],
+            ["imagesize", ["imageSize100", "imageSize50", "imageSize25"]],
+            ["float", ["floatLeft", "floatRight", "floatNone"]],
+            ["remove", ["removeMedia"]],
+        ],
+    },
+    "summernote": {
+        "tabDisable": "true",
+    },
+    "codemirror": {
+        "mode": "json",
+        "lineNumbers": True,
+        "tabSize": 2,
+        "extraKeys": {
+            "Ctrl-Q": "autocomplete",
+            "Ctrl-S": lambda e: mark_safe(
+                "console.log(JSON.stringify(JSON.parse('" + e.getDoc().getValue() + "'), null, 2));"
+            ),
+        },
+    },
+    "lang": "ru-RU",
+    "disableGrammar": "false",
+    "disableSpelling": "false",
+}
+
+
+apps.populate(INSTALLED_APPS)
+FIXTURE_DIRS = (os.path.join(BASE_DIR, "app", "fixtures"),)
+
+# Load fixture data automatically during testing and initialization
+if "test" in sys.argv or "runserver" in sys.argv:
+    call_command("loaddata", "initial_data.json")
