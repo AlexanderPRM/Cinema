@@ -11,7 +11,7 @@ class TypeEnum(str, Enum):
 
 
 class FilmData(BaseModel):
-    film_id: str  # uuid
+    film_id: str
     film_name: str
 
 
@@ -20,13 +20,13 @@ class ListOfFilms(BaseModel):
 
 
 class Context(BaseModel):
-    users_id: Optional[List[str]] # Список uuid
+    users_id: Optional[List[str]]
     payload: Optional[ListOfFilms]
     link: Optional[str]
 
 
 class Notification(BaseModel):
     type_send: TypeEnum = TypeEnum.new_episodes
-    template_id: Optional[str] # Список uuid
-    notification_id: Optional[str] # Список uuid
+    template_id: Optional[str]
+    notification_id: Optional[str]
     context: Context

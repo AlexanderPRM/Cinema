@@ -8,8 +8,8 @@ from core.config import rabbit_settings
 class RabbitWorker:
     async def get_connection(self):
         return await aio_pika.connect_robust(
-            f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}@{rabbit_settings.RABBITMQ_HOST}:"
-            f"{rabbit_settings.RABBITMQ_PORT}/",
+            f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}"
+            f"@{rabbit_settings.RABBITMQ_HOST}:{rabbit_settings.RABBITMQ_PORT}/",
             timeout=10.0,
         )
 
@@ -25,7 +25,9 @@ class RabbitWorker:
     async def make_queues(self):
         connection = await self.get_connection()
         channel = await connection.channel()
-        email_exchange = await channel.declare_exchange(rabbit_settings.EMAIL_EXCHANGE, ExchangeType.DIRECT, durable=True)
+        email_exchange = await channel.declare_exchange(
+            rabbit_settings.EMAIL_EXCHANGE, ExchangeType.DIRECT, durable=True
+        )
         send_email_queue = await channel.declare_queue(rabbit_settings.EMAIL_QUEUE, durable=True)
         await send_email_queue.bind(email_exchange)
         await connection.close()
