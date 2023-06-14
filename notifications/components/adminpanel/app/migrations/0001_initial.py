@@ -10,57 +10,91 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Templates',
+            name="Templates",
             fields=[
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=50)),
-                ('template_text', models.TextField(verbose_name='Notification Template')),
-                ('author', models.CharField(max_length=50)),
-                ('type', models.TextField(choices=[('email', 'Email'), ('push', 'Push'), ('sms', 'Sms')], verbose_name='type_notification')),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+                    ),
+                ),
+                ("title", models.CharField(max_length=50)),
+                ("template_text", models.TextField(verbose_name="Notification Template")),
+                ("author", models.CharField(max_length=50)),
+                (
+                    "type",
+                    models.TextField(
+                        choices=[("email", "Email"), ("push", "Push"), ("sms", "Sms")],
+                        verbose_name="type_notification",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Template',
-                'verbose_name_plural': 'Templates',
-                'db_table': 'templates',
+                "verbose_name": "Template",
+                "verbose_name_plural": "Templates",
+                "db_table": "templates",
             },
         ),
         migrations.CreateModel(
-            name='UsersCategories',
+            name="UsersCategories",
             fields=[
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('category_name', models.CharField(max_length=50)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+                    ),
+                ),
+                ("category_name", models.CharField(max_length=50)),
             ],
             options={
-                'verbose_name': 'User Category',
-                'verbose_name_plural': 'Users Categories',
-                'db_table': 'users_categories',
+                "verbose_name": "User Category",
+                "verbose_name_plural": "Users Categories",
+                "db_table": "users_categories",
             },
         ),
         migrations.CreateModel(
-            name='Tasks',
+            name="Tasks",
             fields=[
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('task_name', models.CharField(default='Notification task', max_length=50)),
-                ('data', models.TextField(verbose_name='Data (json)')),
-                ('pending_time', models.DateTimeField()),
-                ('template_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='template', to='app.templates')),
-                ('users_category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='users_category', to='app.userscategories')),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+                    ),
+                ),
+                ("task_name", models.CharField(default="Notification task", max_length=50)),
+                ("data", models.TextField(verbose_name="Data (json)")),
+                ("pending_time", models.DateTimeField()),
+                (
+                    "template_id",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="template",
+                        to="app.templates",
+                    ),
+                ),
+                (
+                    "users_category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="users_category",
+                        to="app.userscategories",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Task',
-                'verbose_name_plural': 'Tasks',
-                'db_table': 'tasks',
+                "verbose_name": "Task",
+                "verbose_name_plural": "Tasks",
+                "db_table": "tasks",
             },
         ),
     ]
