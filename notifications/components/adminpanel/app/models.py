@@ -21,7 +21,7 @@ class UUIDMixin(models.Model):
 
 class Templates(UUIDMixin, TimeStampedMixin):
     title = models.CharField(max_length=50)
-    template_text = models.TextField(_("email template"))
+    template_text = models.TextField(_("Notification Template"))
     author = models.CharField(max_length=50)
 
     class NotifType(models.TextChoices):
@@ -40,11 +40,25 @@ class Templates(UUIDMixin, TimeStampedMixin):
         verbose_name_plural = _("Templates")
 
 
+class UsersCategories(UUIDMixin, TimeStampedMixin):
+    category_name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.category_name
+
+    class Meta:
+        db_table = "users_categories"
+        verbose_name = _("User Category")
+        verbose_name_plural = _("Users Categories")
+
+
 class Tasks(UUIDMixin, TimeStampedMixin):
     template_id = models.ForeignKey(Templates, on_delete=models.CASCADE, related_name="template")
     task_name = models.CharField(max_length=50, default="Notification task")
-    users_category = models.CharField(max_length=50)
-    data = models.TextField(_("json"))
+    users_category = models.ForeignKey(
+        UsersCategories, on_delete=models.CASCADE, related_name="users_category"
+    )
+    data = models.TextField(_("Data (json)"))
     pending_time = models.DateTimeField()
 
     def __str__(self):
