@@ -4,7 +4,7 @@ WORKDIR /opt/etl_persons
 
 RUN apt-get update && apt-get install -y \
      python3-dev \
-     netcat
+     netcat-openbsd
 
 COPY requirements.txt .
 
