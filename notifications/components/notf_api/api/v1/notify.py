@@ -5,6 +5,7 @@ from models.notification import Notification
 
 router = APIRouter()
 
+
 @router.post(
     "/send/",
     summary="Уведомления",

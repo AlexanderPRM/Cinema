@@ -8,6 +8,7 @@ from core.config import rabbit_settings
 class RabbitWorker:
     def __init__(self):
         self.connection = None
+        self.channel = None
 
     async def get_connection(self):
         if self.connection is None:
@@ -18,16 +19,21 @@ class RabbitWorker:
             )
         return self.connection
 
+    async def get_channel(self):
+        if self.connection is None:
+            self.get_connection()
+        if self.channel is None:
+            self.channel = await self.connection.channel()
+        return self.channel
+
     async def send_rabbitmq(self, msg=dict, queue=str):
-        connection = await self.get_connection()
-        channel = await connection.channel()
+        channel = await self.get_channel()
         await channel.default_exchange.publish(
             Message(json.dumps(msg).encode("utf-8")), routing_key=queue
         )
 
     async def make_queues(self):
-        connection = await self.get_connection()
-        channel = await connection.channel()
+        channel = await self.get_channel()
         email_exchange = await channel.declare_exchange(
             rabbit_settings.EMAIL_EXCHANGE, ExchangeType.DIRECT, durable=True
         )
