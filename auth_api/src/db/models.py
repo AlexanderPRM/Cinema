@@ -14,6 +14,7 @@ class User(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
     name = db.Column(db.String(155), nullable=True)
+    verified = db.Column(db.Boolean, default=False, nullable=False)
 
     service_info = db.relationship("ServiceUser", back_populates="user", uselist=False)
     login_history = db.relationship("UserLoginHistory", back_populates="user")

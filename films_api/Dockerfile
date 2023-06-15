@@ -4,7 +4,7 @@ WORKDIR /opt/api
 
 RUN apt-get update && apt-get install -y \
      python3-dev  \
-     netcat
+     netcat-traditional
 
 COPY requirements.txt .
 

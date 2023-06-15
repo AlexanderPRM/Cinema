@@ -6,8 +6,16 @@ from core.config import config
 from db.models import SocialAccount, UserLoginHistory
 from db.postgres import db
 from db.redis import redis_db
+from flask import url_for
 from flask_jwt_extended import set_access_cookies, set_refresh_cookies
 from user_agents import parse
+
+
+def send_confirmation_email(user, service):
+    """Реализовать HTTP отчет о создании юзера в Notification сервис"""
+    token = service.generate_confirmation_token(user)
+    confirm_url = url_for("api.user.confirm_email", token=token, _external=True)
+    return confirm_url
 
 
 def is_uuid_valid(val):
