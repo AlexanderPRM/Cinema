@@ -28,7 +28,6 @@ def get_roles():
     roles = [{"id": role.id, "name": role.name} for role in roles]
 
     resp = jsonify({"roles": roles})
-    # провеяем валидность ответа
     resp = make_response(resp, HTTPStatus.OK)
     unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
     return resp

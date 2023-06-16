@@ -61,7 +61,6 @@ def signin():
     )
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify({"tokens": {"access_token": access_token, "refresh_token": refresh_token}})
-    # провеяем валидность ответа
     resp = make_response(resp, HTTPStatus.OK)
     unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
 
