@@ -135,11 +135,13 @@ class UserService:
             return False
         return email
 
-    def get_user_info(self, email):
-        user = User.query.filter_by(email=email).first()
-        role = ServiceUser.query.filter_by(user_id=user.id).first()
-        role_name = UserRole.query.filter_by(id=role.role_id).first().name
-        return user, role_name
+    def get_user_info(self, user_id):
+        user = User.query.filter_by(id=user_id).first()
+        if user:
+            role = ServiceUser.query.filter_by(user_id=user.id).first()
+            role_name = UserRole.query.filter_by(id=role.role_id).first().name
+            return user, role_name
+        return user, "not_exists"
 
     def get_all_users_info(self):
         users_roles = (

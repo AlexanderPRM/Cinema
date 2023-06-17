@@ -24,7 +24,7 @@ services:
     image: rabbitmq:3.10.6-management-alpine
     environment:
       - RABBITMQ_DEFAULT_USER=${NOTF_RABBITMQ_USER}
-      - RABBITMQ_DEFAULT_PASS=${NOTF_RABBITMQ_PASSWORD}
+      - RABBITMQ_DEFAULT_PASS=${NOTF_RABBITMQ_PASS}
     networks:
       - cinema
     ports:
@@ -49,6 +49,17 @@ services:
       - "notf.env"
     depends_on:
       - db_notifications
+    networks:
+      - cinema
+    restart: always
+
+  worker:
+    build: components/worker
+    env_file:
+      - notf.env
+    depends_on:
+      - notification_api
+      - rabbitmq_notifications
     networks:
       - cinema
     restart: always

@@ -11,10 +11,10 @@ class ProjectSettings(BaseSettings):
 
 
 class RabbiMQSettings(BaseSettings):
-    RABBITMQ_HOST: str
-    RABBITMQ_PORT: str
-    RABBITMQ_USER: str
-    RABBITMQ_PASS: str
+    NOTF_RABBITMQ_HOST: str
+    NOTF_RABBITMQ_PORT: str
+    NOTF_RABBITMQ_USER: str
+    NOTF_RABBITMQ_PASS: str
     EMAIL_EXCHANGE: str
     EMAIL_QUEUE: str
 

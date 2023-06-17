@@ -62,6 +62,8 @@ services:
       - "discovery.type=single-node"
     volumes:
       - elasticdata:/usr/share/elasticsearch/data
+    networks:
+      - cinema
     env_file:
       - config.env
 
@@ -79,6 +81,8 @@ services:
     restart: always
     env_file:
       - config.env
+    networks:
+      - cinema
     depends_on:
       - db
       - elastic
@@ -89,6 +93,8 @@ services:
     restart: always
     env_file:
       - config.env
+    networks:
+      - cinema
     depends_on:
       - db
       - elastic
@@ -99,6 +105,8 @@ services:
     restart: always
     env_file:
       - config.env
+    networks:
+      - cinema
     depends_on:
       - db
       - elastic
@@ -109,6 +117,8 @@ services:
     restart: always
     env_file:
       - config.env
+    networks:
+      - cinema
     depends_on:
       - etl_movies
   
@@ -116,6 +126,8 @@ services:
     build: films_api
     ports:
       - 8000:8000
+    networks:
+      - cinema
     env_file:
       - config.env
     restart: always
@@ -251,6 +263,8 @@ services:
       discovery.type: single-node
     ports:
       - 9200:9200
+    networks:
+      - cinema
     volumes:
       - /tmp/esdata:/tmp/elasticsearch/data
 
@@ -258,6 +272,8 @@ services:
     image: docker.elastic.co/kibana/kibana:7.10.2
     ports:
       - "5601:5601"
+    networks:
+      - cinema
     depends_on:
       - elasticsearch
   

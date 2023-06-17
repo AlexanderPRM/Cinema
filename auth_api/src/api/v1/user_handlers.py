@@ -340,7 +340,7 @@ def delete():
     return resp, HTTPStatus.OK
 
 
-@user_bp.route("/confirm/<token>", methods=["GET"])
+@user_bp.route("/confirm/<token>/", methods=["GET"])
 def confirm_email(token):
     email = service.confirm_token(token)
     if email:
@@ -358,22 +358,24 @@ def confirm_email(token):
     return resp
 
 
-@user_bp.route("/get_user_info/<user_id>", methods=["GET"])  # GET
+@user_bp.route("/get_user_info/<user_id>/", methods=["GET"])
 @superuser_required
 def get_user_info(user_id):
     user_info, user_role = service.get_user_info(user_id)
-    resp = jsonify(
-        {
-            "name": user_info.name,
-            "email": user_id,
-            "role": user_role,
-            "verified": user_info.verified,
-        }
-    )
-    return resp, HTTPStatus.OK
+    if user_info and user_role:
+        resp = jsonify(
+            {
+                "name": user_info.name,
+                "email": user_info.email,
+                "role": user_role,
+                "verified": user_info.verified,
+            }
+        )
+        return resp, HTTPStatus.OK
+    return {"message": "Not exists"}, HTTPStatus.FORBIDDEN
 
 
-@user_bp.route("/all_users_info", methods=["GET"])  # GET
+@user_bp.route("/all_users_info/", methods=["GET"])
 @superuser_required
 def all_users_info():
     data = service.get_all_users_info()

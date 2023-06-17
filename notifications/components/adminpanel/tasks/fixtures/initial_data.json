@@ -1,6 +1,6 @@
 [
 {
-    "model": "app.templates",
+    "model": "tasks.templates",
     "pk": "5a4fd7c0-8cef-44f5-a16d-0f78f72b0897",
     "fields": {
         "created": "2023-06-14T09:25:43.518Z",
@@ -12,7 +12,7 @@
     }
 },
     {
-    "model": "app.templates",
+    "model": "tasks.templates",
     "pk": "5a4fd7c0-8cef-44f5-a16d-0f78f72b0898",
     "fields": {
         "created": "2023-06-14T09:25:43.518Z",
@@ -24,7 +24,7 @@
     }
 },
     {
-    "model": "app.templates",
+    "model": "tasks.templates",
     "pk": "5a4fd7c0-8cef-44f5-a16d-0f78f72b0899",
     "fields": {
         "created": "2023-06-14T09:25:43.518Z",

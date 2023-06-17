@@ -13,8 +13,8 @@ class RabbitWorker:
     async def get_connection(self):
         if self.connection is None:
             self.connection = await aio_pika.connect_robust(
-                f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}"
-                f"@{rabbit_settings.RABBITMQ_HOST}:{rabbit_settings.RABBITMQ_PORT}/",
+                f"amqp://{rabbit_settings.NOTF_RABBITMQ_USER}:{rabbit_settings.NOTF_RABBITMQ_PASS}"
+                f"@{rabbit_settings.NOTF_RABBITMQ_HOST}:{rabbit_settings.NOTF_RABBITMQ_PORT}/",
                 timeout=10.0,
             )
         return self.connection
