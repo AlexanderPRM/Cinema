@@ -38,6 +38,15 @@ class Worker:
         )
         return email_message_data
 
+    async def send_confirm_email(self, user_info, rabbit_message, template):
+        body = {
+            "name": user_info["name"] if user_info["name"] else "Guest",
+            "confirmation_link": rabbit_message["context"]["link"],
+        }
+        output_template = await self.template_processing(template, body)
+        mail = await self.build_mail(user_info["email"], template["title"], output_template)
+        return await self.send_mail(mail)
+
     async def send_mail(self, mail):
         return self.email_api.emails_post(mail)
 
@@ -59,14 +68,7 @@ class Worker:
                         )
                         users_info.append(await user_info.json())
                     if message["type_send"] == "email_confirm":
-                        user = users_info[0]
-                        body = {
-                            "name": user["name"] if user["name"] else "Guest",
-                            "confirmation_link": message["context"]["link"],
-                        }
-                        output_template = await self.template_processing(db_template[0], body)
-                        mail = await self.build_mail(
-                            user["email"], db_template[0]["title"], output_template
+                        response = await self.send_confirm_email(
+                            users_info[0], message, db_template[0]
                         )
-                        response = await self.send_mail(mail)
                         logging.info(response)

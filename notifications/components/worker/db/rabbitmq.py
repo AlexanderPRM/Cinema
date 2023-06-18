@@ -1,11 +1,11 @@
 import aio_pika
 import backoff
 from aio_pika import exceptions
-from core.config import rabbit_settings
 
 
 class RabbitConsumer:
-    def __init__(self):
+    def __init__(self, dsn):
+        self.dsn = dsn
         self.connection = None
         self.channel = None
 
@@ -13,8 +13,7 @@ class RabbitConsumer:
     async def get_connection(self):
         if self.connection is None:
             self.connection = await aio_pika.connect_robust(
-                f"amqp://{rabbit_settings.NOTF_RABBITMQ_USER}:{rabbit_settings.NOTF_RABBITMQ_PASS}"
-                f"@{rabbit_settings.NOTF_RABBITMQ_HOST}:{rabbit_settings.NOTF_RABBITMQ_PORT}/",
+                self.dsn,
                 timeout=10.0,
             )
         return self.connection

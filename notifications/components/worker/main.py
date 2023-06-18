@@ -1,7 +1,7 @@
 import asyncio
 
 import asyncpg
-from core.config import postgres_settings, worker_setting
+from core.config import postgres_settings, rabbit_settings, worker_setting
 from db.postgres import PostgreSQLConsumer
 from db.rabbitmq import RabbitConsumer
 from worker import Worker
@@ -11,7 +11,10 @@ async def main():
     client = Worker(
         api_key=worker_setting.NOTF_ELASTICEMAIL_API_KEY,
         from_email=worker_setting.NOTF_ELASTICEMAIL_FROM_EMAIL,
-        rabbitmq_client=RabbitConsumer(),
+        rabbitmq_client=RabbitConsumer(
+            f"amqp://{rabbit_settings.NOTF_RABBITMQ_USER}:{rabbit_settings.NOTF_RABBITMQ_PASS}"
+            f"@{rabbit_settings.NOTF_RABBITMQ_HOST}:{rabbit_settings.NOTF_RABBITMQ_PORT}/"
+        ),
         postgres_client=PostgreSQLConsumer(
             await asyncpg.connect(
                 user=postgres_settings.NOTF_POSTGRES_USER,
