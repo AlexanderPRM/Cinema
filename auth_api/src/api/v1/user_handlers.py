@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 from core.config import config
 from core.permissions import superuser_required
-from core.utils import set_tokens
+from core.utils import normalize_email, send_confirmation_email, set_tokens
 from db.redis import redis_db
 from flask import Blueprint, Response, abort, jsonify, make_response, redirect, request, url_for
 from flask_jwt_extended import (
@@ -52,7 +52,6 @@ def data_validate(request):
 @user_bp.route("/signin/", methods=["POST"])
 def signin():
     data_validate(request)
-    service = UserService()
     email = request.json.get("email")
     useragent = request.headers.get("User-Agent")
     password = request.json.get("password")
@@ -62,7 +61,6 @@ def signin():
     )
     refresh_token = create_refresh_token(identity=email)
     resp = jsonify({"tokens": {"access_token": access_token, "refresh_token": refresh_token}})
-    # провеяем валидность ответа
     resp = make_response(resp, HTTPStatus.OK)
     unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
 
@@ -112,30 +110,18 @@ def yandex_signin_callback():
     return resp, HTTPStatus.OK
 
 
-def send_confirmation_email(user):
-    """Реализовать HTTP отчет о создании юзера в Notification сервис"""
-    token = service.generate_confirmation_token(user)
-    confirm_url = url_for("api.user.confirm_email", token=token, _external=True)
-    return confirm_url
-
-
 @user_bp.route("/signup/", methods=["POST"])
 def signup():
     data_validate(request)
     email, password = request.json["email"], request.json["password"]
     name = request.json["name"] if "name" in request.json else None
     useragent = request.headers.get("User-Agent")
-
-    email, password, role, user = service.signup(
-        email=email, password=password, name=name, useragent=useragent
-    )
+    confirm_url = send_confirmation_email(normalize_email(email), service)
+    email, password, role, user = service.signup(email, password, name, useragent, confirm_url)
     access_token = create_access_token(
         identity=email, additional_claims={"role": role.name, "user_id": user.id}
     )
     refresh_token = create_refresh_token(identity=email)
-
-    confirm_url = send_confirmation_email(email)
-
     resp = jsonify(
         {
             "id": user.id,
@@ -145,7 +131,6 @@ def signup():
     )
     resp = make_response(resp, HTTPStatus.CREATED)
     unmarshal_response(FlaskOpenAPIRequest(request), FlaskOpenAPIResponse(resp), spec=spec)
-
     set_tokens(resp, user, useragent, access_token, refresh_token)
     return resp
 
@@ -355,7 +340,7 @@ def delete():
     return resp, HTTPStatus.OK
 
 
-@user_bp.route("/confirm/<token>", methods=["GET"])
+@user_bp.route("/confirm/<token>/", methods=["GET"])
 def confirm_email(token):
     email = service.confirm_token(token)
     if email:
@@ -373,22 +358,24 @@ def confirm_email(token):
     return resp
 
 
-@user_bp.route("/get_user_info/<user_id>", methods=["GET"])  # GET
+@user_bp.route("/get_user_info/<user_id>/", methods=["GET"])
 @superuser_required
 def get_user_info(user_id):
     user_info, user_role = service.get_user_info(user_id)
-    resp = jsonify(
-        {
-            "name": user_info.name,
-            "email": user_id,
-            "role": user_role,
-            "verified": user_info.verified,
-        }
-    )
-    return resp, HTTPStatus.OK
+    if user_info and user_role:
+        resp = jsonify(
+            {
+                "name": user_info.name,
+                "email": user_info.email,
+                "role": user_role,
+                "verified": user_info.verified,
+            }
+        )
+        return resp, HTTPStatus.OK
+    return {"message": "Not exists"}, HTTPStatus.FORBIDDEN
 
 
-@user_bp.route("/all_users_info", methods=["GET"])  # GET
+@user_bp.route("/all_users_info/", methods=["GET"])
 @superuser_required
 def all_users_info():
     data = service.get_all_users_info()

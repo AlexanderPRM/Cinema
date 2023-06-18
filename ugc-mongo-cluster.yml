@@ -7,6 +7,8 @@ services:
       - 27017:27017
     expose:
       - "27017"
+    networks:
+      - cinema
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - mongo_data1:/data/db
@@ -19,6 +21,8 @@ services:
       - 27027:27017
     expose:
       - "27017"
+    networks:
+      - cinema
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - mongo_data2:/data/db
@@ -31,6 +35,8 @@ services:
       - 27037:27017
     expose:
       - "27017"
+    networks:
+      - cinema
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - mongo_data3:/data/db
@@ -43,6 +49,8 @@ services:
       - 27047:27017
     expose:
       - "27017"
+    networks:
+      - cinema
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - mongo_data4:/data/db
@@ -55,6 +63,8 @@ services:
       - 27057:27017
     expose:
       - "27017"
+    networks:
+      - cinema
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - mongo_data5:/data/db
@@ -67,6 +77,8 @@ services:
       - 27067:27017
     expose:
       - "27017"
+    networks:
+      - cinema
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - mongo_data6:/data/db
@@ -77,6 +89,8 @@ services:
     command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
     expose:
       - "27017"
+    networks:
+      - cinema
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - mongo_config1:/data/db
@@ -87,6 +101,8 @@ services:
     command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
     expose:
       - "27017"
+    networks:
+      - cinema
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - mongo_config2:/data/db
@@ -97,6 +113,8 @@ services:
     command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
     expose:
       - "27017"
+    networks:
+      - cinema
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - mongo_config3:/data/db
@@ -108,6 +126,8 @@ services:
       - mongocfg1
       - mongocfg2
     command: mongos --configdb mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017 --bind_ip_all
+    networks:
+      - cinema
     volumes:
       - /etc/localtime:/etc/localtime:ro
 
@@ -118,6 +138,8 @@ services:
       - mongocfg1
       - mongocfg2
     command: mongos --configdb mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017 --bind_ip_all
+    networks:
+      - cinema
     volumes:
       - /etc/localtime:/etc/localtime:ro
 
@@ -128,11 +150,16 @@ services:
     env_file:
       - config.env
     restart: always
+    networks:
+      - cinema
     depends_on:
       - mongos1
       - mongos2
 
-
+networks:
+  default:
+    external:
+      name: cinema
 volumes:
   mongo_data1:
   mongo_data2:

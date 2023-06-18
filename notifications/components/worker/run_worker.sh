@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 echo "Waiting for RabbitMQ..."
 
 while ! nc -z $NOTF_RABBITMQ_HOST $NOTF_RABBITMQ_PORT; do
@@ -9,4 +8,12 @@ done
 
 echo "RabbitMQ started"
 
-gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8001
+echo "Waiting for API..."
+
+while ! nc -z $NOTF_API_HOST $NOTF_API_PORT; do
+    sleep 0.1
+done
+
+echo "API started"
+
+python main.py

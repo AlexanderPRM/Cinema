@@ -15,6 +15,8 @@ services:
       - POSTGRES_PASSWORD=${NOTF_POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - cinema
     restart: always
 
   rabbitmq_notifications:
@@ -22,7 +24,9 @@ services:
     image: rabbitmq:3.10.6-management-alpine
     environment:
       - RABBITMQ_DEFAULT_USER=${NOTF_RABBITMQ_USER}
-      - RABBITMQ_DEFAULT_PASS=${NOTF_RABBITMQ_PASSWORD}
+      - RABBITMQ_DEFAULT_PASS=${NOTF_RABBITMQ_PASS}
+    networks:
+      - cinema
     ports:
       - 5672:5672
       - 15672:15672
@@ -35,6 +39,8 @@ services:
       - db_notifications
     ports:
       - 9009:8000
+    networks:
+      - cinema
     restart: always
   
   notification_api:
@@ -43,9 +49,24 @@ services:
       - "notf.env"
     depends_on:
       - db_notifications
-    ports:
-      - 9010:8000
+    networks:
+      - cinema
     restart: always
 
+  worker:
+    build: components/worker
+    env_file:
+      - notf.env
+    depends_on:
+      - notification_api
+      - rabbitmq_notifications
+    networks:
+      - cinema
+    restart: always
+
+networks:
+  cinema:
+    external:
+      name: cinema
 volumes:
   postgres_data:

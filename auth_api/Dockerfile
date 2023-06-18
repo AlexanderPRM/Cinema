@@ -4,7 +4,7 @@ WORKDIR /opt/auth_api
 
 RUN apt-get update && apt-get install -y \
      python3-dev  \
-     netcat-openbsd \
+     netcat-traditional \
      && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .

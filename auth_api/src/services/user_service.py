@@ -1,6 +1,8 @@
 from datetime import datetime
+from uuid import uuid4
 
 import bcrypt
+import requests
 from core.config import config
 from core.utils import check_device_type, normalize_email
 from db.models import ServiceUser, User, UserLoginHistory, UserRole
@@ -44,7 +46,7 @@ class UserService:
             return email, role, user
         return HttpExceptions().password_error()
 
-    def signup(self, email, password, name, useragent):
+    def signup(self, email, password, name, useragent, confirm_url):
         exceptions = HttpExceptions()
         try:
             validate_email(email)
@@ -61,6 +63,13 @@ class UserService:
         role_service = RoleService()
         role = role_service.change_user_role_to_default(user=user)
         self.add_login_history(user_id=user.id, useragent=useragent)
+        body = {
+            "type_send": "email_confirm",
+            "template_id": config.WELCOME_TEMPLATE_ID,
+            "notification_id": str(uuid4()),
+            "context": {"users_id": [str(user.id)], "link": confirm_url},
+        }
+        requests.post(url=config.NOTIFICATION_SERVICE_URL, json=body)
         return email, password, role, user
 
     def refresh(self, email):
@@ -126,11 +135,13 @@ class UserService:
             return False
         return email
 
-    def get_user_info(self, email):
-        user = User.query.filter_by(email=email).first()
-        role = ServiceUser.query.filter_by(user_id=user.id).first()
-        role_name = UserRole.query.filter_by(id=role.role_id).first().name
-        return user, role_name
+    def get_user_info(self, user_id):
+        user = User.query.filter_by(id=user_id).first()
+        if user:
+            role = ServiceUser.query.filter_by(user_id=user.id).first()
+            role_name = UserRole.query.filter_by(id=role.role_id).first().name
+            return user, role_name
+        return user, "not_exists"
 
     def get_all_users_info(self):
         users_roles = (

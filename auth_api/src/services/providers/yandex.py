@@ -1,5 +1,10 @@
 from core.config import yandex_config
-from core.utils import check_social_account, generate_random_string, normalize_email
+from core.utils import (
+    check_social_account,
+    generate_random_string,
+    normalize_email,
+    send_confirmation_email,
+)
 from db.models import SocialAccount, User
 from db.postgres import db
 from services.providers.base import OAuthSignIn
@@ -36,7 +41,11 @@ class YandexProvider(OAuthSignIn):
             email = created_user.email
         else:
             email, _, role, created_user = user.signup(
-                user_data.default_email, generate_random_string(), user_data.first_name, useragent
+                user_data.default_email,
+                generate_random_string(),
+                user_data.first_name,
+                useragent,
+                send_confirmation_email(normalize_email(user_data.default_email), user),
             )
 
         social_account = SocialAccount(
