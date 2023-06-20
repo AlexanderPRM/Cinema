@@ -31,23 +31,23 @@ class Scheduler:
                     data = [{key: value for key, value in item.items()} for item in result]
 
                     for item in data:
-                        params = json.loads(item.get('task_data'))
+                        params = json.loads(item.get("task_data"))
 
                         context = Context(
-                            users_id=params.get('context').get('users_id'),
-                            payload=params.get('context').get('payload'),
-                            link=params.get('context').get('link'),
+                            users_id=params.get("context").get("users_id"),
+                            payload=params.get("context").get("payload"),
+                            link=params.get("context").get("link"),
                         )
                         notification = Notification(
-                            type_send=item.get('task_type'),
+                            type_send=item.get("task_type"),
                             context=context,
-                            template_id=str(item.get('template_id')),
-                            notification_id=str(item.get('task_id')),
+                            template_id=str(item.get("template_id")),
+                            notification_id=str(item.get("task_id")),
                         )
                         resp = await api_send_notification(notification.dict())
-                        status = json.loads(resp).get('message')
+                        status = json.loads(resp).get("message")
                         if status == "OK":
-                            await self.pg_nf.set_status(item.get('task_id'))
+                            await self.pg_nf.set_status(item.get("task_id"))
 
                 await asyncio.sleep(scheduler_settings.RECOMMENDATIONS_TIMEOUT)
 
@@ -62,24 +62,24 @@ class Scheduler:
                     data = [{key: value for key, value in item.items()} for item in result]
 
                     for item in data:
-                        params = json.loads(item.get('task_data'))
+                        params = json.loads(item.get("task_data"))
 
                         context = Context(
-                            users_id=params.get('context').get('users_id'),
-                            payload=params.get('context').get('payload'),
-                            link=params.get('context').get('link'),
+                            users_id=params.get("context").get("users_id"),
+                            payload=params.get("context").get("payload"),
+                            link=params.get("context").get("link"),
                         )
                         notification = Notification(
-                            type_send=item.get('task_type'),
+                            type_send=item.get("task_type"),
                             context=context,
-                            template_id=str(item.get('template_id')),
-                            notification_id=str(item.get('task_id')),
-                            category_name=item.get('category_name'),
+                            template_id=str(item.get("template_id")),
+                            notification_id=str(item.get("task_id")),
+                            category_name=item.get("category_name"),
                         )
                         resp = await api_send_notification(notification.dict())
-                        status = json.loads(resp).get('message')
+                        status = json.loads(resp).get("message")
                         if status == "OK":
-                            await self.pg_nf.set_status(item.get('task_id'))
+                            await self.pg_nf.set_status(item.get("task_id"))
 
                 await asyncio.sleep(scheduler_settings.RECOMMENDATIONS_TIMEOUT)
 
@@ -94,24 +94,24 @@ class Scheduler:
                     data = [{key: value for key, value in item.items()} for item in result]
 
                     for item in data:
-                        params = json.loads(item.get('task_data'))
+                        params = json.loads(item.get("task_data"))
 
                         context = Context(
-                            users_id=params.get('context').get('users_id'),
-                            payload=params.get('context').get('payload'),
-                            link=params.get('context').get('link'),
+                            users_id=params.get("context").get("users_id"),
+                            payload=params.get("context").get("payload"),
+                            link=params.get("context").get("link"),
                         )
                         notification = Notification(
-                            type_send=item.get('task_type'),
+                            type_send=item.get("task_type"),
                             context=context,
-                            template_id=str(item.get('template_id')),
-                            notification_id=str(item.get('task_id')),
-                            category_name=item.get('category_name'),
+                            template_id=str(item.get("template_id")),
+                            notification_id=str(item.get("task_id")),
+                            category_name=item.get("category_name"),
                         )
                         resp = await api_send_notification(notification.dict())
-                        status = json.loads(resp).get('message')
+                        status = json.loads(resp).get("message")
                         if status == "OK":
-                            await self.pg_nf.set_status(item.get('task_id'))
+                            await self.pg_nf.set_status(item.get("task_id"))
 
                 await asyncio.sleep(scheduler_settings.RECOMMENDATIONS_TIMEOUT)
 

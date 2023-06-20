@@ -5,9 +5,9 @@ from django.utils.translation import gettext_lazy as _
 
 
 class NotificationStatus(models.TextChoices):
-    WAITING = 'waiting'
-    PROCESSING = 'processing'
-    DONE = 'done'
+    WAITING = "waiting"
+    PROCESSING = "processing"
+    DONE = "done"
 
 
 class TaskTypes(models.TextChoices):
