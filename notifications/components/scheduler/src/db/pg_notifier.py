@@ -20,7 +20,8 @@ class PostgresNotifier(PostgresBase):
 
     async def get_notification(self, task_type: str):
         sql_query = (
-            "SELECT tasks.id task_id, tasks.template_id_id template_id, tasks.data task_data, tasks.task_type task_type, users_categories.category_name category_name "
+            "SELECT tasks.id task_id, tasks.template_id_id template_id, tasks.data task_data, "
+            "tasks.task_type task_type, users_categories.category_name category_name "
             "FROM tasks "
             "LEFT JOIN users_categories ON users_categories.id = tasks.users_category_id "
             "WHERE tasks.pending_time <= $1 and tasks.send_status = $2 and task_type = $3"

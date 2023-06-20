@@ -13,6 +13,7 @@ class PostgreSettings(BaseSettings):
         case_sensitive = True
         env_file = "notf.env"
 
+
 class SchedulerSettings(BaseSettings):
     RECOMMENDATIONS: str = Field("recommendations")
     NEW_EPISODES: str = Field("new_episodes")

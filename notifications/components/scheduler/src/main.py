@@ -16,11 +16,11 @@ class Scheduler:
         self.pg_nf = PostgresNotifier()
         await self.pg_nf.create_connection()
 
-        await asyncio.gather( 
-            self.new_episodes_control(scheduler_settings.NEW_EPISODES), 
+        await asyncio.gather(
+            self.new_episodes_control(scheduler_settings.NEW_EPISODES),
             self.weekly_recommendations_control(scheduler_settings.RECOMMENDATIONS),
             self.person_likes_control(scheduler_settings.PERSON_LIKES),
-            return_exceptions=True, 
+            return_exceptions=True,
         )
 
     async def new_episodes_control(self, task_type: str):

@@ -75,7 +75,10 @@ class Migration(migrations.Migration):
                     "task_type",
                     models.CharField(
                         choices=[
-                            ('new_episodes', 'New Episodes'), ('email_confirm', 'Email Confirm'), ('recommendations', 'Recommendations'), ('person_likes', 'Person Likes')
+                            ('new_episodes', 'New Episodes'),
+                            ('email_confirm', 'Email Confirm'),
+                            ('recommendations', 'Recommendations'),
+                            ('person_likes', 'Person Likes'),
                         ],
                         default='new_episodes',
                         max_length=50),
