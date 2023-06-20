@@ -35,9 +35,7 @@ class PostgresNotifier(PostgresBase):
         return result
 
     async def set_status(self, task_id):
-        sql_query = (
-            "UPDATE tasks SET send_status = $1 WHERE id = $2"
-        )
+        sql_query = "UPDATE tasks SET send_status = $1 WHERE id = $2"
         params = (
             NotificationStatus.PROCESSING.value,
             task_id,
