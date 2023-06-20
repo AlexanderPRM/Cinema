@@ -24,6 +24,7 @@ class MongoCollectionsNames(BaseSettings):
     BOOKMARK_COLLECTION: str
     FILM_REVIEW_RATE_COLLECTION: str
     FILM_RATING_COLLECTION: str
+    FILM_REVIEW_LIKES: str
 
     class Config:
         case_sensitive = True
