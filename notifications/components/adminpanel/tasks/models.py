@@ -4,6 +4,19 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+class NotificationStatus(models.TextChoices):
+    WAITING = 'waiting'
+    PROCESSING = 'processing'
+    DONE = 'done'
+
+
+class TaskTypes(models.TextChoices):
+    NEW_EPISODES = "new_episodes"
+    EMAIL_CONFIRM = "email_confirm"
+    RECOMMENDATIONS = "recommendations"
+    PERSON_LIKES = "person_likes"
+
+
 class TimeStampedMixin(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -55,11 +68,21 @@ class UsersCategories(UUIDMixin, TimeStampedMixin):
 class Tasks(UUIDMixin, TimeStampedMixin):
     template_id = models.ForeignKey(Templates, on_delete=models.CASCADE, related_name="template")
     task_name = models.CharField(max_length=50, default="Notification task")
+    task_type = models.CharField(
+        max_length=50,
+        choices=TaskTypes.choices,
+        default=TaskTypes.NEW_EPISODES,
+    )
     users_category = models.ForeignKey(
         UsersCategories, on_delete=models.CASCADE, related_name="users_category"
     )
     data = models.TextField(_("Data (json)"))
     pending_time = models.DateTimeField()
+    send_status = models.CharField(
+        max_length=50,
+        choices=NotificationStatus.choices,
+        default=NotificationStatus.WAITING,
+    )
 
     def __str__(self):
         return self.task_name

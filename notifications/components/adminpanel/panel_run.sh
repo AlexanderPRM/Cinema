@@ -8,5 +8,7 @@ while ! nc -z $NOTF_POSTGRES_HOST $NOTF_POSTGRES_PORT; do
 done
 
 echo "PostgreSQL started"
+python manage.py migrate
+python manage.py collectstatic
 
 gunicorn --bind 0.0.0.0:8000 adminpanel.wsgi
