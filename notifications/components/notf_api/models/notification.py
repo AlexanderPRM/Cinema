@@ -13,7 +13,7 @@ class TypeEnum(str, Enum):
 
 class Context(BaseModel):
     users_id: Optional[List[str]]
-    payload: Optional[dict]
+    payload: dict
     link: Optional[str]
 
 

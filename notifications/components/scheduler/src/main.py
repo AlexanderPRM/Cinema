@@ -5,7 +5,7 @@ from db.pg_notifier import PostgresNotifier
 from utils.api_sender import api_send_notification
 from utils.config import scheduler_settings
 from utils.logger import logger
-from utils.models import Context, Notification
+from utils.models import FilmContext, LikeContext, FilmsNotification, LikesNotification
 
 
 class Scheduler:
@@ -33,12 +33,12 @@ class Scheduler:
                     for item in data:
                         params = json.loads(item.get("task_data"))
 
-                        context = Context(
+                        context = FilmContext(
                             users_id=params.get("context").get("users_id"),
                             payload=params.get("context").get("payload"),
                             link=params.get("context").get("link"),
                         )
-                        notification = Notification(
+                        notification = FilmsNotification(
                             type_send=item.get("task_type"),
                             context=context,
                             template_id=str(item.get("template_id")),
@@ -64,12 +64,12 @@ class Scheduler:
                     for item in data:
                         params = json.loads(item.get("task_data"))
 
-                        context = Context(
+                        context = FilmContext(
                             users_id=params.get("context").get("users_id"),
                             payload=params.get("context").get("payload"),
                             link=params.get("context").get("link"),
                         )
-                        notification = Notification(
+                        notification = FilmsNotification(
                             type_send=item.get("task_type"),
                             context=context,
                             template_id=str(item.get("template_id")),
@@ -96,12 +96,12 @@ class Scheduler:
                     for item in data:
                         params = json.loads(item.get("task_data"))
 
-                        context = Context(
+                        context = LikeContext(
                             users_id=params.get("context").get("users_id"),
                             payload=params.get("context").get("payload"),
                             link=params.get("context").get("link"),
                         )
-                        notification = Notification(
+                        notification = LikesNotification(
                             type_send=item.get("task_type"),
                             context=context,
                             template_id=str(item.get("template_id")),
