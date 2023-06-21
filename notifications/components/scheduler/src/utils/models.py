@@ -3,7 +3,6 @@ from typing import List, Optional
 from pydantic.main import BaseModel
 
 
-
 class Film(BaseModel):
     id: str
     name: str
