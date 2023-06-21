@@ -5,7 +5,7 @@ from db.pg_notifier import PostgresNotifier
 from utils.api_sender import api_send_notification
 from utils.config import scheduler_settings
 from utils.logger import logger
-from utils.models import FilmContext, LikeContext, FilmsNotification, LikesNotification
+from utils.models import FilmContext, FilmsNotification, LikeContext, LikesNotification
 
 
 class Scheduler:
