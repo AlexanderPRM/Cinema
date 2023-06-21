@@ -19,8 +19,8 @@ router = APIRouter()
 async def get_all_fresh_reviews(
     auth: dict = Depends(JWTBearer()), mongodb: Mongo = Depends(get_db)
 ):
-    # if auth["role"] != "superuser":
-    #     raise HTTPException(detail="Token Invalid", status_code=HTTPStatus.FORBIDDEN)
+    if auth["role"] != "superuser":
+        raise HTTPException(detail="Token Invalid", status_code=HTTPStatus.FORBIDDEN)
     collection = mongodb.get_collection(collections_names.FILM_REVIEW_LIKES)
     week_ago = datetime.now() - timedelta(weeks=1)
     query = collection.find(
