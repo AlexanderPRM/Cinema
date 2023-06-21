@@ -6,7 +6,7 @@
         "created": "2023-06-14T09:25:43.518Z",
         "updated_at": "2023-06-14T09:25:43.518Z",
         "title": "Confirm Email",
-        "template_text": "<!DOCTYPE html>\n<html>\n<head>\n\t<title>Подтверждение электронной почты</title>\n\t<meta charset=\"UTF-8\">\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n</head>\n<body>\n\t<h1>Здравствуйте, {{ name }}!</h1>\n\t<p>Спасибо за регистрацию на нашем сайте. Для подтверждения адреса электронной почты, пожалуйста, нажмите на ссылку ниже:</p>\n\t<p><a href=\"{{ confirmation_link }}\" style=\"display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;\">Подтвердить Email</a></p>\n\t<p>Если вы не регистрировались на нашем сайте, проигнорируйте это сообщение.</p>\n</body>\n</html>",
+        "template_text": "<!DOCTYPE html>\n<html>\n<head>\n\t<title>Подтверждение электронной почты</title>\n\t<meta charset=\"UTF-8\">\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n</head>\n<body>\n\t<h1>Здравствуйте, { name }!</h1>\n\t<p>Спасибо за регистрацию на нашем сайте. Для подтверждения адреса электронной почты, пожалуйста, нажмите на ссылку ниже:</p>\n\t<p><a href=\"{ confirmation_link }\" style=\"display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;\">Подтвердить Email</a></p>\n\t<p>Если вы не регистрировались на нашем сайте, проигнорируйте это сообщение.</p>\n</body>\n</html>",
         "author": "system",
         "type": "email"
     }
@@ -18,7 +18,7 @@
         "created": "2023-06-14T09:25:43.518Z",
         "updated_at": "2023-06-14T09:25:43.518Z",
         "title": "New Movies",
-        "template_text": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Новые фильмы в киносервисе</title>\n  </head>\n  <body>\n    <h1>{{ name }}</h1>\n    <p>Здравствуйте!</p>\n    <p>Мы рады сообщить вам о новых фильмах, которые появились в нашем киносервисе:</p>\n    <ul>\n      <li>{{ film_name_1 }}</li>\n      <li>{{ film_name_2 }}</li>\n      <li>{{ film_name_3 }}</li>\n    </ul>\n    <p>Посмотрите новые фильмы и оставьте свой отзыв у нас на сайте.</p>\n    <p>С уважением, Киносервис</p>\n    <a href=\"{{ url }}\" style=\"display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; font-size: 16px; border-radius: 5px; text-decoration: none;\">Перейти на сайт</a>\n  </body>\n</html> ",
+        "template_text": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Новые фильмы в киносервисе</title>\n  </head>\n  <body>\n    <h1>{ name }</h1>\n    <p>Здравствуйте!</p>\n    <p>Мы рады сообщить вам о новых фильмах, которые появились в нашем киносервисе:</p>\n    <ul>\n      <li>{ film_name_1 }</li>\n      <li>{ film_name_2 }</li>\n      <li>{ film_name_3 }</li>\n    </ul>\n    <p>Посмотрите новые фильмы и оставьте свой отзыв у нас на сайте.</p>\n    <p>С уважением, Киносервис</p>\n    <a href=\"{ url }\" style=\"display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; font-size: 16px; border-radius: 5px; text-decoration: none;\">Перейти на сайт</a>\n  </body>\n</html> ",
         "author": "system",
         "type": "email"
     }
@@ -30,7 +30,19 @@
         "created": "2023-06-14T09:25:43.518Z",
         "updated_at": "2023-06-14T09:25:43.518Z",
         "title": "Global Message/News",
-        "template_text": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Информация от администрации</title>\n  </head>\n  <body>\n    <h1>Здравствуйте, {{ name }}!</h1>\n    <p>{{ message }}</p>\n    <p>Если у вас есть какие-то вопросы или предложения - обращайтесь к нам.</p>\n    <p>С уважением, Администрация киносервиса.</p>\n    <a href=\"{{ url }}\" style=\"display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; font-size: 16px; border-radius: 5px; text-decoration: none;\">Перейти на сайт</a>\n  </body>\n</html>",
+        "template_text": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Информация от администрации</title>\n  </head>\n  <body>\n    <h1>Здравствуйте, { name }!</h1>\n    <p>{ message }</p>\n    <p>Если у вас есть какие-то вопросы или предложения - обращайтесь к нам.</p>\n    <p>С уважением, Администрация киносервиса.</p>\n    <a href=\"{ url }\" style=\"display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; font-size: 16px; border-radius: 5px; text-decoration: none;\">Перейти на сайт</a>\n  </body>\n</html>",
+        "author": "system",
+        "type": "email"
+    }
+},
+    {
+    "model": "tasks.templates",
+    "pk": "5a4fd7c0-8cef-44f5-a16d-0f78f72b0900",
+    "fields": {
+        "created": "2023-06-14T09:25:43.518Z",
+        "updated_at": "2023-06-14T09:25:43.518Z",
+        "title": "Review was liked by user",
+        "template_text": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        .container {\n            max-width: 600px;\n            margin: 0 auto;\n            font-family: Arial, sans-serif;\n        }\n\n        .header {\n            background-color: #232323;\n            padding: 20px;\n            text-align: center;\n            color: #ffffff;\n        }\n\n        .content {\n            padding: 20px;\n        }\n\n        .likes-section {\n            font-weight: bold;\n        }\n\n        .button {\n            display: inline-block;\n            background-color: #28a745;\n            color: #ffffff;\n            padding: 12px 24px;\n            text-decoration: none;\n            border-radius: 5px;\n            font-weight: bold;\n            margin-top: 10px;\n            margin-bottom: 10px;\n        }\n\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"header\">\n            <h1>Киносервис</h1>\n        </div>\n        <div class=\"content\">\n            <p>Привет, {author}!</p>\n\n            <p>\n                Пользователь {user} только что поставил лайк вашей рецензии на киносервисе.\n            </p>\n\n            <p class=\"likes-section\">\n                Общее количество лайков на вашей рецензии: {likes}\n            </p>\n\n            <a href=\"https://kinoservis.example.com\" class=\"button\">\n                Перейти на киносервис\n            </a>\n        </div>\n    </div>\n</body>\n</html>",
         "author": "system",
         "type": "email"
     }

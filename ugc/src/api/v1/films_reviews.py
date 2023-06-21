@@ -45,6 +45,30 @@ async def get_all_fresh_reviews(
     }
 
 
+@router.get("/author/{review_id}", status_code=HTTPStatus.OK)
+async def get_author_review(
+    review_id: str, auth: dict = Depends(JWTBearer()), mongodb: Mongo = Depends(get_db)
+):
+    if auth["role"] != "superuser":
+        raise HTTPException(detail="Token Invalid", status_code=HTTPStatus.FORBIDDEN)
+    collection = mongodb.get_collection(collections_names.FILM_REVIEW_COLLECTION)
+    query = await collection.find_one({"_id": ObjectId(review_id)})
+    return {"author": query["author"] if query else None}
+
+
+@router.get("/last_liked/{review_id}", status_code=HTTPStatus.OK)
+async def get_user_last_liked_review(
+    review_id: str, auth: dict = Depends(JWTBearer()), mongodb: Mongo = Depends(get_db)
+):
+    if auth["role"] != "superuser":
+        raise HTTPException(detail="Token Invalid", status_code=HTTPStatus.FORBIDDEN)
+    review_rate_collection = mongodb.get_collection(collections_names.FILM_REVIEW_RATE_COLLECTION)
+    query = review_rate_collection.find({"review_id": ObjectId(review_id)}).sort("_id", -1)
+    list_query = await query.to_list(length=1)
+    last_liker = list_query[0]["user_id"] if list_query else None
+    return {"Last liked by user": last_liker}
+
+
 @router.post(
     "/{film_id}",
     response_description="Добавление рецензии к фильму",
