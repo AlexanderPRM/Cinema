@@ -1,8 +1,3 @@
-# import asyncpg
-# from core.config import postgres_settings, rabbit_settings, worker_setting
-# from db.postgres import PostgreSQLConsumer
-# from db.rabbitmq import RabbitConsumer
-
 import asyncio
 import logging
 
