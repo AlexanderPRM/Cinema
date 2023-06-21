@@ -8,20 +8,12 @@ class TypeEnum(str, Enum):
     new_episodes = "new_episodes"
     email_confirm = "email_confirm"
     recommendations = "recommendations"
-
-
-class FilmData(BaseModel):
-    film_id: str
-    film_name: str
-
-
-class ListOfFilms(BaseModel):
-    films_data: Optional[List[FilmData]]
+    person_likes = "person_likes"
 
 
 class Context(BaseModel):
     users_id: Optional[List[str]]
-    payload: Optional[ListOfFilms]
+    payload: dict
     link: Optional[str]
 
 

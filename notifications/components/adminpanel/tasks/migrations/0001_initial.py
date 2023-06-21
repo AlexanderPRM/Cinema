@@ -71,8 +71,30 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("task_name", models.CharField(default="Notification task", max_length=50)),
+                (
+                    "task_type",
+                    models.CharField(
+                        choices=[
+                            ('new_episodes', 'New Episodes'),
+                            ('email_confirm', 'Email Confirm'),
+                            ('recommendations', 'Recommendations'),
+                            ('person_likes', 'Person Likes'),
+                        ],
+                        default='new_episodes',
+                        max_length=50),
+                ),
                 ("data", models.TextField(verbose_name="Data (json)")),
                 ("pending_time", models.DateTimeField()),
+                (
+                    "send_status",
+                    models.CharField(
+                        choices=[
+                            ("waiting", "Waiting"), ("processing", "Processing"), ("done", "Done")
+                        ],
+                        default="waiting",
+                        max_length=50,
+                    )
+                ),
                 (
                     "template_id",
                     models.ForeignKey(
