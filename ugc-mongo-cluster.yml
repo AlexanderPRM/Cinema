@@ -157,7 +157,7 @@ services:
       - mongos2
 
 networks:
-  default:
+  cinema:
     external:
       name: cinema
 volumes:

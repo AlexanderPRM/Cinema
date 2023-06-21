@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from http import HTTPStatus
 from uuid import UUID
 
@@ -13,6 +13,36 @@ from models.ugc_models import FilmReview, Review, SortDirectionEnum
 from services.films_reviews import ReviewService, get_review_service
 
 router = APIRouter()
+
+
+@router.get("/", status_code=HTTPStatus.OK)
+async def get_all_fresh_reviews(
+    auth: dict = Depends(JWTBearer()), mongodb: Mongo = Depends(get_db)
+):
+    if auth["role"] != "superuser":
+        raise HTTPException(detail="Token Invalid", status_code=HTTPStatus.FORBIDDEN)
+    collection = mongodb.get_collection(collections_names.FILM_REVIEW_LIKES)
+    week_ago = datetime.now() - timedelta(weeks=1)
+    query = collection.find(
+        {
+            "$and": [
+                {"$where": "this.likes > this.notified_likes"},
+                {"updated_at": {"$gt": week_ago}},
+            ]
+        }
+    )
+    return {
+        "message": "Success",
+        "data": [
+            {
+                "review_id": str(entry["review_id"]),
+                "likes": entry["likes"],
+                "notified_likes": entry["notified_likes"],
+                "updated_at": entry["updated_at"],
+            }
+            async for entry in query
+        ],
+    }
 
 
 @router.post(
@@ -35,6 +65,15 @@ async def film_review(
         "created_at": datetime.now(),
     }
     query_res = await collection.insert_one(doc)
+    likes_collection = mongodb.get_collection(collections_names.FILM_REVIEW_LIKES)
+    likes_doc = {
+        "review_id": query_res.inserted_id,
+        "likes": 0,
+        "notified_likes": 0,
+        "updated_at": datetime.now(),
+        "created_at": datetime.now(),
+    }
+    await likes_collection.insert_one(likes_doc)
     LOGGER.info(f"Succesfully insert film review {query_res.inserted_id}")
     return {"message": "Success", "_id": str(query_res.inserted_id)}
 
@@ -68,6 +107,8 @@ async def film_review_rate(
     res = await review_rate_collection.insert_one(
         {"review_id": review_id, "user_id": auth["user_id"], "rate": rate}
     )
+    review_likes = mongodb.get_collection(collections_names.FILM_REVIEW_LIKES)
+    await review_likes.update_one({"review_id": review_id}, {"$inc": {"likes": 1}})
     LOGGER.info(f"New rate {rate} for review {review_id}")
     return {"message": "Success", "_id": str(res.inserted_id)}
 
