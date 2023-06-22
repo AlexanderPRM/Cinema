@@ -60,7 +60,7 @@ class Scheduler:
                 result = await self.pg_nf.get_notification(task_type)
                 if result:
                     data = [{key: value for key, value in item.items()} for item in result]
-
+                    logger.info(data)
                     for item in data:
                         params = json.loads(item.get("task_data"))
 

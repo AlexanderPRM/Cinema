@@ -3,13 +3,18 @@ import logging
 
 import aiohttp
 import ElasticEmail
-import jinja2
 from core.config import rabbit_settings, worker_setting
 from core.utils import generate_admin_jwt
 from db.postgres import PostgreSQLConsumer
 from db.rabbitmq import RabbitConsumer
 from ElasticEmail.api import emails_api
-from ElasticEmail.models import EmailMessageData, EmailRecipient
+from ElasticEmail.models import (
+    BodyContentType,
+    BodyPart,
+    EmailContent,
+    EmailMessageData,
+    EmailRecipient,
+)
 
 
 class Worker:
@@ -22,30 +27,23 @@ class Worker:
         self.rabbitmq_client: RabbitConsumer = rabbitmq_client
         self.postgres_client: PostgreSQLConsumer = postgres_client
 
-    async def template_processing(self, template, body):
-        jinja_template = jinja2.Template(template["template_text"])
-        output_template = jinja_template.render(**body)
-        return output_template
-
-    async def build_mail(self, email, subject, content):
+    async def build_mail(self, recipients, subject, content):
         email_message_data = EmailMessageData(
-            recipients=[EmailRecipient(email=email)],
-            content={
-                "Body": [{"ContentType": "HTML", "Content": content}],
-                "Subject": subject,
-                "From": self.sender,
-            },
+            recipients=recipients,
+            content=EmailContent(
+                body=[
+                    BodyPart(
+                        content_type=BodyContentType("HTML"), content=content, charset="utf-8"
+                    ),
+                    BodyPart(
+                        content_type=BodyContentType("PlainText"), content=content, charset="utf-8"
+                    ),
+                ],
+                _from=self.sender,
+                subject=subject,
+            ),
         )
         return email_message_data
-
-    async def send_confirm_email(self, user_info, rabbit_message, template):
-        body = {
-            "name": user_info["name"] if user_info["name"] else "Guest",
-            "confirmation_link": rabbit_message["context"]["link"],
-        }
-        output_template = await self.template_processing(template, body)
-        mail = await self.build_mail(user_info["email"], template["title"], output_template)
-        return await self.send_mail(mail)
 
     async def send_mail(self, mail):
         return self.email_api.emails_post(mail)
@@ -68,7 +66,32 @@ class Worker:
                         )
                         users_info.append(await user_info.json())
                     if message["type_send"] == "email_confirm":
-                        response = await self.send_confirm_email(
-                            users_info[0], message, db_template[0]
-                        )
-                        logging.info(response)
+                        recipients = [
+                            EmailRecipient(
+                                email=user_info["email"],
+                                fields={
+                                    "name": user_info["name"] if user_info["name"] else "Guest",
+                                    "confirmation_link": message["context"]["link"],
+                                },
+                            )
+                            for user_info in users_info
+                        ]
+                    elif message["type_send"] == "new_episodes":
+                        recipients = []
+                        for user in users_info:
+                            fields = {
+                                "name": user["name"] if user["name"] else "Guest",
+                                "url": message["context"]["link"],
+                            }
+                            counter = 1
+                            for film in message["context"]["payload"]["films_data"]:
+                                fields.update({f"film_name_{counter}": film["film_name"]})
+                                counter += 1
+                            recipients.append(EmailRecipient(email=user["email"], fields=fields))
+                    mail = await self.build_mail(
+                        recipients,
+                        db_template[0]["title"],
+                        db_template[0]["template_text"],
+                    )
+                    response = await self.send_mail(mail)
+                    logging.info(response)

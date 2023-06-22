@@ -53,8 +53,13 @@ class Templates(UUIDMixin, TimeStampedMixin):
         verbose_name_plural = _("Templates")
 
 
+class UserTypes(models.TextChoices):
+    ALL = "all"
+    SELECTED = "selected"
+
+
 class UsersCategories(UUIDMixin, TimeStampedMixin):
-    category_name = models.CharField(max_length=50)
+    category_name = models.CharField(max_length=50, choices=UserTypes.choices)
 
     def __str__(self):
         return self.category_name
