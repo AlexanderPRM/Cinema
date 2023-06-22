@@ -24,8 +24,8 @@ class PostgreSQLConsumer:
         query = (
             f"INSERT INTO {postgres_settings.TASKS_TABLE} "
             f"(template_id_id, task_name, users_category_id, data, pending_time, "
-            f"created, updated_at, id) "
-            f"VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
+            f"created, updated_at, id, send_status, task_type) "
+            f"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
         )
         return await self.connection.fetch(
             query,
@@ -37,4 +37,6 @@ class PostgreSQLConsumer:
             datetime.datetime.now(),
             datetime.datetime.now(),
             uuid.uuid4(),
+            "waiting",
+            "person_likes",
         )
