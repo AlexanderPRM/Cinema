@@ -18,9 +18,9 @@ class SchedulerSettings(BaseSettings):
     RECOMMENDATIONS: str = Field("recommendations")
     NEW_EPISODES: str = Field("new_episodes")
     PERSON_LIKES: str = Field("person_likes")
-    RECOMMENDATIONS_TIMEOUT: int = Field(3600)
-    NEW_EPISODES_TIMEOUT: int = Field(600)
-    PERSON_LIKES_TIMEOUT: int = Field(180)
+    RECOMMENDATIONS_TIMEOUT: int = Field(720)
+    NEW_EPISODES_TIMEOUT: int = Field(360)
+    PERSON_LIKES_TIMEOUT: int = Field(360)
     NOTIFICATION_SERVICE_URL: str = Field("http://notification_api:8001/api/v1/notify/send/")
 
 

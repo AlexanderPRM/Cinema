@@ -53,8 +53,13 @@ class Templates(UUIDMixin, TimeStampedMixin):
         verbose_name_plural = _("Templates")
 
 
+class UserTypes(models.TextChoices):
+    ALL = "all"
+    SELECTED = "selected"
+
+
 class UsersCategories(UUIDMixin, TimeStampedMixin):
-    category_name = models.CharField(max_length=50)
+    category_name = models.CharField(max_length=50, choices=UserTypes.choices)
 
     def __str__(self):
         return self.category_name
@@ -91,3 +96,15 @@ class Tasks(UUIDMixin, TimeStampedMixin):
         db_table = "tasks"
         verbose_name = _("Task")
         verbose_name_plural = _("Tasks")
+
+
+class UserMailingSubscribe(UUIDMixin):
+    user_id = models.UUIDField(unique=True, null=False)
+
+    def __str__(self):
+        return f"{self.user_id} unsubscribe: {self.unsubscribe}"
+
+    class Meta:
+        db_table = "user_mailing_subscribe"
+        verbose_name = _("UserSubscribe")
+        verbose_name_plural = _("UsersSubscribes")

@@ -4,7 +4,8 @@ from pydantic import BaseSettings, Field
 class CronSettings(BaseSettings):
     JWT_SECRET: str
     JWT_ADMIN_ROLE: str
-    UGC_URL: str = Field("http://ugc:8000/api/v1/films/")
+    UGC_URL: str = Field("http://ugc2:8000/api/v1/films/")
+    SITE_LINK: str = Field("localhost")
 
     class Config:
         case_sensitive = True
@@ -18,7 +19,7 @@ class PostgreSQLSettings(BaseSettings):
     NOTF_POSTGRES_USER: str
     NOTF_POSTGRES_PASSWORD: str
     LIKES_TEMPLATE_ID: str = Field("5a4fd7c0-8cef-44f5-a16d-0f78f72b0900")
-    USERS_CATEGORY_FOR_LIKE_NOTIFICATIONS: str = Field("3606b100-a054-44cd-8b5f-6d09c58e59bf")
+    USERS_CATEGORY_FOR_LIKE_NOTIFICATIONS: str = Field("efbae92b-e130-4715-8665-ca78f6a34eb6")
     TASKS_TABLE: str = Field("tasks")
 
     class Config:

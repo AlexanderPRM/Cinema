@@ -35,10 +35,21 @@ class Cron:
                 return
             logging.info(likes)
             for like in likes.get("data"):
+                data = {
+                    "context": {
+                        "users_id": [],
+                        "payload": {"last_liked_user": {}},
+                        "link": cron_setting.SITE_LINK,
+                    }
+                }
                 review_id = like.get("review_id")
                 author_id = await self.get_author_review(aio_session, review_id)
-                like["author_id"] = author_id.get("author")
+                logging.info(author_id)
+                data["context"]["users_id"].append(author_id.get("author"))
                 last_liked_user = await self.get_last_liked_user(aio_session, review_id)
-                like["last_liked_user"] = last_liked_user.get("Last liked by user")
-                logging.info(like)
-                await self.postgres_client.insert_task(like)
+                data["context"]["payload"]["last_liked_user"]["id"] = last_liked_user.get(
+                    "Last liked by user"
+                )
+                data["context"]["payload"]["likes"] = like.get("likes")
+                logging.info(data)
+                await self.postgres_client.insert_task(data)

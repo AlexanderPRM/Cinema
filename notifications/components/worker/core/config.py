@@ -20,6 +20,7 @@ class PostgreSQLSettings(BaseSettings):
     NOTF_POSTGRES_USER: str
     NOTF_POSTGRES_PASSWORD: str
     TEMPLATE_TABLE: str = Field("templates")
+    POSTGRES_SUBSCRIBE_TABLE: str = Field("user_mailing_subscribe")
 
     class Config:
         case_sensitive = True

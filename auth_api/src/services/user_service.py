@@ -67,7 +67,7 @@ class UserService:
             "type_send": "email_confirm",
             "template_id": config.WELCOME_TEMPLATE_ID,
             "notification_id": str(uuid4()),
-            "context": {"users_id": [str(user.id)], "link": confirm_url},
+            "context": {"users_id": [str(user.id)], "payload": {}, "link": confirm_url},
         }
         requests.post(url=config.NOTIFICATION_SERVICE_URL, json=body)
         return email, password, role, user
