@@ -15,8 +15,6 @@ services:
       - POSTGRES_PASSWORD=${NOTF_POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    ports:
-      - 5432:5432
     networks:
       - cinema
     restart: always
@@ -40,7 +38,7 @@ services:
     depends_on:
       - db_notifications
     ports:
-      - 9009:8000
+      - 9010:8000
     networks:
       - cinema
     restart: always
@@ -51,6 +49,8 @@ services:
       - "notf.env"
     depends_on:
       - db_notifications
+    ports:
+      - 9009:8001
     networks:
       - cinema
     restart: always
@@ -67,16 +67,28 @@ services:
       - cinema
     restart: always
 
-  # worker:
-  #   build: components/worker
-  #   env_file:
-  #     - notf.env
-  #   depends_on:
-  #     - notification_api
-  #     - rabbitmq_notifications
-  #   networks:
-  #     - cinema
-  #   restart: always
+  cron:
+    build: components/cron
+    env_file:
+      - notf.env
+    depends_on:
+      - db_notifications
+      - notification_api
+      - rabbitmq_notifications
+    networks:
+      - cinema
+    restart: always
+
+  worker:
+    build: components/worker
+    env_file:
+      - notf.env
+    depends_on:
+      - notification_api
+      - rabbitmq_notifications
+    networks:
+      - cinema
+    restart: always
 
 networks:
   cinema:

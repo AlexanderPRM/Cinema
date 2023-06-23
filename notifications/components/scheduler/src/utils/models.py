@@ -17,7 +17,8 @@ class FilmPayload(BaseModel):
 
 
 class LikePayload(BaseModel):
-    liked_user_id: Like
+    last_liked_user: Like
+    likes: int
 
 
 class FilmContext(BaseModel):

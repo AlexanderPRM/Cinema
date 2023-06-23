@@ -6,7 +6,7 @@ class WorkerSettings(BaseSettings):
     JWT_ADMIN_ROLE: str
     NOTF_ELASTICEMAIL_API_KEY: str
     NOTF_ELASTICEMAIL_FROM_EMAIL: str
-    AUTH_URL: str = Field("http://localhost/auth/api/v1/user/")
+    AUTH_URL: str = Field("http://nginx/auth/api/v1/user/")
 
     class Config:
         case_sensitive = True
@@ -20,6 +20,7 @@ class PostgreSQLSettings(BaseSettings):
     NOTF_POSTGRES_USER: str
     NOTF_POSTGRES_PASSWORD: str
     TEMPLATE_TABLE: str = Field("templates")
+    POSTGRES_SUBSCRIBE_TABLE: str = Field("user_mailing_subscribe")
 
     class Config:
         case_sensitive = True

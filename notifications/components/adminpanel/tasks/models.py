@@ -96,3 +96,15 @@ class Tasks(UUIDMixin, TimeStampedMixin):
         db_table = "tasks"
         verbose_name = _("Task")
         verbose_name_plural = _("Tasks")
+
+
+class UserMailingSubscribe(UUIDMixin):
+    user_id = models.UUIDField(unique=True, null=False)
+
+    def __str__(self):
+        return f"{self.user_id} unsubscribe: {self.unsubscribe}"
+
+    class Meta:
+        db_table = "user_mailing_subscribe"
+        verbose_name = _("UserSubscribe")
+        verbose_name_plural = _("UsersSubscribes")

@@ -31,18 +31,18 @@ async def get_all_fresh_reviews(
             ]
         }
     )
-    return {
-        "message": "Success",
-        "data": [
+    data = []
+    async for entry in query:
+        data.append(
             {
                 "review_id": str(entry["review_id"]),
                 "likes": entry["likes"],
                 "notified_likes": entry["notified_likes"],
                 "updated_at": entry["updated_at"],
             }
-            async for entry in query
-        ],
-    }
+        )
+    collection.update_many({}, [{"$set": {"notified_likes": "$likes"}}])
+    return {"message": "Success", "data": data}
 
 
 @router.get("/author/{review_id}", status_code=HTTPStatus.OK)
@@ -84,7 +84,7 @@ async def film_review(
     collection = mongodb.get_collection(collections_names.FILM_REVIEW_COLLECTION)
     doc = {
         "film_id": film_id.__str__(),
-        "author": auth["user_id"],
+        "author": auth["user_id"].__str__(),
         "text": body.text,
         "created_at": datetime.now(),
     }
@@ -129,7 +129,7 @@ async def film_review_rate(
         )
 
     res = await review_rate_collection.insert_one(
-        {"review_id": review_id, "user_id": auth["user_id"], "rate": rate}
+        {"review_id": review_id, "user_id": auth["user_id"].__str__(), "rate": rate}
     )
     review_likes = mongodb.get_collection(collections_names.FILM_REVIEW_LIKES)
     await review_likes.update_one({"review_id": review_id}, {"$inc": {"likes": 1}})

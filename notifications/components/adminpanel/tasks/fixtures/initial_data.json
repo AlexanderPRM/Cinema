@@ -30,7 +30,7 @@
         "created": "2023-06-14T09:25:43.518Z",
         "updated_at": "2023-06-14T09:25:43.518Z",
         "title": "Global Message/News",
-        "template_text": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Информация от администрации</title>\n  </head>\n  <body>\n    <h1>Здравствуйте, { name }!</h1>\n    <p>{ message }</p>\n    <p>Если у вас есть какие-то вопросы или предложения - обращайтесь к нам.</p>\n    <p>С уважением, Администрация киносервиса.</p>\n    <a href=\"{ url }\" style=\"display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; font-size: 16px; border-radius: 5px; text-decoration: none;\">Перейти на сайт</a>\n  </body>\n</html>",
+        "template_text": "<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Информация от администрации</title>\n  </head>\n  <body>\n    <h1>Здравствуйте, {name}!</h1>\n    <p>{message}</p>\n    <p>Если у вас есть какие-то вопросы или предложения - обращайтесь к нам.</p>\n    <p>С уважением, Администрация киносервиса.</p>\n    <a href=\"{ url }\" style=\"display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; font-size: 16px; border-radius: 5px; text-decoration: none;\">Перейти на сайт</a>\n  </body>\n</html>",
         "author": "system",
         "type": "email"
     }
@@ -42,9 +42,18 @@
         "created": "2023-06-14T09:25:43.518Z",
         "updated_at": "2023-06-14T09:25:43.518Z",
         "title": "Review was liked by user",
-        "template_text": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        .container {\n            max-width: 600px;\n            margin: 0 auto;\n            font-family: Arial, sans-serif;\n        }\n\n        .header {\n            background-color: #232323;\n            padding: 20px;\n            text-align: center;\n            color: #ffffff;\n        }\n\n        .content {\n            padding: 20px;\n        }\n\n        .likes-section {\n            font-weight: bold;\n        }\n\n        .button {\n            display: inline-block;\n            background-color: #28a745;\n            color: #ffffff;\n            padding: 12px 24px;\n            text-decoration: none;\n            border-radius: 5px;\n            font-weight: bold;\n            margin-top: 10px;\n            margin-bottom: 10px;\n        }\n\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"header\">\n            <h1>Киносервис</h1>\n        </div>\n        <div class=\"content\">\n            <p>Привет, {author}!</p>\n\n            <p>\n                Пользователь {user} только что поставил лайк вашей рецензии на киносервисе.\n            </p>\n\n            <p class=\"likes-section\">\n                Общее количество лайков на вашей рецензии: {likes}\n            </p>\n\n            <a href=\"https://kinoservis.example.com\" class=\"button\">\n                Перейти на киносервис\n            </a>\n        </div>\n    </div>\n</body>\n</html>",
+        "template_text": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        .container {\n            max-width: 600px;\n            margin: 0 auto;\n            font-family: Arial, sans-serif;\n        }\n\n        .header {\n            background-color: #232323;\n            padding: 20px;\n            text-align: center;\n            color: #ffffff;\n        }\n\n        .content {\n            padding: 20px;\n        }\n\n        .likes-section {\n            font-weight: bold;\n        }\n\n        .button {\n            display: inline-block;\n            background-color: #28a745;\n            color: #ffffff;\n            padding: 12px 24px;\n            text-decoration: none;\n            border-radius: 5px;\n            font-weight: bold;\n            margin-top: 10px;\n            margin-bottom: 10px;\n        }\n\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"header\">\n            <h1>Киносервис</h1>\n        </div>\n        <div class=\"content\">\n            <p>Привет, {author}!</p>\n\n            <p>\n                Пользователь {user} только что поставил лайк вашей рецензии на киносервисе.\n            </p>\n\n            <p class=\"likes-section\">\n                Общее количество лайков на вашей рецензии: {likes}\n            </p>\n\n            <a href=\"{url}\" class=\"button\">\n                Перейти на киносервис\n            </a>\n        </div>\n    </div>\n</body>\n</html>",
         "author": "system",
         "type": "email"
+    }
+},
+{
+    "model": "tasks.userscategories",
+    "pk": "efbae92b-e130-4715-8665-ca78f6a34eb6",
+    "fields": {
+        "created": "2023-06-23T10:39:58.402Z",
+        "updated_at": "2023-06-23T10:39:58.402Z",
+        "category_name": "selected"
     }
 }
 ]

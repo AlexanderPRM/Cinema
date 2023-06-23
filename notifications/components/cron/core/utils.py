@@ -9,7 +9,7 @@ def generate_admin_jwt():
     now = datetime.now(timezone.utc)
     token_data = {
         "role": cron_setting.JWT_ADMIN_ROLE,
-        "user_id": str(uuid4),
+        "user_id": str(uuid4()),
         "fresh": True,
         "jti": str(uuid4()),
         "nbf": now,

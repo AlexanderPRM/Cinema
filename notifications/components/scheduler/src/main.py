@@ -29,10 +29,9 @@ class Scheduler:
                 result = await self.pg_nf.get_notification(task_type)
                 if result:
                     data = [{key: value for key, value in item.items()} for item in result]
-
+                    logger.info(data)
                     for item in data:
                         params = json.loads(item.get("task_data"))
-
                         context = FilmContext(
                             users_id=params.get("context").get("users_id"),
                             payload=params.get("context").get("payload"),
@@ -51,8 +50,9 @@ class Scheduler:
 
                 await asyncio.sleep(scheduler_settings.RECOMMENDATIONS_TIMEOUT)
 
-            except Exception as e:
-                logger.error(e)
+            except Exception as error:
+                logger.error(error)
+                raise error
 
     async def weekly_recommendations_control(self, task_type: str):
         while True:
@@ -83,8 +83,9 @@ class Scheduler:
 
                 await asyncio.sleep(scheduler_settings.RECOMMENDATIONS_TIMEOUT)
 
-            except Exception as e:
-                logger.error(e)
+            except Exception as error:
+                logger.error(error)
+                raise error
 
     async def person_likes_control(self, task_type: str):
         while True:
@@ -92,7 +93,7 @@ class Scheduler:
                 result = await self.pg_nf.get_notification(task_type)
                 if result:
                     data = [{key: value for key, value in item.items()} for item in result]
-
+                    logger.info(data)
                     for item in data:
                         params = json.loads(item.get("task_data"))
 
@@ -115,8 +116,9 @@ class Scheduler:
 
                 await asyncio.sleep(scheduler_settings.RECOMMENDATIONS_TIMEOUT)
 
-            except Exception as e:
-                logger.error(e)
+            except Exception as error:
+                logger.error(error)
+                raise error
 
 
 if __name__ == "__main__":
