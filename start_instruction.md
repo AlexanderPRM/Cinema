@@ -11,9 +11,7 @@
     pre-commit install
 ---
 
-
 **Создайте виртуальное окружение и войдите в него**
-
 
 **(Linux\MacOS)**
 
@@ -47,9 +45,14 @@
     https://console.cloud.google.com/apis/credentials
 ---
 
-### Запустите docker-compose
+### Запустите docker-compose файлы
 
-    docker-compose --env-file config.env up --build
+    docker-compose --env-file config.env up --build -d
+
+    docker-compose --env-file config.env -f ugc-mongo-cluster.yml up --build -d
+
+    cd notifications
+    docker-compose --env-file notf.env up --build -d
 
 ## Тесты
 
@@ -75,7 +78,6 @@
     docker-compose -f auth_api/tests/functional/docker-compose.yml --env-file config.env up --build
 
 ## Полезные команды*
-
 
 **(Не через докер контейнер)**
 
