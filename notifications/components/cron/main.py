@@ -2,7 +2,7 @@ import asyncio
 import logging
 
 import asyncpg
-import schedule
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from core.config import postgres_settings
 from core.logging_setup import init_logger
 from cron import Cron
@@ -27,18 +27,8 @@ async def collect_likes():
     await client.collect()
 
 
-def wrapper(coro):
-    asyncio.create_task(coro())
-
-
-schedule.every(60).seconds.do(wrapper, collect_likes)
-
-
-async def main():
-    while True:
-        schedule.run_pending()
-        await asyncio.sleep(1)
-
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(collect_likes, 'interval', seconds=60)
+    scheduler.start()
+    asyncio.get_event_loop().run_forever()

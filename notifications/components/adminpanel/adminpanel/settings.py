@@ -22,7 +22,7 @@ load_dotenv("notf.env")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("ADMIN_PANEL_SECRET_KEY", default="NOT_SO_SECRET")
+SECRET_KEY = os.environ.get("ADMIN_PANEL_SECRET_KEY")
 
 DEBUG = os.environ.get("ADMIN_PANEL_DEBUG", default="false").lower() in ("1", "yes", "true")
 

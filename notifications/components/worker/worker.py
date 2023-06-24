@@ -99,6 +99,7 @@ class Worker:
                                 worker_setting.AUTH_URL + f"get_user_info/{user_id}/"
                             )
                             user_info = await aio_response.json()
+                            print(user_info)
                             if aio_response.status != HTTPStatus.FORBIDDEN:
                                 if message["type_send"] == "email_confirm":
                                     recipients = await self.build_confirm_email_recipients(
