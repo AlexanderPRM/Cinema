@@ -29,6 +29,6 @@ async def collect_likes():
 
 if __name__ == "__main__":
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(collect_likes, 'interval', seconds=60)
+    scheduler.add_job(collect_likes, "interval", seconds=60)
     scheduler.start()
     asyncio.get_event_loop().run_forever()
