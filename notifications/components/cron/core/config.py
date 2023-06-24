@@ -4,7 +4,7 @@ from pydantic import BaseSettings, Field
 class CronSettings(BaseSettings):
     JWT_SECRET: str
     JWT_ADMIN_ROLE: str
-    UGC_URL: str = Field("http://ugc2:8000/api/v1/films/")
+    UGC_URL: str = Field("http://ugc:8000/api/v1/films/")
     SITE_LINK: str = Field("localhost")
 
     class Config:
