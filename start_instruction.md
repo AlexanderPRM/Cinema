@@ -45,12 +45,18 @@
     https://console.cloud.google.com/apis/credentials
 ---
 
+### Создайте сеть для Docker
+
+    docker network create cinema
+
 ### Запустите docker-compose файлы
 
     docker-compose --env-file config.env up --build -d
 
+    -- UGC сервис --
     docker-compose --env-file config.env -f ugc-mongo-cluster.yml up --build -d
 
+    -- Сервис уведомлений --
     cd notifications
     docker-compose --env-file notf.env up --build -d
 
