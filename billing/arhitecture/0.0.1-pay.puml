@@ -1,0 +1,32 @@
+@startuml ugc-watch-film
+== Создание запроса на оплату подписки ==
+autonumber
+activate WebClient
+WebClient -> BillingAPI: POST pay/<UUID:subscribe_id>
+activate BillingAPI
+note over BillingAPI: Проверка что пользователь на создавал запрос на оплату чуть ранее
+database PostgreSQL
+alt #LightBlue Проверка ключа идемпотентности
+        activate PostgreSQL
+        BillingAPI -> PostgreSQL: SELECT * FROM <transaction_log> where idempotentity_key = <key>
+        PostgreSQL -> BillingAPI: Запись не найдена.
+    else #Pink План не найден или произошла ошибка
+        PostgreSQL -> BillingAPI: Такой запрос уже создавался (Тут подумать над логикой)
+        BillingAPI -> WebClient: Можно редиректить на страницу подтверждения оплаты (Подумать)
+    end
+note over BillingAPI: Получение плана подписки
+alt #LightBlue План получен
+        BillingAPI -> PostgreSQL: SELECT * FROM <plan_table> WHERE id = <subscribe_id>
+        PostgreSQL -> BillingAPI: Успешная выдача данных
+    else #Pink План не найден или произошла ошибка
+        PostgreSQL -> BillingAPI: План не найден
+        BillingAPI -> WebClient: Подписка не существует. STATUS: 410
+    end
+BillingAPI -> PaymentProvider: Создать платёж
+activate PaymentProvider
+PaymentProvider -> BillingAPI: Ответ сервису после создания платежа
+deactivate PaymentProvider
+BillingAPI -> PostgreSQL: INSERT INTO <transaction_log> <log>
+BillingAPI -> WebClient: Редирект пользователя на страницу подтверждения платежа
+deactivate BillingAPI
+@enduml

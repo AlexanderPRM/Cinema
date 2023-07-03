@@ -1,0 +1,36 @@
+@startuml ugc-watch-film
+== Обработка завершенной операции ==
+autonumber
+activate PaymentProvider
+PaymentProvider -> BillingAPI: POST transaction_handler/
+activate BillingAPI
+database PostgreSQL
+alt #LightBlue Подписка оплачена
+        BillingAPI -> PostgreSQL: UPDATE <transaction_table> WHERE id = <id> SET <LOG_SUCCESS>
+        activate PostgreSQL
+        PostgreSQL -> BillingAPI: Успешно
+        BillingAPI -> PostgreSQL: INSERT INTO <subscription_table> <subscribe> ON CONFLICT (user_id) UPDATE transaction_id
+        PostgreSQL -> BillingAPI: Успешно
+        deactivate PostgreSQL
+        note over BillingAPI: Смена роли
+        BillingAPI -> AuthService: Сменить роль пользователю
+        activate AuthService
+        AuthService -> BillingAPI: Роль изменена
+        deactivate AuthService
+        note over BillingAPI: Отправка письма
+        BillingAPI -> NotificationService: Отправить письмо о успешной оплате
+        activate NotificationService
+        NotificationService -> BillingAPI: Запрос на отправку письма обработан
+        deactivate NotificationService
+    else #Pink Подписка не оплачена или произошла ошибка
+        BillingAPI -> PostgreSQL: UPDATE <transaction_table> WHERE id = <id> SET <LOG_ERROR>
+        activate PostgreSQL
+        PostgreSQL -> BillingAPI: Обновлено
+        deactivate PostgreSQL
+        note over BillingAPI: Отправка письма
+        BillingAPI -> NotificationService: Отправить письмо о неуспешной оплате
+        activate NotificationService
+        NotificationService -> BillingAPI: Запрос на отправку письма обработан
+        deactivate NotificationService
+    end
+@enduml
