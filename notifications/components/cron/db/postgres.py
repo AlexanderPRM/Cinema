@@ -27,7 +27,7 @@ class PostgreSQLConsumer:
             f"send_status, created, updated_at, id) "
             f"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"
         )
-        return await self.connection.fetch(
+        return await self.connection.execute(
             query,
             template_id,
             "Like on user's review",

@@ -31,7 +31,7 @@ class Cron:
             cookies={"access_token_cookie": generate_admin_jwt()}
         ) as aio_session:
             likes = await self.get_likes_notification(aio_session)
-            if likes is None:
+            if likes.get("data") is None:
                 return
             logging.info(likes)
             for like in likes.get("data"):
