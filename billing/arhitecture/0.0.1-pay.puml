@@ -11,8 +11,8 @@ alt #LightBlue Проверка ключа идемпотентности
         BillingAPI -> PostgreSQL: SELECT * FROM <transaction_log> where idempotentity_key = <key>
         PostgreSQL -> BillingAPI: Запись не найдена.
     else #Pink План не найден или произошла ошибка
-        PostgreSQL -> BillingAPI: Такой запрос уже создавался (Тут подумать над логикой)
-        BillingAPI -> WebClient: Можно редиректить на страницу подтверждения оплаты (Подумать)
+        PostgreSQL -> BillingAPI: Такой запрос уже создавался
+        BillingAPI -> WebClient: Можно редиректить на страницу подтверждения уже созданного платежа
     end
 note over BillingAPI: Получение плана подписки
 alt #LightBlue План получен
