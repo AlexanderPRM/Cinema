@@ -13,6 +13,7 @@ class Settings(BaseSettings):
         case_sensitive = True
         env_file = "config.env"
 
+
 class PostgreSQLSettings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str

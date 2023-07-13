@@ -1,8 +1,8 @@
 from api.v1 import admin_handlers
+from core import postgres
+from core.config import config, postgres_settings
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from core import postgres
-from core.config import postgres_settings, config
 
 ADMIN_API_VERSION = "0.0.1"
 
@@ -15,6 +15,7 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
+
 @app.on_event("startup")
 async def startup():
     postgres.postgres_ = postgres.PostgreSQL(config.POSTGRESQL_URL)
@@ -23,6 +24,7 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await postgres.postgres_.conn.close()
+
 
 app.include_router(
     admin_handlers.router,

@@ -1,7 +1,8 @@
-from sqlalchemy.ext.asyncio import create_async_engine
-import asyncpg
-from core.config import postgres_settings, config
 from typing import Optional
+
+import asyncpg
+from core.config import config, postgres_settings
+from sqlalchemy.ext.asyncio import create_async_engine
 
 
 class PostgreSQL:
@@ -17,8 +18,12 @@ class PostgreSQL:
         return result
 
     async def get_connection(self):
-        return await asyncpg.connect(user=postgres_settings.POSTGRES_USER, password=postgres_settings.POSTGRES_PASSWORD,
-                                     database=postgres_settings.POSTGRES_DB, host=postgres_settings.POSTGRES_HOST)
+        return await asyncpg.connect(
+            user=postgres_settings.POSTGRES_USER,
+            password=postgres_settings.POSTGRES_PASSWORD,
+            database=postgres_settings.POSTGRES_DB,
+            host=postgres_settings.POSTGRES_HOST,
+        )
 
 
 postgres_: Optional[PostgreSQL] = None

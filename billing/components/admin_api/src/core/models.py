@@ -1,8 +1,8 @@
 import datetime
 import uuid
 
-from sqlalchemy import Column, DateTime, Enum, Integer, String, Boolean
-from sqlalchemy.dialects.postgresql import UUID, ENUM
+from sqlalchemy import Boolean, Column, DateTime, Enum, Integer, String
+from sqlalchemy.dialects.postgresql import ENUM, UUID
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -44,8 +44,8 @@ class TransactionsLog(Base):
     provider = Column(String, nullable=False)
     idempotency_key_ttl = Column(DateTime, nullable=False)
     idempotency_key = Column(UUID(as_uuid=True), nullable=False)
-    StatusEnum = ENUM('SUCCESS', 'ERROR', 'WAITING', name='status_enum')
-    operate_status = Column(StatusEnum, default='WAITING', nullable=False)
+    StatusEnum = ENUM("SUCCESS", "ERROR", "WAITING", name="status_enum")
+    operate_status = Column(StatusEnum, default="WAITING", nullable=False)
     payment_details = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.datetime.now)
     updated_at = Column(
