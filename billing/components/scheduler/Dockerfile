@@ -13,6 +13,6 @@ RUN pip install --upgrade pip --no-cache-dir \
      && pip install -r requirements.txt --no-cache-dir
 
 COPY run_scheduler.sh .
-COPY /src src
-RUN chmod +x /opt/scheduler/run_payment.sh
-ENTRYPOINT [ "/opt/scheduler/run_payment.sh" ]
+COPY . .
+RUN chmod +x /opt/scheduler/run_scheduler.sh
+ENTRYPOINT [ "/opt/scheduler/run_scheduler.sh" ]
