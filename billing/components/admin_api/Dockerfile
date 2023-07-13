@@ -13,6 +13,6 @@ RUN pip install --upgrade pip --no-cache-dir \
      && pip install -r requirements.txt --no-cache-dir
 
 COPY run_admin.sh .
-COPY /src src
+COPY . .
 RUN chmod +x /opt/admin_api/run_admin.sh
 ENTRYPOINT [ "/opt/admin_api/run_admin.sh" ]
