@@ -1,6 +1,6 @@
 from api.v1 import admin_handlers
+from core import postgres
 from core.config import config
-from db import postgres
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 

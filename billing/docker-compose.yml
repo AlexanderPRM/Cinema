@@ -17,6 +17,21 @@ services:
       - cinema
     restart: always
 
+  rabbitmq_billing:
+    container_name: rabbitmq
+    image: rabbitmq:3.10.6-management-alpine
+    env_file:
+      - config.env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+    networks:
+      - cinema
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+
   admin_api:
     build:
       context: components
@@ -24,6 +39,26 @@ services:
     env_file:
       - config.env
     restart: always
+    ports:
+      - 8000:8000
+    networks:
+      - cinema
+
+  scheduler:
+    build: components/scheduler
+    env_file:
+      - config.env
+    depends_on:
+      - billing_psql
+    networks:
+      - cinema
+    restart: always
+
+  billing_redis:
+    image: redis:7.0.9
+    restart: always
+    env_file:
+      - config.env
     networks:
       - cinema
 
@@ -41,4 +76,4 @@ networks:
     external:
       name: cinema
 volumes:
-  postgres_data:
+    postgres_data:

@@ -2,8 +2,8 @@ import datetime
 import uuid
 from functools import lru_cache
 
-from db.models import Subscriptions
-from db.postgres import PostgreSQL, get_postgres
+from core.models import Subscriptions
+from core.postgres import PostgreSQL, get_postgres
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
