@@ -1,12 +1,10 @@
 import datetime
-import logging
 import uuid
 from functools import lru_cache
 
-from core.models import Subscriptions, TransactionsLog
-from core.postgres import PostgreSQL, get_postgres
+from db.models import Subscriptions
+from db.postgres import PostgreSQL, get_postgres
 from fastapi import Depends
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

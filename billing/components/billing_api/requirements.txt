@@ -5,3 +5,4 @@ yookassa==2.4.0
 pydantic==2.0.2
 SQLAlchemy[asyncio]==2.0.18
 alembic==1.11.1
+httptools==0.6.0

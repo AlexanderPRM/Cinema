@@ -7,12 +7,13 @@ RUN apt-get update && apt-get install -y \
      python3-dev  \
      netcat-traditional
 
-COPY requirements.txt .
+COPY admin_api/requirements.txt .
 
 RUN pip install --upgrade pip --no-cache-dir \
      && pip install -r requirements.txt --no-cache-dir
 
-COPY run_admin.sh .
-COPY . .
+COPY admin_api/run_admin.sh .
+COPY admin_api .
+COPY core/ src/core/
 RUN chmod +x /opt/admin_api/run_admin.sh
 ENTRYPOINT [ "/opt/admin_api/run_admin.sh" ]

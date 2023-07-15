@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from core.jwt import JWTBearer
+from fastapi import APIRouter, Depends
 from models.billing import Pay
 
 router = APIRouter()
@@ -11,5 +12,5 @@ router = APIRouter()
     summary="Оплата подписки.",
     description="Оплата подписки по какому-то выбранному плану.",
 )
-async def pay(body: Pay):
+async def pay(body: Pay, auth: dict = Depends(JWTBearer())):
     pass
