@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 
 from core.jwt import JWTBearer
 from core.utils import CommonQueryParams
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from models.subscribtion import Subscribtion
 from models.transaction import Transaction
