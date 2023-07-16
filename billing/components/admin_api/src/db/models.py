@@ -10,9 +10,9 @@ Base = declarative_base()
 
 class Subscriptions(Base):
     __tablename__ = "subscriptions_tiers"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String, nullable=False)
-    subscribe_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    duratation = Column(DateTime, nullable=False)
+    duration = Column(Integer, nullable=False)
     cost = Column(Integer, nullable=False)
     description = Column(String, nullable=False)
     discount = Column(Integer, default=0, nullable=False)
