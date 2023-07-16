@@ -17,6 +17,15 @@ services:
       - cinema
     restart: always
 
+  db_migrations:
+    build: components
+    env_file:
+      - config.env
+    networks:
+      - cinema
+    depends_on:
+      - billing_psql
+
   rabbitmq_billing:
     container_name: rabbitmq
     image: rabbitmq:3.10.6-management-alpine
@@ -43,6 +52,9 @@ services:
       - 8000:8000
     networks:
       - cinema
+    depends_on:
+      - db_migrations
+      - billing_psql
 
   scheduler:
     build: components/scheduler
@@ -50,6 +62,7 @@ services:
       - config.env
     depends_on:
       - billing_psql
+      - db_migrations
     networks:
       - cinema
     restart: always
@@ -59,6 +72,9 @@ services:
     restart: always
     env_file:
       - config.env
+    depends_on:
+      - billing_psql
+      - db_migrations
     networks:
       - cinema
 
