@@ -20,6 +20,7 @@ class Transactions(Base):
     __tablename__ = "transactions"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), nullable=False)
+    transaction_id = Column(UUID(as_uuid=True), nullable=False)
     value = Column(Integer, nullable=False)
     ttl = Column(DateTime, nullable=False)
     provider = Column(String, nullable=False)
