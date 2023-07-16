@@ -1,8 +1,10 @@
+import json
 from typing import Dict, List, Optional
+from uuid import UUID
 
 from core.jwt import JWTBearer
 from core.utils import CommonQueryParams
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from models.subscribtion import Subscribtion
 from models.transaction import Transaction
@@ -23,8 +25,8 @@ async def add_subscribtion(
     auth: dict = Depends(JWTBearer()),
     service: AdminService = Depends(get_service),
 ):
-    await service.add_subscription(body)
-    return JSONResponse(f"{body.title} subscription created")
+    entry_id = await service.add_subscription(body)
+    return JSONResponse(f"{body.title} subscription created. ID: {entry_id.subscribe_id}")
 
 
 @router.get(
@@ -36,7 +38,7 @@ async def add_subscribtion(
 )
 async def get_list_transactions(
     commons: CommonQueryParams = Depends(CommonQueryParams),
-    auth: dict = Depends(JWTBearer()),
+    # auth: dict = Depends(JWTBearer()),
     service: AdminService = Depends(get_service),
 ) -> Optional[List[Dict[str, Transaction]]]:
     transactions = await service.get_transactions(
@@ -60,3 +62,24 @@ async def get_list_transactions(
         for transaction in transactions
     ]
     return transaction_objs
+
+
+@router.put(
+    "/update/{sub_id}",
+    response_model=None,
+    response_description="Изменение плана подписки.",
+    summary="Изменение тарифного плана подписки.",
+    description="Изменение тарифного плана подписки.",
+)
+async def update_sub(
+    body: Subscribtion,
+    sub_id: UUID,
+    # auth: dict = Depends(JWTBearer()),
+    service: AdminService = Depends(get_service),
+):
+    result = await service.update_subscription(id=sub_id, data=body)
+    response = {
+        "Message": "Succesfully update subscription",
+        "Users, who have auto-renewal turned off": [user for user in result],
+    }
+    return JSONResponse(response, 200)
