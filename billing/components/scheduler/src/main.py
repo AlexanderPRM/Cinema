@@ -4,11 +4,11 @@ import logging
 import asyncpg
 import redis
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from core.config import postgres_settings, rabbit_settings, settings
-from core.logging_setup import init_logger
-from core.postgres import PostgreSQLProducer
-from core.rabbit import RabbitMQBroker
+from core.config import config, postgres_settings, rabbit_settings
+from db.postgres import PostgreSQLProducer
+from db.rabbit import RabbitMQBroker
 from sheduler import Scheduler
+from utils.logging_setup import init_logger
 
 init_logger()
 
@@ -29,7 +29,7 @@ async def taking_subscriptions_away():
         url=f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}@{rabbit_settings.RABBITMQ_HOST}/",
         queue_name=rabbit_settings.BILLING_QUEUE_NOTIFICATIONS,
     )
-    r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+    r = redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT, db=0)
     await rabbitmq_client_auth.connect()
     await rabbitmq_client_notifications.connect()
     scheduler = Scheduler(
@@ -50,6 +50,6 @@ async def taking_subscriptions_away():
 
 if __name__ == "__main__":
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(taking_subscriptions_away, "interval", seconds=80)
+    scheduler.add_job(taking_subscriptions_away, "interval", seconds=15)
     scheduler.start()
     asyncio.get_event_loop().run_forever()
