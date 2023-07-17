@@ -13,6 +13,6 @@ RUN pip install --upgrade pip --no-cache-dir \
      && pip install -r requirements.txt --no-cache-dir
 
 COPY run_scheduler.sh .
-COPY . .
+COPY /src src
 RUN chmod +x /opt/scheduler/run_scheduler.sh
 ENTRYPOINT [ "/opt/scheduler/run_scheduler.sh" ]
