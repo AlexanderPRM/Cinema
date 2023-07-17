@@ -23,8 +23,8 @@ async def add_subscribtion(
     auth: dict = Depends(JWTBearer()),
     service: AdminService = Depends(get_service),
 ):
-    await service.add_subscription(body)
-    return JSONResponse(f"{body.title} subscription created")
+    entry_id = await service.add_subscription(body)
+    return JSONResponse(f"{body.title} subscription created. ID: {entry_id.id}")
 
 
 @router.get(

@@ -1,5 +1,7 @@
-from base import Provider
+from core.config import config
+from providers.base import Provider
 from yookassa import Configuration, Payment, Refund, Settings
+from yookassa.domain.exceptions.bad_request_error import BadRequestError
 
 
 class YooKassa(Provider):
@@ -16,7 +18,13 @@ class YooKassa(Provider):
         return Refund.create(refund_data)
 
     def pay(self, payment_data: dict, idempotence_key):
-        return Payment.create(payment_data, idempotence_key)
+        try:
+            pay_info = Payment.create(payment_data, idempotence_key)
+            return pay_info
+        except BadRequestError as error:
+            if error.args[0]["parameter"] == "Idempotence-Key":
+                return
+            raise error
 
     def payment_cancel(self, payment_id: int | str, idempotence_key: str):
         return Payment.cancel(payment_id, idempotence_key)
@@ -35,3 +43,7 @@ class YooKassa(Provider):
 
     def get_refunds(self, data: dict = None):
         return Refund.list(data)
+
+
+def get_yookassa() -> YooKassa:
+    return YooKassa(config.YOOKASSA_SHOP_ID, config.YOOKASSA_SHOP_SECRET)

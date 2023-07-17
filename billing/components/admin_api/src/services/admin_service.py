@@ -1,34 +1,33 @@
 import datetime
-import uuid
 from functools import lru_cache
 
 from db.models import Subscriptions
 from db.postgres import PostgreSQL, get_postgres
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import sessionmaker
 
 
 class AdminService:
     def __init__(self, pg_conn):
         self.db = pg_conn
+        self.asyncsession = sessionmaker(
+            self.db.engine, expire_on_commit=False, class_=AsyncSession
+        )
 
     async def add_subscription(self, data):
         data = dict(data)
-        data["subscribe_id"] = uuid.uuid4()
         data["created_at"] = datetime.datetime.now()
         data["updated_at"] = datetime.datetime.now()
-        data["duratation"] = datetime.datetime.strptime(
-            data["duratation"], "%Y, %m, %d, %H, %M, %S, %f"
-        )
-        if data["discount_duratation"]:
-            data["discount_duratation"] = datetime.datetime.strptime(
-                data["discount_duratation"], "%Y, %m, %d, %H, %M, %S, %f"
+        if data.get("discount_duration"):
+            data["discount_duration"] = datetime.datetime.strptime(
+                data["discount_duration"], "%Y, %m, %d, %H, %M, %S, %f"
             )
-        sub = Subscriptions(**data)
-        async with AsyncSession(self.db.engine) as session:
-            session.add(sub)
-            await session.commit()
-        return sub
+        async with self.asyncsession() as session:
+            async with session.begin():
+                sub = Subscriptions(**data)
+                session.add(sub)
+            return sub
 
     async def get_transactions(self, page_size, page_number):
         data = await self.db.get_transactions_list(page_size, page_number)
