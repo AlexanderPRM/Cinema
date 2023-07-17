@@ -20,7 +20,8 @@ app = FastAPI(
 async def startup():
     postgres.postgres_ = postgres.PostgreSQL(config.POSTGRESQL_URL_ASYNC)
     rabbit.rabbit_ = rabbit.RabbitMQBroker(
-        url=f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}@{rabbit_settings.RABBITMQ_HOST}/",
+        url=f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}@"
+        f"{rabbit_settings.RABBITMQ_HOST}/",
         queue_name=rabbit_settings.BILLING_QUEUE_NOTIFICATIONS,
     )
     await rabbit.rabbit_.connect()

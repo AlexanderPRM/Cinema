@@ -20,14 +20,18 @@ class PostgreSQL:
 
     async def disable_auto_renewal(self, subscribe_id):
         self.conn = await self.get_connection()
-        query = f"UPDATE {config.SUBSCRIPTIONS_USERS_TABLE} SET auto_renewal = False WHERE subscribe_id = '{subscribe_id}' AND auto_renewal = True;"
+        query = (
+            f"UPDATE {config.SUBSCRIPTIONS_USERS_TABLE} SET auto_renewal = False "
+            f"WHERE subscribe_id = '{subscribe_id}' AND auto_renewal = True;"
+        )
         await self.conn.execute(query)
 
     async def get_all_users_with_sub(self, subscribe_id):
         self.conn = await self.get_connection()
         query = (
             f"SELECT user_id FROM {config.SUBSCRIPTIONS_USERS_TABLE} "
-            f"WHERE subscribe_id = '{subscribe_id}' AND ttl > '{datetime.datetime.now()}' AND auto_renewal = True;"
+            f"WHERE subscribe_id = '{subscribe_id}' AND ttl > '{datetime.datetime.now()}' "
+            f"AND auto_renewal = True;"
         )
 
         result = await self.conn.fetch(query)
