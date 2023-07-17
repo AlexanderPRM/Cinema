@@ -19,3 +19,8 @@ class Confirmation(BaseModel):
 class PayResponse(BaseModel):
     confirmation: Confirmation
     created_at: str
+
+
+class UnsubscribeResponse(BaseModel):
+    message: str
+    subscribe_id: int
