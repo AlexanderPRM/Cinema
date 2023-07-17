@@ -2,12 +2,11 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    SUBSCRIPTIONS_TABLE: str
     JWT_SECRET: str
     JWT_ADMIN_ROLE: str
-    POSTGRESQL_URL: str
-    SUBSCRIPTIONS_USERS_TABLE: str
-    TRANSACTIONS_LOG_TABLE: str
+    YOOKASSA_SHOP_ID: int
+    YOOKASSA_SHOP_SECRET: str
+    PAYMENT_REDIRECT_URL: str
 
     class Config:
         case_sensitive = True
@@ -20,7 +19,10 @@ class PostgreSQLSettings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: str
     POSTGRES_DB: str
+    POSTGRESQL_URL: str
+    SUBSCRIPTIONS_TABLE: str
     SUBSCRIPTIONS_USERS_TABLE: str
+    TRANSACTIONS_LOG_TABLE: str
 
     class Config:
         case_sensitive = True

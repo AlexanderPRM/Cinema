@@ -1,6 +1,21 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+
+class Message(BaseModel):
+    message: str
 
 
 class Pay(BaseModel):
     auto_renewal: bool
+    currency: str = Field(default="RUB")
     idempotence_key: str
+
+
+class Confirmation(BaseModel):
+    confirmation_url: str
+    type: str
+
+
+class PayResponse(BaseModel):
+    confirmation: Confirmation
+    created_at: str

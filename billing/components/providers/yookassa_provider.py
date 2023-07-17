@@ -1,4 +1,5 @@
-from base import Provider
+from core.config import config
+from providers.base import Provider
 from yookassa import Configuration, Payment, Refund, Settings
 
 
@@ -35,3 +36,7 @@ class YooKassa(Provider):
 
     def get_refunds(self, data: dict = None):
         return Refund.list(data)
+
+
+def get_yookassa() -> YooKassa:
+    return YooKassa(config.YOOKASSA_SHOP_ID, config.YOOKASSA_SHOP_SECRET)

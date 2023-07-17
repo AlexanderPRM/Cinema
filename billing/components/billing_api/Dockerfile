@@ -7,15 +7,14 @@ RUN apt-get update && apt-get install -y \
      python3-dev  \
      netcat-traditional
 
-COPY requirements.txt .
+COPY billing_api/requirements.txt .
 
 RUN pip install --upgrade pip --no-cache-dir \
      && pip install -r requirements.txt --no-cache-dir
 
-
-COPY alembic.ini .
-COPY /migrations migrations
-COPY run_billing.sh .
-COPY /src src
+COPY core/ src/core/
+COPY providers/ src/providers/
+COPY billing_api/run_billing.sh .
+COPY billing_api .
 RUN chmod +x /opt/billing_api/run_billing.sh
 ENTRYPOINT [ "/opt/billing_api/run_billing.sh" ]
