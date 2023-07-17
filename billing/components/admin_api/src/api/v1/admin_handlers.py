@@ -1,4 +1,3 @@
-import json
 from typing import Dict, List, Optional
 from uuid import UUID
 
@@ -25,6 +24,8 @@ async def add_subscribtion(
     auth: dict = Depends(JWTBearer()),
     service: AdminService = Depends(get_service),
 ):
+    if auth["role"] != "superuser":
+        return JSONResponse({"message": "Superuser only"}, 403)
     entry_id = await service.add_subscription(body)
     return JSONResponse(f"{body.title} subscription created. ID: {entry_id.subscribe_id}")
 
@@ -38,9 +39,11 @@ async def add_subscribtion(
 )
 async def get_list_transactions(
     commons: CommonQueryParams = Depends(CommonQueryParams),
-    # auth: dict = Depends(JWTBearer()),
+    auth: dict = Depends(JWTBearer()),
     service: AdminService = Depends(get_service),
 ) -> Optional[List[Dict[str, Transaction]]]:
+    if auth["role"] != "superuser":
+        return JSONResponse({"message": "Superuser only"}, 403)
     transactions = await service.get_transactions(
         page_size=commons.page_size, page_number=commons.page_number
     )
@@ -74,9 +77,11 @@ async def get_list_transactions(
 async def update_sub(
     body: Subscribtion,
     sub_id: UUID,
-    # auth: dict = Depends(JWTBearer()),
+    auth: dict = Depends(JWTBearer()),
     service: AdminService = Depends(get_service),
 ):
+    if auth["role"] != "superuser":
+        return JSONResponse({"message": "Superuser only"}, 403)
     result = await service.update_subscription(id=sub_id, data=body)
     response = {
         "Message": "Succesfully update subscription",
