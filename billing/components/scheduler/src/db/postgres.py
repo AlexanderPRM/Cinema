@@ -21,8 +21,8 @@ class PostgreSQLProducer:
     )
     async def get_ended_subs(self, previous_run_time):
         query = (
-            f"SELECT user_id, transaction_id, subscribe_id, ttl, auto_renewal, created_at, updated_at "
-            f"FROM {postgres_settings.SUBSCRIPTIONS_USERS_TABLE} "
+            f"SELECT user_id, transaction_id, subscribe_id, ttl, auto_renewal, created_at, "
+            f"updated_at FROM {postgres_settings.SUBSCRIPTIONS_USERS_TABLE} "
             f"WHERE ttl <= '{datetime.datetime.now()}' "
             f"AND ttl >= '{previous_run_time}' "
             f"GROUP BY transaction_id, user_id, subscribe_id ORDER BY ttl;"

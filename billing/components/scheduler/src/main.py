@@ -22,11 +22,13 @@ async def taking_subscriptions_away():
         database=postgres_settings.POSTGRES_DB,
     )
     rabbitmq_client_auth = RabbitMQBroker(
-        url=f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}@{rabbit_settings.RABBITMQ_HOST}/",
+        url=f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}@"
+        f"{rabbit_settings.RABBITMQ_HOST}/",
         queue_name=rabbit_settings.BILLING_QUEUE_AUTH,
     )
     rabbitmq_client_notifications = RabbitMQBroker(
-        url=f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}@{rabbit_settings.RABBITMQ_HOST}/",
+        url=f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}@"
+        f"{rabbit_settings.RABBITMQ_HOST}/",
         queue_name=rabbit_settings.BILLING_QUEUE_NOTIFICATIONS,
     )
     r = redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT, db=0)

@@ -61,7 +61,9 @@ class Scheduler:
                             "amount": {"value": cost["cost"], "currency": "RUB"},
                             "capture": True,
                             "payment_method_id": str(sub["transaction_id"]),
-                            "description": f"Auto-Renewal subscription {str(sub['subsciption_tier_id'])} \n User id: {str(sub['user_id'])}",
+                            "description": f"Auto-Renewal "
+                            f"subscription {str(sub['subsciption_tier_id'])}"
+                            f"\nUser id: {str(sub['user_id'])}",
                         }
                     )
                     logging.info(
