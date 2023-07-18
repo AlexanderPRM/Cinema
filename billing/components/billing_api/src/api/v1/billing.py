@@ -16,7 +16,7 @@ router = APIRouter()
     "/pay/{subscribe_plan_id}/",
     response_model=PayResponse,
     status_code=status.HTTP_201_CREATED,
-    responses={404: {"model": Message}},
+    responses={404: {"model": Message}, 400: {"model": Message}},
     response_description="Пример информации о платежа с ссылкой для оплаты.",
     summary="Оплата подписки.",
     description="Оплата подписки по какому-то выбранному плану.",
@@ -30,7 +30,7 @@ async def pay(
 ):
     subscribe_tier = await postgres.get_subscribe_tier(subscribe_plan_id)
     if not subscribe_tier:
-        raise JSONResponse(
+        return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={"message": "Subscription Tier not Found."},
         )
@@ -43,16 +43,22 @@ async def pay(
         "save_payment_method": body.auto_renewal,
     }
     pay_response = provider.pay(payment_data, body.idempotence_key)
-    if not pay_response:
-        raise JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content={"message": "This Idempotency Key has expired for Today"},
+    if pay_response is None or pay_response.status != "pending":
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "message": "This Idempotency Key has expired for today OR Payment already happen"
+            },
         )
     transaction = {
         "user_id": auth["user_id"],
         "transaction_id": pay_response.id,
         "value": pay_response.amount.value,
         "currency": pay_response.amount.currency,
+        "payment_details": {
+            "subscribe_tier_id": str(subscribe_tier.id),
+            "auto_renewal": body.auto_renewal,
+        },
         "provider": "yookassa",
         "idempotency_key": body.idempotence_key,
         "operate_status": "waiting",
