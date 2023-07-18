@@ -3,7 +3,7 @@ import enum
 import uuid
 
 from sqlalchemy import Column, DateTime, Enum, Integer, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -24,6 +24,7 @@ class Transactions(Base):
     value = Column(Integer, nullable=False)
     currency = Column(String, nullable=False)
     provider = Column(String, nullable=False)
+    payment_details = Column(JSON, nullable=False)
     idempotency_key = Column(UUID(as_uuid=True), nullable=False, unique=True)
     operate_status = Column(Enum(OperateStatus), default=OperateStatus.waiting, nullable=False)
     created_at = Column(DateTime(timezone=True), default=datetime.datetime.now)
