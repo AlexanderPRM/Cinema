@@ -2,8 +2,8 @@ import datetime
 import json
 import logging
 
-from core.config import config
-from yookassa import Configuration, Payment
+from providers.base import Provider
+from providers.yookassa_provider import get_yookassa
 
 
 class Scheduler:
@@ -12,8 +12,8 @@ class Scheduler:
         self.auth_broker = auth_broker
         self.notifications_broker = notifications_broker
         self.cache = cache
-        Configuration.account_id = config.YOOKASSA_SHOP_ID
-        Configuration.secret_key = config.YOOKASSA_SECRET_KEY
+        self.provider: Provider = get_yookassa()
+
 
     async def get_previous_run_time(self):
         stored_data = self.cache.get("previous_run")
@@ -25,8 +25,6 @@ class Scheduler:
         self.cache.set("previous_run", previous_run_time)
 
     async def taking_subs_away(self):
-        # удалить
-        # await self.set_previous_run_time("2000-07-12 20:15:04.883535")
         previous_run_time = datetime.datetime.strptime(
             (await self.get_previous_run_time()).split(".")[0], "%Y-%m-%d %H:%M:%S"
         )
@@ -37,7 +35,8 @@ class Scheduler:
                 sub = dict(sub)
                 # disable subscription
                 body = json.dumps(
-                    {"user_id": str(sub["user_id"]), "subscribe_id": str(sub["subscribe_id"])}
+                    {"user_id": str(sub["user_id"]), "subscribe_id": str(sub["subscribe_id"]),
+                     "auto_renewal": sub["auto_renewal"]}
                 )
                 logging.info(body)
                 # notification
@@ -55,17 +54,19 @@ class Scheduler:
                     cost = await self.producer.get_subscriprion_cost(
                         str(sub["subsciption_tier_id"])
                     )
+                    currency = await self.producer.get_transaction_currency(
+                        str(sub["transaction_id"])
+                    )
                     # request to yookassa for auto-renewal
-                    payment = Payment.create(
-                        {
-                            "amount": {"value": cost["cost"], "currency": "RUB"},
+                    payment_data = {
+                            "amount": {"value": cost["cost"], "currency": currency["currency"]},
                             "capture": True,
                             "payment_method_id": str(sub["transaction_id"]),
                             "description": f"Auto-Renewal "
-                            f"subscription {str(sub['subsciption_tier_id'])}"
-                            f"\nUser id: {str(sub['user_id'])}",
+                                           f"subscription {str(sub['subsciption_tier_id'])}"
+                                           f"\nUser id: {str(sub['user_id'])}",
                         }
-                    )
+                    payment = self.provider.pay(payment_data=payment_data)
                     logging.info(
                         {
                             "payment.id": payment.id,
