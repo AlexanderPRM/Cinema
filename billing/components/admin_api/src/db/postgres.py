@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 import asyncpg
-from core.config import postgres_settings, config
+from core.config import config, postgres_settings
 from sqlalchemy.ext.asyncio import create_async_engine
 
 
