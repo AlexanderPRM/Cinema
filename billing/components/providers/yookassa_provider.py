@@ -17,7 +17,7 @@ class YooKassa(Provider):
     def refund(self, refund_data: dict, idempotence_key):
         return Refund.create(refund_data, idempotence_key)
 
-    def pay(self, payment_data: dict, idempotence_key = None):
+    def pay(self, payment_data: dict, idempotence_key=None):
         try:
             if idempotence_key:
                 pay_info = Payment.create(payment_data, idempotence_key)
