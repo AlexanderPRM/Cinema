@@ -1,5 +1,5 @@
 from api.v1 import admin_handlers
-from core.config import config
+from core.config import postgres_settings
 from db import postgres
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -18,7 +18,7 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
-    postgres.postgres_ = postgres.PostgreSQL(config.POSTGRESQL_URL)
+    postgres.postgres_ = postgres.PostgreSQL(postgres_settings.POSTGRESQL_URL)
 
 
 @app.on_event("shutdown")
