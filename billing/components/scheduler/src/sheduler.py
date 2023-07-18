@@ -14,7 +14,6 @@ class Scheduler:
         self.cache = cache
         self.provider: Provider = get_yookassa()
 
-
     async def get_previous_run_time(self):
         stored_data = self.cache.get("previous_run")
         if stored_data:
@@ -35,8 +34,11 @@ class Scheduler:
                 sub = dict(sub)
                 # disable subscription
                 body = json.dumps(
-                    {"user_id": str(sub["user_id"]), "subscribe_id": str(sub["subscribe_id"]),
-                     "auto_renewal": sub["auto_renewal"]}
+                    {
+                        "user_id": str(sub["user_id"]),
+                        "subscribe_id": str(sub["subscribe_id"]),
+                        "auto_renewal": sub["auto_renewal"],
+                    }
                 )
                 logging.info(body)
                 # notification
@@ -59,13 +61,13 @@ class Scheduler:
                     )
                     # request to yookassa for auto-renewal
                     payment_data = {
-                            "amount": {"value": cost["cost"], "currency": currency["currency"]},
-                            "capture": True,
-                            "payment_method_id": str(sub["transaction_id"]),
-                            "description": f"Auto-Renewal "
-                                           f"subscription {str(sub['subsciption_tier_id'])}"
-                                           f"\nUser id: {str(sub['user_id'])}",
-                        }
+                        "amount": {"value": cost["cost"], "currency": currency["currency"]},
+                        "capture": True,
+                        "payment_method_id": str(sub["transaction_id"]),
+                        "description": f"Auto-Renewal "
+                        f"subscription {str(sub['subsciption_tier_id'])}"
+                        f"\nUser id: {str(sub['user_id'])}",
+                    }
                     payment = self.provider.pay(payment_data=payment_data)
                     logging.info(
                         {
