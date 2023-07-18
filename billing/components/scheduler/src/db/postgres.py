@@ -1,52 +1,71 @@
 import datetime
+from typing import Optional
 
-import backoff
-from asyncpg.exceptions import CannotConnectNowError, TooManyConnectionsError
-from core.config import postgres_settings
+import asyncpg
+from core.config import config, postgres_settings
+from sqlalchemy.ext.asyncio import create_async_engine
 
 
-class PostgreSQLProducer:
-    def __init__(self, connection):
-        self.connection = connection
+class PostgreSQL:
+    def __init__(self, conn_url, **kwargs) -> None:
+        self.engine = create_async_engine(conn_url, **kwargs)
+        self.conn = None
 
-    async def __aenter__(self):
-        await self.connection.__aenter__()
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.connection.__aexit__(exc_type, exc_val, exc_tb)
-
-    @backoff.on_exception(
-        backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
-    )
-    async def get_ended_subs(self, previous_run_time):
-        query = (
-            f"SELECT user_id, transaction_id, subscribe_id, ttl, auto_renewal, created_at, "
-            f"updated_at FROM %s "
-            f"WHERE ttl <= '%s' "
-            f"AND ttl >= '%s' "
-            f"GROUP BY transaction_id, user_id, subscribe_id ORDER BY ttl;"
-            % (
-                postgres_settings.SUBSCRIPTIONS_USERS_TABLE,
-                datetime.datetime.now(),
-                previous_run_time,
-            )
+    async def get_transactions_list(self, page_size, page_number):
+        offset = (page_number - 1) * page_size
+        self.conn = await self.get_connection()
+        query = "SELECT * FROM %s LIMIT %s OFFSET %s" % (
+            postgres_settings.TRANSACTIONS_LOG_TABLE,
+            page_size,
+            offset,
         )
-        return await self.connection.fetch(query)
+        result = await self.conn.fetch(query)
+        return result
 
-    async def get_subscriprion_cost(self, sub_id):
-        query = (
-            f"SELECT cost "
-            f"FROM %s "
-            f"WHERE subscribe_id = '%s' " % (postgres_settings.SUBSCRIPTIONS_TABLE, sub_id)
+    async def get_user_transactions_list(self, page_size, page_number, user_id):
+        offset = (page_number - 1) * page_size
+        self.conn = await self.get_connection()
+        query = "SELECT * FROM %s WHERE user_id = '%s' LIMIT %s OFFSET %s" % (
+            postgres_settings.TRANSACTIONS_LOG_TABLE,
+            user_id,
+            page_size,
+            offset,
         )
-        return await self.connection.fetch(query)
+        result = await self.conn.fetch(query)
+        return result
 
-    async def get_transaction_currency(self, transaction_id):
+    async def disable_auto_renewal(self, subscribe_id):
+        self.conn = await self.get_connection()
         query = (
-            f"SELECT currency "
-            f"FROM %s "
-            f"WHERE transaction_id = '%s' ORDER BY updated_at LIMIT 1"
-            % (postgres_settings.TRANSACTIONS_LOG_TABLE, transaction_id)
+            "UPDATE %s SET auto_renewal = False "
+            "WHERE subscribe_id = '%s' AND auto_renewal = True;"
+            % (config.SUBSCRIPTIONS_USERS_TABLE, subscribe_id)
         )
-        return await self.connection.fetch(query)
+        await self.conn.execute(query)
+
+    async def get_all_users_with_sub(self, subscribe_id):
+        self.conn = await self.get_connection()
+        query = (
+            "SELECT user_id FROM %s "
+            "WHERE subscribe_id = '%s' AND ttl > '%s' "
+            "AND auto_renewal = True;"
+            % (config.SUBSCRIPTIONS_USERS_TABLE, subscribe_id, datetime.datetime.now())
+        )
+
+        result = await self.conn.fetch(query)
+        return result
+
+    async def get_connection(self):
+        return await asyncpg.connect(
+            user=postgres_settings.POSTGRES_USER,
+            password=postgres_settings.POSTGRES_PASSWORD,
+            database=postgres_settings.POSTGRES_DB,
+            host=postgres_settings.POSTGRES_HOST,
+        )
+
+
+postgres_: Optional[PostgreSQL] = None
+
+
+async def get_postgres() -> PostgreSQL:
+    return postgres_
