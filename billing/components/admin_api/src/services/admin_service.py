@@ -23,10 +23,6 @@ class AdminService:
         data = dict(data)
         data["created_at"] = datetime.datetime.now()
         data["updated_at"] = datetime.datetime.now()
-        if data.get("discount_duration"):
-            data["discount_duration"] = datetime.datetime.strptime(
-                data["discount_duration"], "%Y, %m, %d, %H, %M, %S, %f"
-            )
         async with self.asyncsession() as session:
             async with session.begin():
                 sub = Subscriptions(**data)
@@ -63,6 +59,10 @@ class AdminService:
 
     async def get_transactions(self, page_size, page_number):
         data = await self.db.get_transactions_list(page_size, page_number)
+        return data
+
+    async def get_user_transactions(self, page_size, page_number, user_id):
+        data = await self.db.get_user_transactions_list(page_size, page_number, user_id)
         return data
 
 

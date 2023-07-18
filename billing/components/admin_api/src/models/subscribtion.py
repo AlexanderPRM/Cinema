@@ -10,4 +10,4 @@ class Subscribtion(BaseModel):
     cost: int
     description: str
     discount: int = 0
-    discount_duratation: str | None = None
+    discount_duratation: int | None = None

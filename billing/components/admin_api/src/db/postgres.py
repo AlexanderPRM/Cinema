@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 import asyncpg
-from core.config import postgres_settings
+from core.config import postgres_settings, config
 from sqlalchemy.ext.asyncio import create_async_engine
 
 
@@ -22,20 +22,34 @@ class PostgreSQL:
         result = await self.conn.fetch(query)
         return result
 
+    async def get_user_transactions_list(self, page_size, page_number, user_id):
+        offset = (page_number - 1) * page_size
+        self.conn = await self.get_connection()
+        query = "SELECT * FROM %s WHERE user_id = '%s' LIMIT %s OFFSET %s" % (
+            postgres_settings.TRANSACTIONS_LOG_TABLE,
+            user_id,
+            page_size,
+            offset,
+        )
+        result = await self.conn.fetch(query)
+        return result
+
     async def disable_auto_renewal(self, subscribe_id):
         self.conn = await self.get_connection()
         query = (
-            f"UPDATE {config.SUBSCRIPTIONS_USERS_TABLE} SET auto_renewal = False "
-            f"WHERE subscribe_id = '{subscribe_id}' AND auto_renewal = True;"
+            f"UPDATE %s SET auto_renewal = False "
+            f"WHERE subscribe_id = '%s' AND auto_renewal = True;"
+            % (config.SUBSCRIPTIONS_USERS_TABLE, subscribe_id)
         )
         await self.conn.execute(query)
 
     async def get_all_users_with_sub(self, subscribe_id):
         self.conn = await self.get_connection()
         query = (
-            f"SELECT user_id FROM {config.SUBSCRIPTIONS_USERS_TABLE} "
-            f"WHERE subscribe_id = '{subscribe_id}' AND ttl > '{datetime.datetime.now()}' "
+            f"SELECT user_id FROM %s "
+            f"WHERE subscribe_id = '%s' AND ttl > '%s' "
             f"AND auto_renewal = True;"
+            % (config.SUBSCRIPTIONS_USERS_TABLE, subscribe_id, datetime.datetime.now())
         )
 
         result = await self.conn.fetch(query)
