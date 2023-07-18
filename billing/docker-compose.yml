@@ -40,7 +40,6 @@ services:
       - 5672:5672
       - 15672:15672
 
-
   admin_api:
     build:
       context: components
@@ -49,7 +48,7 @@ services:
       - config.env
     restart: always
     ports:
-      - 8000:8000
+      - 3000:8000
     networks:
       - cinema
     depends_on:
@@ -78,13 +77,20 @@ services:
     networks:
       - cinema
 
-  # billing_api:
-  #   build: components/billing_api
-  #   env_file:
-  #     - config.env
-  #   restart: always
-  #   networks:
-  #     - cinema
+  billing_api:
+    build:
+      context: components
+      dockerfile: billing_api/Dockerfile
+    env_file:
+      - config.env
+    restart: always
+    ports:
+      - 3010:8000
+    networks:
+      - cinema
+    depends_on:
+      - billing_psql
+      - db_migrations
 
 
 networks:

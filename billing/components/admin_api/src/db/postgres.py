@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 import asyncpg
-from core.config import config, postgres_settings
+from core.config import postgres_settings
 from sqlalchemy.ext.asyncio import create_async_engine
 
 
@@ -14,7 +14,11 @@ class PostgreSQL:
     async def get_transactions_list(self, page_size, page_number):
         offset = (page_number - 1) * page_size
         self.conn = await self.get_connection()
-        query = f"SELECT * FROM {config.TRANSACTIONS_LOG_TABLE} LIMIT {page_size} OFFSET {offset}"
+        query = "SELECT * FROM %s LIMIT %s OFFSET %s" % (
+            postgres_settings.TRANSACTIONS_LOG_TABLE,
+            page_size,
+            offset,
+        )
         result = await self.conn.fetch(query)
         return result
 

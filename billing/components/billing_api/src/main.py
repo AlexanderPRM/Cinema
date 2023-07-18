@@ -4,6 +4,7 @@ from fastapi.responses import ORJSONResponse
 
 BILLING_API_VERSION = "0.0.1"
 
+
 app = FastAPI(
     title="Billing",
     description="API для работы с пользовательским контентом",
@@ -12,7 +13,6 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
     default_response_class=ORJSONResponse,
 )
-
 
 app.include_router(
     billing.router,

@@ -7,7 +7,7 @@ from billing_api.src.db.models import Base as Base2
 from dotenv import load_dotenv
 from sqlalchemy import MetaData, engine_from_config, pool
 
-load_dotenv(".env")
+load_dotenv("config.env")
 
 metadata = MetaData()
 
@@ -31,7 +31,7 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 target_metadata = metadata
 config.set_section_option(
-    config.config_ini_section, "sqlalchemy.url", os.environ.get("POSTGRESQL_URL")
+    config.config_ini_section, "sqlalchemy.url", os.environ.get("ALEMBIC_POSTGRESQL_URL")
 )
 
 # other values from the config, defined by the needs of env.py,
