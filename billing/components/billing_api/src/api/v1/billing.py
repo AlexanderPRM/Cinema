@@ -1,3 +1,4 @@
+import time
 from uuid import UUID
 
 from core.config import config
@@ -5,7 +6,16 @@ from core.jwt import JWTBearer
 from db.postgres import PostgreSQL, get_db
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
-from models.billing import Confirmation, Message, Pay, PayResponse, UnsubscribeResponse
+from models.billing import (
+    Amount,
+    Confirmation,
+    Message,
+    Pay,
+    PayResponse,
+    Refund,
+    RefundResponse,
+    UnsubscribeResponse,
+)
 from providers.base import Provider
 from providers.yookassa_provider import get_yookassa
 
@@ -70,6 +80,43 @@ async def pay(
             type=pay_response.confirmation.type,
         ),
         created_at=pay_response.created_at,
+    )
+
+
+@router.post(
+    "/refund/",
+    response_model=RefundResponse,
+    status_code=status.HTTP_200_OK,
+    response_description="Пример информации о совершённом возврате.",
+    summary="Возврат оставших средств от использования подписки.",
+    description="Возврат средств.",
+)
+async def refund(
+    body: Refund,
+    auth: dict = Depends(JWTBearer()),
+    postgres: PostgreSQL = Depends(get_db),
+    provider: Provider = Depends(get_yookassa),
+):
+    subscribe = await postgres.get_subscibe_by_user(auth["user_id"])
+    now_time = time.time()
+    if not subscribe and subscribe.ttl <= now_time:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"message": "User does not have a subscription OR it has expired."},
+        )
+    transaction = await postgres.get_transaction_by_id(subscribe.transaction_id)
+    subscribe_tier = await postgres.get_subscribe_tier(subscribe.subscription_tier_id)
+    used_seconds = subscribe.ttl - now_time
+    cost_per_second = subscribe_tier.cost / subscribe_tier.duration
+    refund_details = {
+        "amount": {"value": cost_per_second * used_seconds, "currency": transaction.currency},
+        "payment_id": transaction.id,
+    }
+    refund = provider.refund(refund_details, body.idempotence_key)
+    return RefundResponse(
+        refund.status,
+        amount=Amount(value=refund.amount.value, currency=refund.amount.currency),
+        payment_id=refund.payment_id,
     )
 
 

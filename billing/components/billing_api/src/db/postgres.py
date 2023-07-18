@@ -13,10 +13,10 @@ class PostgreSQL:
             self.engine, expire_on_commit=False, class_=AsyncSession
         )
 
-    async def get_subscribe_tier(self, subscribe_id):
+    async def get_subscribe_tier(self, subscribe_tier_id):
         sql = "SELECT * FROM %s WHERE id = '%s'" % (
             postgres_settings.SUBSCRIPTIONS_TABLE,
-            subscribe_id,
+            subscribe_tier_id,
         )
         async with self.asyncsession() as session:
             async with session.begin():
@@ -39,6 +39,16 @@ class PostgreSQL:
                 sql = "SELECT * FROM %s WHERE idempotency_key = '%s'" % (
                     postgres_settings.TRANSACTIONS_LOG_TABLE,
                     idempotency_key,
+                )
+                res = await session.execute(text(sql))
+            return res.one()
+
+    async def get_transaction_by_id(self, idx):
+        async with self.asyncsession() as session:
+            async with session.begin():
+                sql = "SELECT * FROM %s WHERE id = '%s'" % (
+                    postgres_settings.TRANSACTIONS_LOG_TABLE,
+                    idx,
                 )
                 res = await session.execute(text(sql))
             return res.one()

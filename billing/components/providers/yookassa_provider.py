@@ -14,8 +14,8 @@ class YooKassa(Provider):
     def settings_info(self):
         return Settings.get_account_settings()
 
-    def refund(self, refund_data: dict):
-        return Refund.create(refund_data)
+    def refund(self, refund_data: dict, idempotence_key):
+        return Refund.create(refund_data, idempotence_key)
 
     def pay(self, payment_data: dict, idempotence_key):
         try:
