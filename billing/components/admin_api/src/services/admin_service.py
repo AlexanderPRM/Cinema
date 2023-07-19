@@ -23,6 +23,10 @@ class AdminService:
         data = dict(data)
         data["created_at"] = datetime.datetime.now()
         data["updated_at"] = datetime.datetime.now()
+        if data.get("discount_duration"):
+            data["discount_duration"] = datetime.datetime.strptime(
+                data["discount_duration"], "%Y-%m-%d %H:%M:%S"
+            )
         async with self.asyncsession() as session:
             async with session.begin():
                 sub = Subscriptions(**data)
@@ -35,7 +39,7 @@ class AdminService:
         data["updated_at"] = datetime.datetime.now()
         if data.get("discount_duration"):
             data["discount_duration"] = datetime.datetime.strptime(
-                data["discount_duration"], "%Y, %m, %d, %H, %M, %S, %f"
+                data["discount_duration"], "%Y-%m-%d %H:%M:%S"
             )
         async with self.asyncsession() as session:
             async with session.begin():

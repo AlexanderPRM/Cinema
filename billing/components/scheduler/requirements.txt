@@ -2,7 +2,9 @@ aiohttp==3.8.4
 asyncpg==0.27.0
 backoff==2.2.1
 PyJWT==2.7.0
-pydantic==1.10.5
+pydantic==2.0.3
+pydantic-settings==2.0.2
 APScheduler==3.10.1
+SQLAlchemy[asyncio]==2.0.18
 aio-pika==9.1.4
 redis==4.6.0

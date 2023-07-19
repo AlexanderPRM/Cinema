@@ -56,7 +56,9 @@ services:
       - billing_psql
 
   scheduler:
-    build: components/scheduler
+    build:
+      context: components
+      dockerfile: scheduler/Dockerfile
     env_file:
       - config.env
     depends_on:

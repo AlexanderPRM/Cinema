@@ -19,10 +19,7 @@ class YooKassa(Provider):
 
     def pay(self, payment_data: dict, idempotence_key=None):
         try:
-            if idempotence_key:
-                pay_info = Payment.create(payment_data, idempotence_key)
-            else:
-                pay_info = Payment.create(payment_data)
+            pay_info = Payment.create(payment_data, idempotence_key)
             return pay_info
         except BadRequestError as error:
             if error.args[0]["parameter"] == "Idempotence-Key":
