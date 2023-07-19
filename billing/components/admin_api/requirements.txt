@@ -10,3 +10,4 @@ PyJWT==2.7.0
 pydantic==2.0.3
 pydantic-settings==2.0.2
 orjson==3.9.2
+aio-pika==9.1.4
