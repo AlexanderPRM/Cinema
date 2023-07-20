@@ -2,7 +2,7 @@ import datetime
 import json
 from functools import lru_cache
 
-from db.models import Subscriptions
+from db.models import SubscriptionsTiers
 from db.postgres import PostgreSQL, get_postgres
 from db.rabbit import RabbitMQBroker, get_rabbit
 from fastapi import Depends
@@ -29,7 +29,7 @@ class AdminService:
             )
         async with self.asyncsession() as session:
             async with session.begin():
-                sub = Subscriptions(**data)
+                sub = SubscriptionsTiers(**data)
                 session.add(sub)
             return sub
 
@@ -43,7 +43,7 @@ class AdminService:
             )
         async with self.asyncsession() as session:
             async with session.begin():
-                stmt = update(Subscriptions).where(Subscriptions.subscribe_id == id).values(data)
+                stmt = update(SubscriptionsTiers).where(SubscriptionsTiers.id == id).values(data)
                 await session.execute(stmt)
         users = await self.db.get_all_users_with_sub(subscribe_id=id)
         await self.db.disable_auto_renewal(subscribe_id=id)

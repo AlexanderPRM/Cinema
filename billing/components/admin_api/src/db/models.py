@@ -8,11 +8,11 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
-class Subscriptions(Base):
+class SubscriptionsTiers(Base):
     __tablename__ = "subscriptions_tiers"
-    subscribe_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String, nullable=False)
-    duratation = Column(Integer, nullable=False)
+    duration = Column(Integer, nullable=False)
     cost = Column(Integer, nullable=False)
     description = Column(String, nullable=False)
     discount = Column(Integer, default=0, nullable=False)

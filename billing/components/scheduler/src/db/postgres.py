@@ -1,4 +1,4 @@
-import datetime
+import time
 
 import backoff
 from asyncpg.exceptions import CannotConnectNowError, TooManyConnectionsError
@@ -21,14 +21,14 @@ class PostgreSQLProducer:
     )
     async def get_ended_subs(self, previous_run_time):
         query = (
-            "SELECT user_id, transaction_id, subscribe_id, ttl, auto_renewal, created_at, "
+            "SELECT user_id, transaction_id, id, ttl, auto_renewal, created_at, "
             "updated_at FROM %s "
             "WHERE ttl <= '%s' "
             "AND ttl >= '%s' "
-            "GROUP BY transaction_id, user_id, subscribe_id ORDER BY ttl;"
+            "GROUP BY transaction_id, user_id, id ORDER BY ttl;"
             % (
                 postgres_settings.SUBSCRIPTIONS_USERS_TABLE,
-                datetime.datetime.now(),
+                int(time.time()),
                 previous_run_time,
             )
         )
@@ -38,9 +38,9 @@ class PostgreSQLProducer:
         query = (
             "SELECT cost "
             "FROM {postgres_settings.SUBSCRIPTIONS_TABLE} "
-            "WHERE subscribe_id = '{sub_id}' "
+            "WHERE id = '{sub_id}' "
             "FROM %s "
-            "WHERE subscribe_id = '%s' " % (postgres_settings.SUBSCRIPTIONS_TABLE, sub_id)
+            "WHERE id = '%s' " % (postgres_settings.SUBSCRIPTIONS_TABLE, sub_id)
         )
         return await self.connection.fetch(query)
 

@@ -1,6 +1,6 @@
-import datetime
 import json
 import logging
+import time
 
 from providers.base import Provider
 from providers.yookassa_provider import get_yookassa
@@ -18,17 +18,15 @@ class Scheduler:
         stored_data = self.cache.get("previous_run")
         if stored_data:
             return stored_data.decode("utf-8")
-        return "2000-07-12 20:15:04.883535"
+        return 0
 
     async def set_previous_run_time(self, previous_run_time):
         self.cache.set("previous_run", previous_run_time)
 
     async def taking_subs_away(self):
-        previous_run_time = datetime.datetime.strptime(
-            (await self.get_previous_run_time()).split(".")[0], "%Y-%m-%d %H:%M:%S"
-        )
+        previous_run_time = await self.get_previous_run_time()
         ended_subs = await self.producer.get_ended_subs(previous_run_time)
-        await self.set_previous_run_time(str(datetime.datetime.now()))
+        await self.set_previous_run_time(int(time.time()))
         if ended_subs:
             for sub in ended_subs:
                 sub = dict(sub)

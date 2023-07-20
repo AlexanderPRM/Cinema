@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 import asyncpg
-from core.config import config, postgres_settings
+from core.config import postgres_settings
 from sqlalchemy.ext.asyncio import create_async_engine
 
 
@@ -15,7 +15,7 @@ class PostgreSQL:
         offset = (page_number - 1) * page_size
         self.conn = await self.get_connection()
         query = "SELECT * FROM %s LIMIT %s OFFSET %s" % (
-            config.TRANSACTIONS_LOG_TABLE,
+            postgres_settings.TRANSACTIONS_LOG_TABLE,
             page_size,
             offset,
         )
@@ -26,7 +26,7 @@ class PostgreSQL:
         offset = (page_number - 1) * page_size
         self.conn = await self.get_connection()
         query = "SELECT * FROM %s WHERE user_id = '%s' LIMIT %s OFFSET %s" % (
-            config.TRANSACTIONS_LOG_TABLE,
+            postgres_settings.TRANSACTIONS_LOG_TABLE,
             user_id,
             page_size,
             offset,
@@ -39,7 +39,7 @@ class PostgreSQL:
         query = (
             "UPDATE %s SET auto_renewal = False "
             "WHERE subscribe_id = '%s' AND auto_renewal = True;"
-            % (config.SUBSCRIPTIONS_USERS_TABLE, subscribe_id)
+            % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, subscribe_id)
         )
         await self.conn.execute(query)
 
@@ -49,7 +49,7 @@ class PostgreSQL:
             "SELECT user_id FROM %s "
             "WHERE subscribe_id = '%s' AND ttl > '%s' "
             "AND auto_renewal = True;"
-            % (config.SUBSCRIPTIONS_USERS_TABLE, subscribe_id, datetime.datetime.now())
+            % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, subscribe_id, datetime.datetime.now())
         )
 
         result = await self.conn.fetch(query)
