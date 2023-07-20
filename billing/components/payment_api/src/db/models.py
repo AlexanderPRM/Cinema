@@ -20,18 +20,3 @@ class Subscriptions(Base):
     updated_at = Column( 
         DateTime(timezone=True), default=datetime.datetime.now, onupdate=datetime.datetime.now 
     )
-
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), nullable=False)
-    transaction_id = Column(UUID(as_uuid=True), nullable=False)
-    value = Column(Integer, nullable=False)
-    currency = Column(String, nullable=False)
-    provider = Column(String, nullable=False)
-    payment_details = Column(JSON, nullable=False)
-    idempotency_key = Column(UUID(as_uuid=True), nullable=False, unique=True)
-    operate_status = Column(Enum(OperateStatus), default=OperateStatus.waiting, nullable=False)
-    created_at = Column(DateTime(timezone=True), default=datetime.datetime.now)
-    updated_at = Column(
-        DateTime(timezone=True), default=datetime.datetime.now, onupdate=datetime.datetime.now
-    )
