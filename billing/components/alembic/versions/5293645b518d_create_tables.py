@@ -1,8 +1,8 @@
-"""Create Subscribes
+"""Create Tables
 
-Revision ID: 40859baa5a71
+Revision ID: 5293645b518d
 Revises:
-Create Date: 2023-07-20 12:47:15.203881
+Create Date: 2023-07-20 21:19:29.909255
 
 """
 import sqlalchemy as sa
@@ -10,7 +10,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "40859baa5a71"
+revision = "5293645b518d"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,7 +26,7 @@ def upgrade() -> None:
         sa.Column("cost", sa.Integer(), nullable=False),
         sa.Column("description", sa.String(), nullable=False),
         sa.Column("discount", sa.Integer(), nullable=False),
-        sa.Column("discount_duratation", sa.DateTime(), nullable=True),
+        sa.Column("discount_duration", sa.DateTime(), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint("id"),
@@ -50,6 +50,7 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("idempotency_key"),
+        sa.UniqueConstraint("transaction_id"),
     )
     op.create_table(
         "subscriptions",
@@ -70,6 +71,7 @@ def upgrade() -> None:
             ["transactions.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("user_id"),
     )
     # ### end Alembic commands ###
 

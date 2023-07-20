@@ -16,7 +16,7 @@ class SubscriptionsTiers(Base):
     cost = Column(Integer, nullable=False)
     description = Column(String, nullable=False)
     discount = Column(Integer, default=0, nullable=False)
-    discount_duratation = Column(DateTime, nullable=True)
+    discount_duration = Column(DateTime, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.datetime.now)
     updated_at = Column(
         DateTime(timezone=True), default=datetime.datetime.now, onupdate=datetime.datetime.now

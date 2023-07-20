@@ -1,3 +1,4 @@
+import logging
 import time
 
 import backoff
@@ -32,6 +33,7 @@ class PostgreSQLProducer:
                 previous_run_time,
             )
         )
+        logging.info(query)
         return await self.connection.fetch(query)
 
     async def get_subscriprion_cost(self, sub_id):

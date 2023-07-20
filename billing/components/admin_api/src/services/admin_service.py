@@ -35,7 +35,7 @@ class AdminService:
 
     async def update_subscription(self, id, data):
         data = dict(data)
-        data["subscribe_id"] = id
+        data["id"] = id
         data["updated_at"] = datetime.datetime.now()
         if data.get("discount_duration"):
             data["discount_duration"] = datetime.datetime.strptime(

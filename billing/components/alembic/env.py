@@ -5,6 +5,7 @@ from admin_api.src.db.models import Base as Base1
 from alembic import context
 from billing_api.src.db.models import Base as Base2
 from dotenv import load_dotenv
+from payment_api.src.db.models import Base as Base3
 from sqlalchemy import MetaData, engine_from_config, pool
 
 load_dotenv("config.env")
@@ -15,6 +16,9 @@ for table in Base1.metadata.tables.values():
     table.tometadata(metadata)
 
 for table in Base2.metadata.tables.values():
+    table.tometadata(metadata)
+
+for table in Base3.metadata.tables.values():
     table.tometadata(metadata)
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

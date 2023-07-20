@@ -11,7 +11,7 @@ class PostgreSQL:
     def __init__(self, conn_url, **kwargs) -> None:
         self.engine = create_async_engine(conn_url, **kwargs)
         self.conn = None
-    
+
     @backoff.on_exception(
         backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
     )
