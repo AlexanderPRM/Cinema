@@ -1,4 +1,7 @@
+import datetime
+import uuid
 from typing import Optional
+import time
 
 import asyncpg
 import backoff
@@ -11,15 +14,19 @@ class PostgreSQL:
     def __init__(self, conn_url, **kwargs) -> None:
         self.engine = create_async_engine(conn_url, **kwargs)
         self.conn = None
-    
+
     @backoff.on_exception(
         backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
     )
-    async def get_transaction_by_payment_id(self, payment_id):
+    async def get_object_by_id(self, object_name: str, id: str):
+        if object_name == postgres_settings.TRANSACTIONS_LOG_TABLE:
+            id_name = "transaction_id"
+        else:
+            id_name = "id"
         self.conn = await self.get_connection()
         return await self.connection.fetch(
-            "SELECT * FROM %s WHERE transaction_id = '%s'"
-            % (postgres_settings.TRANSACTIONS_LOG_TABLE, payment_id)
+            "SELECT * FROM %s WHERE %s = '%s'"
+            % (object_name, id_name, id)
         )
 
     @backoff.on_exception(
@@ -42,12 +49,25 @@ class PostgreSQL:
             % (postgres_settings.TRANSACTIONS_LOG_TABLE, transaction_id)
         )
 
-    # @backoff.on_exception(
-    #     backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
-    # )
-    # async def create_subscription(self, payment):
-    #     self.conn = await self.get_connection()
-    #     await self.connection.execute()
+    @backoff.on_exception(
+        backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
+    )
+    async def create_subscription(self, transaction, payment_details, subscription_tiers):
+        self.conn = await self.get_connection()
+        query = """
+            INSERT INTO subscriptions (id, user_id, transaction_id, subscription_tier_id, ttl, auto_renewal, created_at, updated_at)
+            VALUES ('{id}', '{user_id}', '{transaction_id}', '{subscription_tier_id}', {ttl}, {auto_renewal}, '{created_at}', '{updated_at}')
+        """.format(
+            id=uuid.uuid4(),
+            user_id=transaction['user_id'],
+            transaction_id=transaction['transaction_id'],
+            subscription_tier_id=payment_details['subscription_tier_id'],
+            ttl=int(time.time()) + subscription_tiers['duration'],
+            auto_renewal=payment_details['auto_renewal'],
+            created_at=datetime.datetime.now(),
+            updated_at=datetime.datetime.now()
+        )
+        await self.connection.execute(query)
 
     async def get_connection(self):
         return await asyncpg.connect(
