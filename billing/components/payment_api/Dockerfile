@@ -7,12 +7,15 @@ RUN apt-get update && apt-get install -y \
      python3-dev  \
      netcat-traditional
 
-COPY requirements.txt .
+COPY payment_api/requirements.txt .
 
 RUN pip install --upgrade pip --no-cache-dir \
      && pip install -r requirements.txt --no-cache-dir
 
-COPY run_payment.sh .
-COPY /src src
+COPY payment_api/run_payment.sh .
+COPY payment_api/ .
+COPY core/ src/core/
+COPY providers/ src/providers/
+
 RUN chmod +x /opt/payment_api/run_payment.sh
 ENTRYPOINT [ "/opt/payment_api/run_payment.sh" ]
