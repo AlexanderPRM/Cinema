@@ -1,7 +1,8 @@
+import datetime
+
 import backoff
 from asyncpg.exceptions import CannotConnectNowError, TooManyConnectionsError
 from core.config import postgres_settings
-import datetime
 
 
 class PostgreSQLProducer:
@@ -24,10 +25,11 @@ class PostgreSQLProducer:
             f"updated_at FROM %s "
             f"WHERE ttl <= '%s' "
             f"AND ttl >= '%s' "
-            f"GROUP BY transaction_id, user_id, subscribe_id ORDER BY ttl;" % (
+            f"GROUP BY transaction_id, user_id, subscribe_id ORDER BY ttl;"
+            % (
                 postgres_settings.SUBSCRIPTIONS_USERS_TABLE,
                 datetime.datetime.now(),
-                previous_run_time
+                previous_run_time,
             )
         )
         return await self.connection.fetch(query)
@@ -38,10 +40,7 @@ class PostgreSQLProducer:
             f"FROM {postgres_settings.SUBSCRIPTIONS_TABLE} "
             f"WHERE subscribe_id = '{sub_id}' "
             f"FROM %s "
-            f"WHERE subscribe_id = '%s' " % (
-                postgres_settings.SUBSCRIPTIONS_TABLE,
-                sub_id
-            )
+            f"WHERE subscribe_id = '%s' " % (postgres_settings.SUBSCRIPTIONS_TABLE, sub_id)
         )
         return await self.connection.fetch(query)
 
@@ -49,9 +48,7 @@ class PostgreSQLProducer:
         query = (
             f"SELECT currency "
             f"FROM %s "
-            f"WHERE transaction_id = '%s' ORDER BY updated_at LIMIT 1" % (
-                postgres_settings.TRANSACTIONS_LOG_TABLE,
-                transaction_id
-            )
+            f"WHERE transaction_id = '%s' ORDER BY updated_at LIMIT 1"
+            % (postgres_settings.TRANSACTIONS_LOG_TABLE, transaction_id)
         )
         return await self.connection.fetch(query)
