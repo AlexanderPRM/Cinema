@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 from core.config import ip_white_list
 from core.jwt import JWTBearer
-from db.postgres import get_db
+from db.postgres import PostgreSQL, get_db
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse
 from models.payment_models import Payment_info
@@ -19,7 +19,7 @@ router = APIRouter()
 )
 async def check_payment_status(
     body: Payment_info,
-    psql = Depends(get_db),
+    psql: PostgreSQL = Depends(get_db),
     auth: dict = Depends(JWTBearer()),
 ):
     response = ProviderDefiner.get_payment_info_from_provider(body.payment_id, psql)
@@ -33,7 +33,7 @@ async def check_payment_status(
 )
 async def webhook_processing(
     request: Request,
-    psql = Depends(get_db),
+    psql: PostgreSQL = Depends(get_db),
 ):
     ip = ipaddress.ip_address(str(request.client.host))
     for provider_name, network in ip_white_list.PROVIDERS_IP_LIST.items():
