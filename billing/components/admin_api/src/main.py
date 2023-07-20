@@ -18,7 +18,7 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
-    postgres.postgres_ = postgres.PostgreSQL(config.POSTGRESQL_URL)
+    postgres.postgres_ = postgres.PostgreSQL(config.POSTGRESQL_URL_ASYNC)
     rabbit.rabbit_ = rabbit.RabbitMQBroker(
         url=f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}@"
         f"{rabbit_settings.RABBITMQ_HOST}/",

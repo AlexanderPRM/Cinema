@@ -8,3 +8,4 @@ APScheduler==3.10.1
 SQLAlchemy[asyncio]==2.0.18
 aio-pika==9.1.4
 redis==4.6.0
+yookassa==2.4.0

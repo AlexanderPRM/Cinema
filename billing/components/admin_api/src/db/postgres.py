@@ -15,7 +15,7 @@ class PostgreSQL:
         offset = (page_number - 1) * page_size
         self.conn = await self.get_connection()
         query = "SELECT * FROM %s LIMIT %s OFFSET %s" % (
-            postgres_settings.TRANSACTIONS_LOG_TABLE,
+            config.TRANSACTIONS_LOG_TABLE,
             page_size,
             offset,
         )
@@ -26,7 +26,7 @@ class PostgreSQL:
         offset = (page_number - 1) * page_size
         self.conn = await self.get_connection()
         query = "SELECT * FROM %s WHERE user_id = '%s' LIMIT %s OFFSET %s" % (
-            postgres_settings.TRANSACTIONS_LOG_TABLE,
+            config.TRANSACTIONS_LOG_TABLE,
             user_id,
             page_size,
             offset,
