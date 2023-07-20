@@ -1,7 +1,7 @@
 import datetime
+import time
 import uuid
 from typing import Optional
-import time
 
 import asyncpg
 import backoff

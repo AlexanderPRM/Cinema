@@ -2,7 +2,6 @@ import logging
 from contextlib import asynccontextmanager
 
 import uvicorn
-from api.v1 import payment
 from db.rabbitmq import RabbitWorker
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -29,13 +28,6 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
     default_response_class=ORJSONResponse,
     lifespan=lifespan,
-)
-
-
-app.include_router(
-    payment.router,
-    prefix="/api/v1/provider",
-    tags=["Работа с провайдерами"],
 )
 
 

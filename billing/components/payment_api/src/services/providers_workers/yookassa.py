@@ -10,16 +10,16 @@ class YooKassaProviderWorker(BaseProviderWorker):
         event_json = json.loads(request.body)
         notification_object = WebhookNotification(event_json)
         payment = notification_object.object
-        if payment.status == "canceled":
-            await psql.update_transaction_status_to_error(payment['id'])
-            return
-        # if payment.status == "succeeded":
-        await psql.update_transaction_status_to_success(payment['id'])
-        transaction = await psql.get_object_by_id(postgres_settings.TRANSACTIONS_LOG_TABLE, payment['id'])
-        payment_details = json.loads(transaction['payment_details'])
-        subscription_tiers = await psql.get_object_by_id(postgres_settings.SUBSCRIPTIONS_USERS_TABLE, payment_details['subscribe_tier_id'])
-        await psql.create_subscription(transaction, payment_details, subscription_tiers)
-        return
+        if payment.status == "succeeded":
+            transaction = await psql.get_object_by_id(postgres_settings.TRANSACTIONS_LOG_TABLE, payment['id'])
+            payment_details = json.loads(transaction['payment_details'])
+            subscription_tiers = await psql.get_object_by_id(postgres_settings.SUBSCRIPTIONS_USERS_TABLE, payment_details['subscribe_tier_id'])
+            await psql.update_transaction_status_to_success(payment['id'])
+            await psql.create_subscription(transaction, payment_details, subscription_tiers)
+            return {"user_id": transaction['user_id'], "ttl": subscription_tiers['duration'], "auto_renewal": payment_details["auto_renewal"]}
+
+        await psql.update_transaction_status_to_error(payment['id'])
+        return None
 
 
 def get_yookassa_worker():

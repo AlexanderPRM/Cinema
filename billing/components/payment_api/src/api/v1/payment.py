@@ -1,9 +1,11 @@
 import ipaddress
 from http import HTTPStatus
 
-from core.config import ip_white_list
+from core.config import ip_white_list, rabbit_settings
 from core.jwt import JWTBearer
 from db.postgres import get_db
+from main import app
+from models.payment_models import Notification
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse
 from models.payment_models import Payment_info
@@ -38,6 +40,12 @@ async def webhook_processing(
     ip = ipaddress.ip_address(str(request.client.host))
     for provider_name, network in ip_white_list.PROVIDERS_IP_LIST.items():
         if any(ip in network):
-            ProviderDefiner.webhook_confirmation(request, provider_name, psql)
+            data = ProviderDefiner.webhook_confirmation(request, provider_name, psql)
+            if data is None:
+                return
+
+            rabbit_worker = app.state.rabbit_worker
+            await rabbit_worker.send_rabbitmq(data, rabbit_settings.BILLING_QUEUE_NOTIFICATIONS)
+            await rabbit_worker.send_rabbitmq(data, rabbit_settings.BILLING_QUEUE_AUTH)
             return
     return Response(status_code=HTTPStatus.FORBIDDEN)
