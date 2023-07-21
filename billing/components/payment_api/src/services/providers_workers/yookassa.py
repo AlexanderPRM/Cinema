@@ -34,7 +34,9 @@ class YooKassaProviderWorker(BaseProviderWorker):
             return None
         elif notification_object.event == "refund.succeeded":
             transaction = (
-                await psql.get_object_by_id(postgres_settings.TRANSACTIONS_LOG_TABLE, payment.payment_id)
+                await psql.get_object_by_id(
+                    postgres_settings.TRANSACTIONS_LOG_TABLE, payment.payment_id
+                )
             )[0]
             await psql.deactivate_subscribe(str(transaction["user_id"]))
             return None
