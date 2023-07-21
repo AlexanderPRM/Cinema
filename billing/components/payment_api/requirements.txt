@@ -5,7 +5,6 @@ yookassa==2.4.0
 pydantic==2.0.3
 pydantic-settings==2.0.2
 SQLAlchemy[asyncio]==2.0.18
-alembic==1.11.1
 psycopg2==2.9.6
 asyncpg==0.28.0
 PyJWT==2.7.0
