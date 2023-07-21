@@ -22,7 +22,7 @@ class ProviderDefiner:
         )
         if not transaction:
             return
-        provider_name = transaction['provider']
+        provider_name = transaction["provider"]
         provider_get_func = ProviderDefiner.PROVIDERS.get(provider_name)
         if provider_get_func is None:
             raise ValueError(f"Unknown provider name: {provider_name}")

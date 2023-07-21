@@ -24,8 +24,7 @@ class PostgreSQL:
             id_name = "id"
         self.conn = await self.get_connection()
         return await self.conn.fetch(
-            "SELECT * FROM %s WHERE %s = '%s'"
-            % (object_name, id_name, id)
+            "SELECT * FROM %s WHERE %s = '%s'" % (object_name, id_name, id)
         )
 
     @backoff.on_exception(
@@ -60,13 +59,13 @@ class PostgreSQL:
              {ttl}, {auto_renewal}, '{created_at}', '{updated_at}')
         """.format(
             id=uuid.uuid4(),
-            user_id=transaction['user_id'],
-            transaction_id=transaction['id'],
-            subscription_tier_id=payment_details['subscribe_tier_id'],
-            ttl=int(time.time()) + subscription_tiers['duration'],
-            auto_renewal=payment_details['auto_renewal'],
+            user_id=transaction["user_id"],
+            transaction_id=transaction["id"],
+            subscription_tier_id=payment_details["subscribe_tier_id"],
+            ttl=int(time.time()) + subscription_tiers["duration"],
+            auto_renewal=payment_details["auto_renewal"],
             created_at=datetime.datetime.now(),
-            updated_at=datetime.datetime.now()
+            updated_at=datetime.datetime.now(),
         )
         await self.conn.execute(query)
 
@@ -75,18 +74,20 @@ class PostgreSQL:
     )
     async def deactivate_subscribe(self, user_id):
         self.conn = await self.get_connection()
-        subscription = (await self.conn.fetch(
-            "SELECT * FROM %s WHERE user_id = '%s'"
-            % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, user_id)
-        ))[0]
-        if subscription['ttl'] <= int(time.time()) and subscription['auto_renewal'] is False:
+        subscription = (
+            await self.conn.fetch(
+                "SELECT * FROM %s WHERE user_id = '%s'"
+                % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, user_id)
+            )
+        )[0]
+        if subscription["ttl"] <= int(time.time()) and subscription["auto_renewal"] is False:
             return
         await self.conn.execute(
             "UPDATE %s SET ttl = $1, auto_renewal = $2 WHERE user_id = $3"
             % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE),
             int(time.time()),
             False,
-            user_id
+            user_id,
         )
 
     async def get_connection(self):
