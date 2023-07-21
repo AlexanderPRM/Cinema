@@ -37,7 +37,7 @@ services:
     networks:
       - cinema
     healthcheck:
-      test: rabbitmq-diagnostics -q ping
+      test: rabbitmq-diagnostics -q ping && rabbitmq-diagnostics check_port_connectivity
       interval: 5s
       timeout: 5s
       retries: 5
@@ -98,6 +98,22 @@ services:
     depends_on:
       - billing_psql
       - db_migrations
+    
+  payment_api:
+    build:
+      context: components
+      dockerfile: payment_api/Dockerfile
+    env_file:
+      - config.env
+    restart: always
+    ports:
+      - 3020:8000
+    networks:
+      - cinema
+    depends_on:
+      - billing_psql
+      - db_migrations
+      - rabbitmq_billing
 
   worker_auth:
     build:
@@ -126,8 +142,6 @@ services:
     depends_on:
       rabbitmq_billing:
         condition: service_healthy
-      
-
 
 
 networks:
