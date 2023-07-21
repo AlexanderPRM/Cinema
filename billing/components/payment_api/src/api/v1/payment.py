@@ -51,5 +51,4 @@ async def webhook_processing(
             await rabbit_worker.send_rabbitmq(data, rabbit_settings.BILLING_QUEUE_NOTIFICATIONS)
             await rabbit_worker.send_rabbitmq(data, rabbit_settings.BILLING_QUEUE_AUTH)
             return Response(status_code=HTTPStatus.OK)
-
     return Response(status_code=HTTPStatus.FORBIDDEN)

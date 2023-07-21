@@ -13,16 +13,16 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     ports:
       - 5432:5432
-    # networks:
-    #   - cinema
+    networks:
+      - cinema
     restart: always
 
   db_migrations:
     build: components
     env_file:
       - config.env
-    # networks:
-    #   - cinema
+    networks:
+      - cinema
     depends_on:
       - billing_psql
 
@@ -37,7 +37,7 @@ services:
     networks:
       - cinema
     healthcheck:
-      test: rabbitmq-diagnostics -q ping
+      test: rabbitmq-diagnostics -q ping && rabbitmq-diagnostics check_port_connectivity
       interval: 5s
       timeout: 5s
       retries: 5
@@ -54,24 +54,24 @@ services:
     restart: always
     ports:
       - 3000:8000
-    # networks:
-    #   - cinema
+    networks:
+      - cinema
     depends_on:
       - db_migrations
       - billing_psql
 
-  # scheduler:
-  #   build:
-  #     context: components
-  #     dockerfile: scheduler/Dockerfile
-  #   env_file:
-  #     - config.env
-  #   depends_on:
-  #     - billing_psql
-  #     - db_migrations
-  #   networks:
-  #     - cinema
-  #   restart: always
+  scheduler:
+    build:
+      context: components
+      dockerfile: scheduler/Dockerfile
+    env_file:
+      - config.env
+    depends_on:
+      - billing_psql
+      - db_migrations
+    networks:
+      - cinema
+    restart: always
 
   billing_redis:
     image: redis:7.0.9
@@ -81,8 +81,8 @@ services:
     depends_on:
       - billing_psql
       - db_migrations
-    # networks:
-    #   - cinema
+    networks:
+      - cinema
 
   billing_api:
     build:
@@ -93,8 +93,8 @@ services:
     restart: always
     ports:
       - 3010:8000
-    # networks:
-    #   - cinema
+    networks:
+      - cinema
     depends_on:
       - billing_psql
       - db_migrations
@@ -108,8 +108,8 @@ services:
     restart: always
     ports:
       - 3020:8000
-    # networks:
-    #   - cinema
+    networks:
+      - cinema
     depends_on:
       - billing_psql
       - db_migrations
@@ -142,13 +142,11 @@ services:
     depends_on:
       rabbitmq_billing:
         condition: service_healthy
-      
 
 
-
-# networks:
-#   cinema:
-#     external:
-#       name: cinema
+networks:
+  cinema:
+    external:
+      name: cinema
 volumes:
     postgres_data:

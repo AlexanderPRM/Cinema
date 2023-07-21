@@ -31,7 +31,6 @@ class PostgreSQLSettings(BaseSettings):
     SUBSCRIPTIONS_TABLE: str
     TRANSACTIONS_LOG_TABLE: str
     SUBSCRIPTIONS_USERS_TABLE: str
-    POSTGRESQL_URL: str
 
     class Config:
         case_sensitive = True
