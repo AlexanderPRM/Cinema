@@ -51,7 +51,7 @@ class RabbitMQSettings(BaseSettings):
 
 class ProvidersIPLists(BaseSettings):
     PROVIDERS_IP_LIST: dict = Field({
-        "yookassa": 
+        "yookassa":
             [
                 ipaddress.ip_network("185.71.76.0/27"),
                 ipaddress.ip_network("185.71.77.0/27"),
@@ -60,6 +60,7 @@ class ProvidersIPLists(BaseSettings):
                 ipaddress.ip_network("77.75.156.35"),
                 ipaddress.ip_network("77.75.154.128/25"),
                 ipaddress.ip_network("2a02:5180::/32"),
+                ipaddress.ip_address("192.168.192.1"),  # Удалить !!!
             ],
     })
 

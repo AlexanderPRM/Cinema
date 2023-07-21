@@ -17,17 +17,22 @@ class ProviderDefiner:
 
     @staticmethod
     async def get_payment_info_from_provider(payment_id: str, psql: PostgreSQL):
-        provider_name = await psql.get_object_by_id(postgres_settings.TRANSACTIONS_LOG_TABLE, payment_id)['provider']
+        transaction = await psql.get_object_by_id(
+            postgres_settings.TRANSACTIONS_LOG_TABLE, payment_id
+        )
+        if not transaction:
+            return
+        provider_name = transaction['provider']
         provider_get_func = ProviderDefiner.PROVIDERS.get(provider_name)
         if provider_get_func is None:
-            raise ValueError(f'Unknown provider name: {provider_name}')    
+            raise ValueError(f'Unknown provider name: {provider_name}')
         provider = provider_get_func()
         return provider.get_payment_info(payment_id)
 
     @staticmethod
-    def webhook_confirmation(request: Request, provider_name: str, psql: PostgreSQL):
+    async def webhook_confirmation(request: Request, provider_name: str, psql: PostgreSQL):
         provider_worker_get_func = ProviderDefiner.PROVIDERS_WORKERS.get(provider_name)
         if provider_worker_get_func is None:
             raise ValueError(f'Unknown provider name: {provider_name}')
         provider_worker = provider_worker_get_func()
-        return provider_worker.webhook_worker(request, psql)
+        return await provider_worker.webhook_worker(request, psql)

@@ -13,16 +13,16 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     ports:
       - 5432:5432
-    networks:
-      - cinema
+    # networks:
+    #   - cinema
     restart: always
 
   db_migrations:
     build: components
     env_file:
       - config.env
-    networks:
-      - cinema
+    # networks:
+    #   - cinema
     depends_on:
       - billing_psql
 
@@ -34,8 +34,8 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
-    networks:
-      - cinema
+    # networks:
+    #   - cinema
     ports:
       - 5672:5672
       - 15672:15672
@@ -49,24 +49,24 @@ services:
     restart: always
     ports:
       - 3000:8000
-    networks:
-      - cinema
+    # networks:
+    #   - cinema
     depends_on:
       - db_migrations
       - billing_psql
 
-  scheduler:
-    build:
-      context: components
-      dockerfile: scheduler/Dockerfile
-    env_file:
-      - config.env
-    depends_on:
-      - billing_psql
-      - db_migrations
-    networks:
-      - cinema
-    restart: always
+  # scheduler:
+  #   build:
+  #     context: components
+  #     dockerfile: scheduler/Dockerfile
+  #   env_file:
+  #     - config.env
+  #   depends_on:
+  #     - billing_psql
+  #     - db_migrations
+  #   networks:
+  #     - cinema
+  #   restart: always
 
   billing_redis:
     image: redis:7.0.9
@@ -76,8 +76,8 @@ services:
     depends_on:
       - billing_psql
       - db_migrations
-    networks:
-      - cinema
+    # networks:
+    #   - cinema
 
   billing_api:
     build:
@@ -88,16 +88,32 @@ services:
     restart: always
     ports:
       - 3010:8000
-    networks:
-      - cinema
+    # networks:
+    #   - cinema
     depends_on:
       - billing_psql
       - db_migrations
+    
+  payment_api:
+    build:
+      context: components
+      dockerfile: payment_api/Dockerfile
+    env_file:
+      - config.env
+    restart: always
+    ports:
+      - 3020:8000
+    # networks:
+    #   - cinema
+    depends_on:
+      - billing_psql
+      - db_migrations
+      - rabbitmq_billing
 
 
-networks:
-  cinema:
-    external:
-      name: cinema
+# networks:
+#   cinema:
+#     external:
+#       name: cinema
 volumes:
     postgres_data:

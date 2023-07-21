@@ -37,8 +37,12 @@ class RabbitWorker:
         email_exchange = await channel.declare_exchange(
             rabbit_settings.BILLING_EXCHANGE, ExchangeType.DIRECT, durable=True
         )
-        send_email_queue = await channel.declare_queue(rabbit_settings.BILLING_QUEUE_NOTIFICATIONS, durable=True)
-        send_auth_queue = await channel.declare_queue(rabbit_settings.BILLING_QUEUE_AUTH, durable=True)
+        send_email_queue = await channel.declare_queue(
+            rabbit_settings.BILLING_QUEUE_NOTIFICATIONS, durable=True
+        )
+        send_auth_queue = await channel.declare_queue(
+            rabbit_settings.BILLING_QUEUE_AUTH, durable=True
+        )
         await send_email_queue.bind(email_exchange)
         await send_auth_queue.bind(email_exchange)
 

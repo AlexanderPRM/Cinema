@@ -1,7 +1,6 @@
 import datetime
 import time
 import uuid
-from typing import Optional
 
 import asyncpg
 import backoff
@@ -24,7 +23,7 @@ class PostgreSQL:
         else:
             id_name = "id"
         self.conn = await self.get_connection()
-        return await self.connection.fetch(
+        return await self.conn.fetch(
             "SELECT * FROM %s WHERE %s = '%s'"
             % (object_name, id_name, id)
         )
@@ -32,10 +31,10 @@ class PostgreSQL:
     @backoff.on_exception(
         backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
     )
-    async def update_transaction_status_to_error(self, transaction_id):
+    async def update_transaction_status_to_canceled(self, transaction_id):
         self.conn = await self.get_connection()
-        await self.connection.execute(
-            "UPDATE %s SET operate_status = 'ERROR' WHERE transaction_id = '%s'"
+        await self.conn.execute(
+            "UPDATE %s SET operate_status = 'CANCELED' WHERE transaction_id = '%s'"
             % (postgres_settings.TRANSACTIONS_LOG_TABLE, transaction_id)
         )
 
@@ -44,7 +43,7 @@ class PostgreSQL:
     )
     async def update_transaction_status_to_success(self, transaction_id):
         self.conn = await self.get_connection()
-        await self.connection.execute(
+        await self.conn.execute(
             "UPDATE %s SET operate_status = 'SUCCESS' WHERE transaction_id = '%s'"
             % (postgres_settings.TRANSACTIONS_LOG_TABLE, transaction_id)
         )
@@ -55,19 +54,40 @@ class PostgreSQL:
     async def create_subscription(self, transaction, payment_details, subscription_tiers):
         self.conn = await self.get_connection()
         query = """
-            INSERT INTO subscriptions (id, user_id, transaction_id, subscription_tier_id, ttl, auto_renewal, created_at, updated_at)
-            VALUES ('{id}', '{user_id}', '{transaction_id}', '{subscription_tier_id}', {ttl}, {auto_renewal}, '{created_at}', '{updated_at}')
+            INSERT INTO subscriptions (id, user_id, transaction_id, subscription_tier_id,
+             ttl, auto_renewal, created_at, updated_at)
+            VALUES ('{id}', '{user_id}', '{transaction_id}', '{subscription_tier_id}',
+             {ttl}, {auto_renewal}, '{created_at}', '{updated_at}')
         """.format(
             id=uuid.uuid4(),
             user_id=transaction['user_id'],
-            transaction_id=transaction['transaction_id'],
-            subscription_tier_id=payment_details['subscription_tier_id'],
+            transaction_id=transaction['id'],
+            subscription_tier_id=payment_details['subscribe_tier_id'],
             ttl=int(time.time()) + subscription_tiers['duration'],
             auto_renewal=payment_details['auto_renewal'],
             created_at=datetime.datetime.now(),
             updated_at=datetime.datetime.now()
         )
-        await self.connection.execute(query)
+        await self.conn.execute(query)
+
+    @backoff.on_exception(
+        backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
+    )
+    async def deactivate_subscribe(self, user_id):
+        self.conn = await self.get_connection()
+        subscription = (await self.conn.fetch(
+            "SELECT * FROM %s WHERE user_id = '%s'"
+            % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, user_id)
+        ))[0]
+        if subscription['ttl'] <= int(time.time()) and subscription['auto_renewal'] is False:
+            return
+        await self.conn.execute(
+            "UPDATE %s SET ttl = $1, auto_renewal = $2 WHERE user_id = $3"
+            % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE),
+            int(time.time()),
+            False,
+            user_id
+        )
 
     async def get_connection(self):
         return await asyncpg.connect(
@@ -78,8 +98,5 @@ class PostgreSQL:
         )
 
 
-postgres: Optional[PostgreSQL] = None
-
-
 async def get_db() -> PostgreSQL:
-    return postgres
+    return PostgreSQL(postgres_settings.POSTGRESQL_URL)
