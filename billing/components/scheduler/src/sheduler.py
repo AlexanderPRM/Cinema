@@ -1,11 +1,30 @@
 import json
 import logging
 import time
+from uuid import uuid4
 
+from core.config import config
 from providers.base import Provider
 from providers.yookassa_provider import get_yookassa
 
+# class TypeEnum(str, Enum):
+#     new_episodes = "new_episodes"
+#     email_confirm = "email_confirm"
+#     recommendations = "recommendations"
+#     person_likes = "person_likes"
 
+
+# class Context(BaseModel):
+#     users_id: Optional[List[str]]
+#     payload: dict
+#     link: Optional[str]
+
+
+# class Notification(BaseModel):
+#     type_send: TypeEnum = TypeEnum.new_episodes
+#     template_id: Optional[str]
+#     notification_id: Optional[str]
+#     context: Context
 class Scheduler:
     def __init__(self, producer, auth_broker, notifications_broker, cache):
         self.producer = producer
@@ -33,16 +52,22 @@ class Scheduler:
                 # disable subscription
                 body = json.dumps(
                     {
-                        "user_id": str(sub["user_id"]),
-                        "subscribe_id": str(sub["id"]),
-                        "auto_renewal": sub["auto_renewal"],
+                        "type_send": "subscribe_info",
+                        "template_id": config.SUBSCRIBE_INFO_TEMPLATE_ID,
+                        "notification_id": str(uuid4()),
+                        "context": {
+                            "users_id": [str(sub["user_id"])],
+                            "payload": {"auto_renewal": sub["auto_renewal"]},
+                        },
                     }
                 )
+
                 logging.info(body)
                 # notification
                 await self.notifications_broker.send_data(body)
                 body = json.dumps(
                     {
+                        "auto_renewal": sub["auto_renewal"],
                         "user_id": str(sub["user_id"]),
                     }
                 )
