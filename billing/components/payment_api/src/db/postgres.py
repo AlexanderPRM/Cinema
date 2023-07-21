@@ -33,7 +33,7 @@ class PostgreSQL:
     async def update_transaction_status_to_canceled(self, transaction_id):
         self.conn = await self.get_connection()
         await self.conn.execute(
-            "UPDATE %s SET operate_status = 'CANCELED' WHERE transaction_id = '%s'"
+            "UPDATE %s SET operate_status = 'canceled' WHERE transaction_id = '%s'"
             % (postgres_settings.TRANSACTIONS_LOG_TABLE, transaction_id)
         )
 
@@ -43,7 +43,7 @@ class PostgreSQL:
     async def update_transaction_status_to_success(self, transaction_id):
         self.conn = await self.get_connection()
         await self.conn.execute(
-            "UPDATE %s SET operate_status = 'SUCCESS' WHERE transaction_id = '%s'"
+            "UPDATE %s SET operate_status = 'success' WHERE transaction_id = '%s'"
             % (postgres_settings.TRANSACTIONS_LOG_TABLE, transaction_id)
         )
 
