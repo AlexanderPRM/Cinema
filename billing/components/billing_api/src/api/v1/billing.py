@@ -3,6 +3,7 @@ from uuid import UUID
 
 from core.config import config
 from core.jwt import JWTBearer
+from core.logger import logger
 from db.postgres import PostgreSQL, get_db
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
@@ -99,7 +100,7 @@ async def refund(
 ):
     subscribe = await postgres.get_subscibe_by_user(auth["user_id"])
     now_time = time.time()
-    if not subscribe and subscribe.ttl <= now_time:
+    if not subscribe or subscribe.ttl <= now_time:
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content={"message": "User does not have a subscription OR it has expired."},
@@ -107,14 +108,24 @@ async def refund(
     transaction = await postgres.get_transaction_by_id(subscribe.transaction_id)
     subscribe_tier = await postgres.get_subscribe_tier(subscribe.subscription_tier_id)
     used_seconds = subscribe.ttl - now_time
-    cost_per_second = subscribe_tier.cost / subscribe_tier.duration
+    logger.info((used_seconds / subscribe_tier.duration) * subscribe_tier.cost)
     refund_details = {
-        "amount": {"value": cost_per_second * used_seconds, "currency": transaction.currency},
-        "payment_id": transaction.id,
+        "amount": {
+            "value": (used_seconds / subscribe_tier.duration) * subscribe_tier.cost,
+            "currency": transaction.currency,
+        },
+        "payment_id": transaction.transaction_id,
     }
     refund = provider.refund(refund_details, body.idempotence_key)
+    if refund is None:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"message": "Idempotency key expire OR payment was not made"},
+        )
+
+    await postgres.deactivate_subscribe(auth["user_id"])
     return RefundResponse(
-        refund.status,
+        status=refund.status,
         amount=Amount(value=refund.amount.value, currency=refund.amount.currency),
         payment_id=refund.payment_id,
     )

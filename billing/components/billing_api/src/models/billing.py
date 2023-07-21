@@ -10,7 +10,7 @@ class Refund(BaseModel):
 
 
 class Amount(BaseModel):
-    value: int
+    value: float
     currency: str
 
 
