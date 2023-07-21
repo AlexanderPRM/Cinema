@@ -26,7 +26,6 @@ async def check_payment_status(
     response = await ProviderDefiner.get_payment_info_from_provider(body.payment_id, psql)
     if not response:
         return JSONResponse({"message": "Transaction doesn't exist"}, HTTPStatus.BAD_REQUEST)
-
     return JSONResponse(response)
 
 
@@ -40,7 +39,6 @@ async def webhook_processing(
     psql: PostgreSQL = Depends(get_db),
 ):
     ip = ipaddress.ip_address(str(request.client.host))
-    ip = ipaddress.ip_address("192.168.192.1")  # Удалить !!!
     for provider_name, network in ip_white_list.PROVIDERS_IP_LIST.items():
         if ip in network:
             data: Notification = await ProviderDefiner.webhook_confirmation(
@@ -54,4 +52,4 @@ async def webhook_processing(
             await rabbit_worker.send_rabbitmq(data, rabbit_settings.BILLING_QUEUE_AUTH)
             return Response(status_code=HTTPStatus.OK)
 
-    return Response(f"{ip}", status_code=HTTPStatus.FORBIDDEN)
+    return Response(status_code=HTTPStatus.FORBIDDEN)

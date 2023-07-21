@@ -60,7 +60,6 @@ class ProvidersIPLists(BaseSettings):
                 ipaddress.ip_network("77.75.156.35"),
                 ipaddress.ip_network("77.75.154.128/25"),
                 ipaddress.ip_network("2a02:5180::/32"),
-                ipaddress.ip_address("192.168.192.1"),  # Удалить !!!
             ],
         }
     )

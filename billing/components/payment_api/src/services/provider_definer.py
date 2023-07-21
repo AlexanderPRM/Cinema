@@ -17,9 +17,9 @@ class ProviderDefiner:
 
     @staticmethod
     async def get_payment_info_from_provider(payment_id: str, psql: PostgreSQL):
-        transaction = await psql.get_object_by_id(
-            postgres_settings.TRANSACTIONS_LOG_TABLE, payment_id
-        )
+        transaction = (
+            await psql.get_object_by_id(postgres_settings.TRANSACTIONS_LOG_TABLE, payment_id)
+        )[0]
         if not transaction:
             return
         provider_name = transaction["provider"]

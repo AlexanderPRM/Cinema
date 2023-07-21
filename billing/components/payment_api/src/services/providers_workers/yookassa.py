@@ -10,47 +10,6 @@ from yookassa.domain.notification import WebhookNotification
 class YooKassaProviderWorker(BaseProviderWorker):
     async def webhook_worker(self, request: Request, psql: PostgreSQL):
         event_json = json.loads(await request.body())
-        # event_json = {
-        #     "type": "notification",
-        #     "event": "refund.succeeded",
-        #     "object": {
-        #         "id": "11d6d597-000f-5000-9000-145f6df21d6f",
-        #         "status": "succeeded",
-        #         "paid": True,
-        #         "amount": {
-        #             "value": "2.00",
-        #             "currency": "RUB"
-        #         },
-        #         "authorization_details": {
-        #             "rrn": "10000000000",
-        #             "auth_code": "000000",
-        #             "three_d_secure": {
-        #                 "applied": True
-        #             }
-        #         },
-        #         "created_at": "2018-07-10T14:27:54.691Z",
-        #         "description": "Заказ №72",
-        #         "expires_at": "2018-07-17T14:28:32.484Z",
-        #         "metadata": {},
-        #         "payment_method": {
-        #             "type": "bank_card",
-        #             "id": "11d6d597-000f-5000-9000-145f6df21d6f",
-        #             "saved": False,
-        #             "card": {
-        #                 "first6": "555555",
-        #                 "last4": "4444",
-        #                 "expiry_month": "07",
-        #                 "expiry_year": "2021",
-        #                 "card_type": "MasterCard",
-        #                 "issuer_country": "RU",
-        #                 "issuer_name": "Sberbank"
-        #             },
-        #             "title": "Bank card *4444"
-        #         },
-        #         "refundable": False,
-        #         "test": True
-        #     }
-        # }
         notification_object = WebhookNotification(event_json)
         payment = notification_object.object
         if notification_object.event == "payment.succeeded":
@@ -75,7 +34,7 @@ class YooKassaProviderWorker(BaseProviderWorker):
             return None
         elif notification_object.event == "refund.succeeded":
             transaction = (
-                await psql.get_object_by_id(postgres_settings.TRANSACTIONS_LOG_TABLE, payment.id)
+                await psql.get_object_by_id(postgres_settings.TRANSACTIONS_LOG_TABLE, payment.payment_id)
             )[0]
             await psql.deactivate_subscribe(str(transaction["user_id"]))
             return None
