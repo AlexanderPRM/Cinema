@@ -1,7 +1,9 @@
 import json
 import logging
 import time
+from uuid import uuid4
 
+from core.config import config
 from providers.base import Provider
 from providers.yookassa_provider import get_yookassa
 
@@ -33,16 +35,22 @@ class Scheduler:
                 # disable subscription
                 body = json.dumps(
                     {
-                        "user_id": str(sub["user_id"]),
-                        "subscribe_id": str(sub["id"]),
-                        "auto_renewal": sub["auto_renewal"],
+                        "type_send": "subscribe_info",
+                        "template_id": config.SUBSCRIBE_INFO_TEMPLATE_ID,
+                        "notification_id": str(uuid4()),
+                        "context": {
+                            "users_id": [str(sub["user_id"])],
+                            "payload": {"auto_renewal": sub["auto_renewal"]},
+                        },
                     }
                 )
+
                 logging.info(body)
                 # notification
                 await self.notifications_broker.send_data(body)
                 body = json.dumps(
                     {
+                        "auto_renewal": sub["auto_renewal"],
                         "user_id": str(sub["user_id"]),
                     }
                 )

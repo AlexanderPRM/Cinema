@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     YOOKASSA_SHOP_ID: str
     YOOKASSA_SHOP_SECRET: str
     PAYMENT_REDIRECT_URL: str
+    AUTH_SERVICE_URL: str = Field(default="http://nginx/auth/")
+    NOTIFICATION_SERVICE_URL: str = Field("http://notification_api:8001/api/v1/notify/send/")
+    SUBSCRIBE_INFO_TEMPLATE_ID: str = Field(default="FOR_TEST")
 
     class Config:
         case_sensitive = True
