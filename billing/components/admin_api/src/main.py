@@ -1,5 +1,5 @@
 from api.v1 import admin_handlers
-from core.config import config, rabbit_settings
+from core.config import postgres_settings, rabbit_settings
 from db import postgres, rabbit
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -18,7 +18,7 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
-    postgres.postgres_ = postgres.PostgreSQL(config.POSTGRESQL_URL)
+    postgres.postgres_ = postgres.PostgreSQL(postgres_settings.POSTGRESQL_URL)
     rabbit.rabbit_ = rabbit.RabbitMQBroker(
         url=f"amqp://{rabbit_settings.RABBITMQ_USER}:{rabbit_settings.RABBITMQ_PASS}@"
         f"{rabbit_settings.RABBITMQ_HOST}/",

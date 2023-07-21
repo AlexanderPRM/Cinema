@@ -14,6 +14,6 @@ RUN pip install --upgrade pip --no-cache-dir \
 COPY alembic.ini .
 COPY alembic alembic
 COPY admin_api/src/db/models.py admin_api/src/db/
-COPY payment_api/src/db/models.py payment_api_api/src/db/
+COPY payment_api/src/db/models.py payment_api/src/db/
 COPY billing_api/src/db/models.py billing_api/src/db/
 CMD ["alembic", "upgrade", "head"]
