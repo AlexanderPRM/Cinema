@@ -26,7 +26,7 @@ class Scheduler:
     async def taking_subs_away(self):
         previous_run_time = await self.get_previous_run_time()
         ended_subs = await self.producer.get_ended_subs(previous_run_time)
-        await self.set_previous_run_time(int(time.time()))
+        logging.info(ended_subs)
         if ended_subs:
             for sub in ended_subs:
                 sub = dict(sub)
@@ -34,7 +34,7 @@ class Scheduler:
                 body = json.dumps(
                     {
                         "user_id": str(sub["user_id"]),
-                        "subscribe_id": str(sub["subscribe_id"]),
+                        "subscribe_id": str(sub["id"]),
                         "auto_renewal": sub["auto_renewal"],
                     }
                 )
@@ -74,3 +74,4 @@ class Scheduler:
                             "paid": payment.paid,
                         }
                     )
+        await self.set_previous_run_time(int(time.time()))

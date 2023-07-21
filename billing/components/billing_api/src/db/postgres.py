@@ -1,3 +1,5 @@
+import time
+
 from core.config import postgres_settings
 from db.models import Transactions
 from sqlalchemy import text
@@ -69,6 +71,20 @@ class PostgreSQL:
                 sql = "UPDATE %s SET auto_renewal = FALSE WHERE user_id = '%s' RETURNING id" % (
                     postgres_settings.SUBSCRIPTIONS_USERS_TABLE,
                     user_id,
+                )
+                res = await session.execute(text(sql))
+            return res.one()
+
+    async def deactivate_subscribe(self, user_id):
+        async with self.asyncsession() as session:
+            async with session.begin():
+                sql = (
+                    "UPDATE %s SET auto_renewal = FALSE, ttl = %s WHERE user_id = '%s' RETURNING id"
+                    % (
+                        postgres_settings.SUBSCRIPTIONS_USERS_TABLE,
+                        int(time.time()),
+                        user_id,
+                    )
                 )
                 res = await session.execute(text(sql))
             return res.one()

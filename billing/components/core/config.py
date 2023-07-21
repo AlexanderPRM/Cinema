@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     REDIS_PORT: int
     YOOKASSA_SHOP_ID: str
     YOOKASSA_SHOP_SECRET: str
-    # PAYMENT_REDIRECT_URL: str
+    PAYMENT_REDIRECT_URL: str
 
     class Config:
         case_sensitive = True
@@ -50,9 +50,9 @@ class RabbitMQSettings(BaseSettings):
 
 
 class ProvidersIPLists(BaseSettings):
-    PROVIDERS_IP_LIST: dict = Field({
-        "yookassa":
-            [
+    PROVIDERS_IP_LIST: dict = Field(
+        {
+            "yookassa": [
                 ipaddress.ip_network("185.71.76.0/27"),
                 ipaddress.ip_network("185.71.77.0/27"),
                 ipaddress.ip_network("77.75.153.0/25"),
@@ -62,7 +62,8 @@ class ProvidersIPLists(BaseSettings):
                 ipaddress.ip_network("2a02:5180::/32"),
                 ipaddress.ip_address("192.168.192.1"),  # Удалить !!!
             ],
-    })
+        }
+    )
 
 
 rabbit_settings = RabbitMQSettings()

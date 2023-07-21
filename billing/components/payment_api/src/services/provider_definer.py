@@ -7,11 +7,11 @@ from services.providers_workers.yookassa import get_yookassa_worker
 
 class ProviderDefiner:
     PROVIDERS = {
-        'yookassa': get_yookassa,
+        "yookassa": get_yookassa,
         # Возможность добавить другие провайдеры
     }
     PROVIDERS_WORKERS = {
-        'yookassa': get_yookassa_worker,
+        "yookassa": get_yookassa_worker,
         # Возможность добавить другие провайдеры
     }
 
@@ -25,7 +25,7 @@ class ProviderDefiner:
         provider_name = transaction['provider']
         provider_get_func = ProviderDefiner.PROVIDERS.get(provider_name)
         if provider_get_func is None:
-            raise ValueError(f'Unknown provider name: {provider_name}')
+            raise ValueError(f"Unknown provider name: {provider_name}")
         provider = provider_get_func()
         return provider.get_payment_info(payment_id)
 
@@ -33,6 +33,6 @@ class ProviderDefiner:
     async def webhook_confirmation(request: Request, provider_name: str, psql: PostgreSQL):
         provider_worker_get_func = ProviderDefiner.PROVIDERS_WORKERS.get(provider_name)
         if provider_worker_get_func is None:
-            raise ValueError(f'Unknown provider name: {provider_name}')
+            raise ValueError(f"Unknown provider name: {provider_name}")
         provider_worker = provider_worker_get_func()
         return await provider_worker.webhook_worker(request, psql)

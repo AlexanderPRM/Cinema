@@ -52,6 +52,6 @@ async def taking_subscriptions_away():
 
 if __name__ == "__main__":
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(taking_subscriptions_away, "interval", seconds=15)
+    scheduler.add_job(taking_subscriptions_away, "interval", seconds=25)
     scheduler.start()
     asyncio.get_event_loop().run_forever()

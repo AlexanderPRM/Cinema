@@ -30,7 +30,7 @@ async def add_subscribtion(
     entry_id = await service.add_subscription(body)
     response = {
         "message": f"{body.title} subscription created.",
-        "subscribe_id": str(entry_id.subscribe_id),
+        "subscribe_id": str(entry_id.id),
     }
     return AddSubscribtion(**response)
 
