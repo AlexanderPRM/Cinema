@@ -7,24 +7,7 @@ from core.config import config
 from providers.base import Provider
 from providers.yookassa_provider import get_yookassa
 
-# class TypeEnum(str, Enum):
-#     new_episodes = "new_episodes"
-#     email_confirm = "email_confirm"
-#     recommendations = "recommendations"
-#     person_likes = "person_likes"
 
-
-# class Context(BaseModel):
-#     users_id: Optional[List[str]]
-#     payload: dict
-#     link: Optional[str]
-
-
-# class Notification(BaseModel):
-#     type_send: TypeEnum = TypeEnum.new_episodes
-#     template_id: Optional[str]
-#     notification_id: Optional[str]
-#     context: Context
 class Scheduler:
     def __init__(self, producer, auth_broker, notifications_broker, cache):
         self.producer = producer

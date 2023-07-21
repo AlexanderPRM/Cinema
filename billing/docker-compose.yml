@@ -36,6 +36,11 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
     networks:
       - cinema
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - 5672:5672
       - 15672:15672
@@ -93,6 +98,36 @@ services:
     depends_on:
       - billing_psql
       - db_migrations
+
+  worker_auth:
+    build:
+      context: components
+      dockerfile: worker/Dockerfile
+    env_file:
+      - config.env
+    command: ["python", "src/auth_run.py"]
+    restart: always
+    networks:
+     - cinema
+    depends_on:
+      rabbitmq_billing:
+        condition: service_healthy
+
+  worker_emails:
+    build:
+      context: components
+      dockerfile: worker/Dockerfile
+    env_file:
+      - config.env
+    command: ["python", "src/email_run.py"]
+    restart: always
+    networks:
+     - cinema
+    depends_on:
+      rabbitmq_billing:
+        condition: service_healthy
+      
+
 
 
 networks:
