@@ -33,9 +33,8 @@ class PostgreSQL:
     async def get_transaction_by_user_id(self, id: str):
         self.conn = await self.get_connection()
         return await self.conn.fetch(
-            "SELECT * FROM %s WHERE user_id = '%s' ORDER BY created_at DESC LIMIT 1" % (
-                postgres_settings.TRANSACTIONS_LOG_TABLE, id
-            )
+            "SELECT * FROM %s WHERE user_id = '%s' ORDER BY created_at DESC LIMIT 1"
+            % (postgres_settings.TRANSACTIONS_LOG_TABLE, id)
         )
 
     @backoff.on_exception(

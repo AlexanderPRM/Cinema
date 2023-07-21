@@ -43,9 +43,7 @@ class YooKassaProviderWorker(BaseProviderWorker):
         psql: PostgreSQL,
     ):
         if payment_info.status == "succeeded":
-            _, _, _ = await self.__create_subscription(
-                payment_info.id, psql, transaction
-            )
+            _, _, _ = await self.__create_subscription(payment_info.id, psql, transaction)
             await psql.update_transaction_status_to_success(payment_info.id)
             return transaction
         return None

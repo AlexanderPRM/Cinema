@@ -16,9 +16,7 @@ class ProviderDefiner:
 
     @staticmethod
     async def update_payment_status(user_id: str, psql: PostgreSQL):
-        transaction = (
-            await psql.get_transaction_by_user_id(user_id)
-        )[0]
+        transaction = (await psql.get_transaction_by_user_id(user_id))[0]
         if not transaction:
             return
         provider_name = transaction["provider"]
