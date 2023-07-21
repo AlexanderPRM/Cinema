@@ -30,6 +30,17 @@ class PostgreSQL:
     @backoff.on_exception(
         backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
     )
+    async def get_transaction_by_user_id(self, id: str):
+        self.conn = await self.get_connection()
+        return await self.conn.fetch(
+            "SELECT * FROM %s WHERE user_id = '%s' ORDER BY created_at DESC LIMIT 1" % (
+                postgres_settings.TRANSACTIONS_LOG_TABLE, id
+            )
+        )
+
+    @backoff.on_exception(
+        backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
+    )
     async def update_transaction_status_to_canceled(self, transaction_id):
         self.conn = await self.get_connection()
         await self.conn.execute(
