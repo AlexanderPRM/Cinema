@@ -9,6 +9,7 @@ class TypeEnum(str, Enum):
     email_confirm = "email_confirm"
     recommendations = "recommendations"
     person_likes = "person_likes"
+    subscribe_info = "subscribe_info"
 
 
 class Context(BaseModel):

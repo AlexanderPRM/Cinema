@@ -14,7 +14,8 @@ class Settings(BaseSettings):
     PAYMENT_REDIRECT_URL: str
     AUTH_SERVICE_URL: str = Field(default="http://nginx/auth/")
     NOTIFICATION_SERVICE_URL: str = Field("http://notification_api:8001/api/v1/notify/send/")
-    SUBSCRIBE_INFO_TEMPLATE_ID: str = Field(default="FOR_TEST")
+    SUBSCRIBE_OFF_TEMPLATE_ID: str = Field(default="7403a28a-a2f2-4981-be53-104364e44447")
+    SUBSCRIBE_ON_TEMPLATE_ID: str = Field(default="a28e491f-a722-47e6-a87b-cc6b7c225aff")
 
     class Config:
         case_sensitive = True

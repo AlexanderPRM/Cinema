@@ -55,5 +55,29 @@
         "updated_at": "2023-06-23T10:39:58.402Z",
         "category_name": "selected"
     }
+},
+{
+    "model": "tasks.templates",
+    "pk": "7403a28a-a2f2-4981-be53-104364e44447",
+    "fields": {
+        "created": "2023-07-22T15:11:58.611Z",
+        "updated_at": "2023-07-22T15:12:27.910Z",
+        "title": "Subscribe Info First",
+        "template_text": "<p>Здравствуйте, {name}!</p><p><br></p><p>Ваша подписка была отключена, так как вы не подключали автопродление.</p>",
+        "author": "system",
+        "type": "email"
+    }
+},
+{
+    "model": "tasks.templates",
+    "pk": "a28e491f-a722-47e6-a87b-cc6b7c225aff",
+    "fields": {
+        "created": "2023-07-22T15:13:09.812Z",
+        "updated_at": "2023-07-22T15:13:09.812Z",
+        "title": "Subscribe Info Two",
+        "template_text": "<p>Здравствуйте, {name}!</p><p>Ваша подписка на нашем киносервисе была продлена автоматически.</p>",
+        "author": "system",
+        "type": "email"
+    }
 }
 ]

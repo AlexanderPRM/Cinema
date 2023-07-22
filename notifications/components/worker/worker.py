@@ -100,7 +100,7 @@ class Worker:
                             )
                             user_info = await aio_response.json()
                             if aio_response.status != HTTPStatus.FORBIDDEN:
-                                if message["type_send"] == "email_confirm":
+                                if message["type_send"] in ("email_confirm", "subscribe_info"):
                                     recipients = await self.build_confirm_email_recipients(
                                         user_info, message
                                     )

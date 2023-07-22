@@ -8,7 +8,7 @@ ADMIN_API_VERSION = "0.0.1"
 
 app = FastAPI(
     title="Admin",
-    description="API для модерации киносервиса",
+    description="API для модерации сервиса оплаты.",
     version=ADMIN_API_VERSION,
     docs_url="/api/openapi",
     openapi_url="/api/openapi.json",

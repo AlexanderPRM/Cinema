@@ -27,7 +27,6 @@ services:
       - billing_psql
 
   rabbitmq_billing:
-    container_name: rabbitmq
     image: rabbitmq:3.10.6-management-alpine
     env_file:
       - config.env
@@ -42,8 +41,8 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - 5672:5672
-      - 15672:15672
+      - 5673:5672
+      - 15673:15672
 
   admin_api:
     build:

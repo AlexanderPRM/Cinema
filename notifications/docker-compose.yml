@@ -20,7 +20,6 @@ services:
     restart: always
 
   rabbitmq_notifications:
-    container_name: rabbitmq
     image: rabbitmq:3.10.6-management-alpine
     environment:
       - RABBITMQ_DEFAULT_USER=${NOTF_RABBITMQ_USER}
@@ -90,19 +89,19 @@ services:
       - cinema
     restart: always
 
-  nginx:
-    image: nginx:1.22.1
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/static:/etc/nginx/static
-    depends_on:
-      - admin_panel
-      - notification_api
-    networks:
-      - cinema
-    ports:
-      - 80:80
+  # nginx:
+  #   image: nginx:1.22.1
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #     - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+  #     - ./nginx/static:/etc/nginx/static
+  #   depends_on:
+  #     - admin_panel
+  #     - notification_api
+  #   networks:
+  #     - cinema
+  #   ports:
+  #     - 80:80
 
 networks:
   cinema:

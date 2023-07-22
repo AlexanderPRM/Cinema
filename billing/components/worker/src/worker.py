@@ -2,7 +2,6 @@ import json
 
 import aiohttp
 from core.config import config
-from core.logger import logger
 from core.utils import generate_admin_jwt
 from db.rabbit import RabbitMQBroker
 
@@ -24,11 +23,11 @@ class Worker:
                             body = {
                                 "role_name": "subscriber" if data["auto_renewal"] else "default"
                             }
-                            logger.info(data)
                             await aio_session.put(
                                 config.AUTH_SERVICE_URL
                                 + "api/v1/role/change_role/{}".format(data["user_id"]),
-                                data=body,
+                                data=json.dumps(body),
+                                headers={"Content-Type": "application/json"},
                             )
 
     async def consume_emails(self):
@@ -40,6 +39,9 @@ class Worker:
                 while True:
                     async for message in queue_iter:
                         async with message.process():
-                            data = json.loads(message.body.decode())
-                            logger.info(data)
-                            await aio_session.post(config.NOTIFICATION_SERVICE_URL, data=data)
+                            data = message.body.decode()
+                            await aio_session.post(
+                                config.NOTIFICATION_SERVICE_URL,
+                                data=data,
+                                headers={"Content-Type": "application/json"},
+                            )

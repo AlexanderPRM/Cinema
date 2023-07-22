@@ -22,8 +22,8 @@ class PostgreSQLProducer:
     )
     async def get_ended_subs(self, previous_run_time):
         query = (
-            "SELECT user_id, transaction_id, id, ttl, auto_renewal, created_at, "
-            "updated_at FROM %s "
+            "SELECT * "
+            "FROM %s "
             "WHERE ttl <= '%s' "
             "AND ttl >= '%s' "
             "GROUP BY transaction_id, user_id, id ORDER BY ttl;"
@@ -39,18 +39,16 @@ class PostgreSQLProducer:
     async def get_subscriprion_cost(self, sub_id):
         query = (
             "SELECT cost "
-            "FROM {postgres_settings.SUBSCRIPTIONS_TABLE} "
-            "WHERE id = '{sub_id}' "
             "FROM %s "
             "WHERE id = '%s' " % (postgres_settings.SUBSCRIPTIONS_TABLE, sub_id)
         )
         return await self.connection.fetch(query)
 
-    async def get_transaction_currency(self, transaction_id):
+    async def get_transaction_info(self, transaction_id):
         query = (
-            "SELECT currency "
+            "SELECT currency, transaction_id "
             "FROM %s "
-            "WHERE transaction_id = '%s' ORDER BY updated_at LIMIT 1"
+            "WHERE id = '%s' ORDER BY updated_at LIMIT 1"
             % (postgres_settings.TRANSACTIONS_LOG_TABLE, transaction_id)
         )
         return await self.connection.fetch(query)
