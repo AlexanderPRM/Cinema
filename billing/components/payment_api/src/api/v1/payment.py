@@ -7,7 +7,7 @@ from core.jwt import JWTBearer
 from db.postgres import PostgreSQL, get_db
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse
-from models.payment_models import Notification, Payment_info
+from models.payment_models import Notification
 from services.provider_definer import ProviderDefiner
 
 router = APIRouter()
@@ -15,18 +15,17 @@ router = APIRouter()
 
 @router.get(
     "/get_transactions/",
-    response_description="Проверить статус платежа",
+    response_description="Проверить статус подписки",
     status_code=HTTPStatus.OK,
 )
 async def check_payment_status(
-    body: Payment_info,
     psql: PostgreSQL = Depends(get_db),
     auth: dict = Depends(JWTBearer()),
 ):
-    response = await ProviderDefiner.get_payment_info_from_provider(body.payment_id, psql)
+    response = await ProviderDefiner.update_payment_status(auth["user_id"], psql)
     if not response:
         return JSONResponse({"message": "Transaction doesn't exist"}, HTTPStatus.BAD_REQUEST)
-    return JSONResponse(response)
+    return JSONResponse({"message": "Subscription has been updated"})
 
 
 @router.post(
