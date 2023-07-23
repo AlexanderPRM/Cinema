@@ -10,9 +10,8 @@ class Transaction(BaseModel):
     transaction_id: uuid.UUID
     value: int
     provider: str
-    idempotency_key_ttl: datetime
     idempotency_key: uuid.UUID
-    operate_status: Literal["SUCCESS", "ERROR", "WAITING"]
+    operate_status: Literal["waiting", "success", "error", "canceled"]
     payment_details: str
     created_at: datetime
     updated_at: datetime
