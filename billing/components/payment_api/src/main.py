@@ -6,7 +6,7 @@ from app import app
 
 app.include_router(
     router,
-    prefix="/api/v1/provider",
+    prefix="/v1/provider",
     tags=["Работа с провайдерами"],
 )
 

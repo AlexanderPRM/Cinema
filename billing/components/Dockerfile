@@ -5,7 +5,8 @@ WORKDIR /opt/migrations
 
 RUN apt-get update && apt-get install -y \
      python3-dev \
-     netcat-traditional
+     netcat-traditional \
+     && rm -rf /var/lib/apt/lists/*
 
 COPY alembic_req.txt .
 

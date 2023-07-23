@@ -2,6 +2,7 @@ from typing import Dict, List, Optional
 from uuid import UUID
 
 from core.jwt import JWTBearer
+from core.logger import logger
 from core.utils import CommonQueryParams
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
@@ -54,18 +55,19 @@ async def get_list_transactions(
     )
     if not transactions:
         return JSONResponse("No transactions")
+    logger.info(transactions)
     transaction_objs = [
         Transaction(
-            user_id=transaction["user_id"],
-            transaction_id=transaction["transaction_id"],
-            value=transaction["value"],
-            provider=transaction["provider"],
-            idempotency_key_ttl=transaction["idempotency_key_ttl"],
-            idempotency_key=transaction["idempotency_key"],
-            operate_status=transaction["operate_status"],
-            payment_details=transaction["payment_details"],
-            created_at=transaction["created_at"],
-            updated_at=transaction["updated_at"],
+            user_id=transaction.user_id,
+            transaction_id=transaction.transaction_id,
+            value=transaction.value,
+            provider=transaction.provider,
+            currency=transaction.currency,
+            idempotency_key=transaction.idempotency_key,
+            operate_status=transaction.operate_status,
+            payment_details=transaction.payment_details,
+            created_at=transaction.created_at,
+            updated_at=transaction.updated_at,
         )
         for transaction in transactions
     ]
@@ -94,16 +96,16 @@ async def get_user_list_transactions(
         return JSONResponse("No transactions")
     transaction_objs = [
         Transaction(
-            user_id=transaction["user_id"],
-            transaction_id=transaction["transaction_id"],
-            value=transaction["value"],
-            provider=transaction["provider"],
-            idempotency_key_ttl=transaction["idempotency_key_ttl"],
-            idempotency_key=transaction["idempotency_key"],
-            operate_status=transaction["operate_status"],
-            payment_details=transaction["payment_details"],
-            created_at=transaction["created_at"],
-            updated_at=transaction["updated_at"],
+            user_id=transaction.user_id,
+            transaction_id=transaction.transaction_id,
+            value=transaction.value,
+            provider=transaction.provider,
+            currency=transaction.currency,
+            idempotency_key=transaction.idempotency_key,
+            operate_status=transaction.operate_status,
+            payment_details=transaction.payment_details,
+            created_at=transaction.created_at,
+            updated_at=transaction.updated_at,
         )
         for transaction in transactions
     ]

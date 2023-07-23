@@ -4,14 +4,18 @@ from core.config import postgres_settings
 from db.models import Transactions
 from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 
 class PostgreSQL:
     def __init__(self, conn_url, **kwargs) -> None:
         self.engine: AsyncEngine = create_async_engine(conn_url, **kwargs)
-        self.asyncsession: AsyncSession = sessionmaker(
+        self.asyncsession: AsyncSession = async_sessionmaker(
             self.engine, expire_on_commit=False, class_=AsyncSession
         )
 

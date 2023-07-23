@@ -22,8 +22,9 @@ app = FastAPI(
     title=PAYMENT_PROJECT_NAME,
     description="API для обработки платежей",
     version=PAYMENT_PROJECT_VERSION,
-    docs_url="/api/openapi",
-    openapi_url="/api/openapi.json",
+    docs_url="/openapi",
+    openapi_url="/openapi.json",
+    root_path="/payment_api",
     default_response_class=ORJSONResponse,
     lifespan=lifespan,
 )
