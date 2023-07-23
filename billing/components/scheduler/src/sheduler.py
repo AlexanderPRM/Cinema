@@ -1,7 +1,6 @@
 import json
 import logging
 import time
-from datetime import datetime
 from uuid import uuid4
 
 from core.config import config
