@@ -22,11 +22,11 @@ router = APIRouter()
 )
 async def add_subscribtion(
     body: Subscribtion,
-    # auth: dict = Depends(JWTBearer()),
+    auth: dict = Depends(JWTBearer()),
     service: AdminService = Depends(get_service),
 ):
-    # if auth["role"] != "superuser":
-    #     return JSONResponse({"message": "Superuser only"}, status.HTTP_403_FORBIDDEN)
+    if auth["role"] != "superuser":
+        return JSONResponse({"message": "Superuser only"}, status.HTTP_403_FORBIDDEN)
     entry_id = await service.add_subscription(body)
     response = {
         "message": f"{body.title} subscription created.",
@@ -44,11 +44,11 @@ async def add_subscribtion(
 )
 async def get_list_transactions(
     commons: CommonQueryParams = Depends(CommonQueryParams),
-    # auth: dict = Depends(JWTBearer()),
+    auth: dict = Depends(JWTBearer()),
     service: AdminService = Depends(get_service),
 ) -> Optional[List[Dict[str, Transaction]]]:
-    # if auth["role"] != "superuser":
-    #     return JSONResponse({"message": "Superuser only"}, status.HTTP_403_FORBIDDEN)
+    if auth["role"] != "superuser":
+        return JSONResponse({"message": "Superuser only"}, status.HTTP_403_FORBIDDEN)
     transactions = await service.get_transactions(
         page_size=commons.page_size, page_number=commons.page_number
     )
@@ -81,11 +81,11 @@ async def get_list_transactions(
 async def get_user_list_transactions(
     user_id: UUID,
     commons: CommonQueryParams = Depends(CommonQueryParams),
-    # auth: dict = Depends(JWTBearer()),
+    auth: dict = Depends(JWTBearer()),
     service: AdminService = Depends(get_service),
 ) -> Optional[List[Dict[str, Transaction]]]:
-    # if auth["role"] != "superuser":
-    #     return JSONResponse({"message": "Superuser only"}, status.HTTP_403_FORBIDDEN)
+    if auth["role"] != "superuser":
+        return JSONResponse({"message": "Superuser only"}, status.HTTP_403_FORBIDDEN)
     transactions = await service.get_user_transactions(
         page_size=commons.page_size, page_number=commons.page_number, user_id=user_id
     )
@@ -118,11 +118,11 @@ async def get_user_list_transactions(
 async def update_sub(
     body: Subscribtion,
     sub_id: UUID,
-    # auth: dict = Depends(JWTBearer()),
+    auth: dict = Depends(JWTBearer()),
     service: AdminService = Depends(get_service),
 ):
-    # if auth["role"] != "superuser":
-    #     return JSONResponse({"message": "Superuser only"}, status.HTTP_403_FORBIDDEN)
+    if auth["role"] != "superuser":
+        return JSONResponse({"message": "Superuser only"}, status.HTTP_403_FORBIDDEN)
     result = await service.update_subscription(id=sub_id, data=body)
     response = {
         "message": "Succesfully update subscription",
