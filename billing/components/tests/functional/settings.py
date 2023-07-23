@@ -7,7 +7,7 @@ class BaseConfig(BaseSettings):
 
     class Config:
         case_sensitive = False
-        env_file = "config_tests.env"
+        env_file = "config.env"
 
 
 baseconfig = BaseConfig()
