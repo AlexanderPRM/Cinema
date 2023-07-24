@@ -36,9 +36,10 @@ class PostgreSQL:
 
     async def disable_auto_renewal(self, subscribe_id):
         self.conn = await self.get_connection()
-        query = "UPDATE %s SET auto_renewal = False " "WHERE id = '%s' AND auto_renewal = True;" % (
-            postgres_settings.SUBSCRIPTIONS_USERS_TABLE,
-            subscribe_id,
+        query = (
+            "UPDATE %s SET auto_renewal = False "
+            "WHERE subscription_tier_id = '%s' AND auto_renewal = True;"
+            % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, subscribe_id)
         )
         await self.conn.execute(query)
 
@@ -46,7 +47,7 @@ class PostgreSQL:
         self.conn = await self.get_connection()
         query = (
             "SELECT user_id FROM %s "
-            "WHERE id = '%s' AND ttl > '%s' "
+            "WHERE subscription_tier_id = '%s' AND ttl > '%s' "
             "AND auto_renewal = True;"
             % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, subscribe_id, int(time.time()))
         )

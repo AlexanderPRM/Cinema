@@ -27,18 +27,16 @@ class Scheduler:
 
     async def taking_subs_away(self):
         previous_run_time = await self.get_previous_run_time()
-        ended_subs = await self.producer.get_ended_subs(previous_run_time)
+        ended_subs = await self.producer.get_ended_subs(int(previous_run_time))
+        logging.info(ended_subs)
         if ended_subs:
             for sub in ended_subs:
                 sub = dict(sub)
                 # disable subscription
-                logging.info(sub)
                 body = json.dumps(
                     {
                         "type_send": "subscribe_info",
-                        "template_id": config.SUBSCRIBE_ON_TEMPLATE_ID
-                        if sub["auto_renewal"]
-                        else config.SUBSCRIBE_OFF_TEMPLATE_ID,
+                        "template_id": config.SUBSCRIBE_INFO_TEMPLATE_ID,
                         "notification_id": str(uuid4()),
                         "context": {
                             "users_id": [str(sub["user_id"])],
@@ -62,20 +60,18 @@ class Scheduler:
 
                 if sub["auto_renewal"]:
                     cost = await self.producer.get_subscriprion_cost(
-                        str(sub["subscription_tier_id"])
+                        str(sub["subsciption_tier_id"])
                     )
-                    cost = dict(cost[0])
-                    transaction = await self.producer.get_transaction_info(
+                    currency = await self.producer.get_transaction_currency(
                         str(sub["transaction_id"])
                     )
-                    transaction = dict(transaction[0])
                     # request to yookassa for auto-renewal
                     payment_data = {
-                        "amount": {"value": cost["cost"], "currency": transaction["currency"]},
+                        "amount": {"value": cost["cost"], "currency": currency["currency"]},
                         "capture": True,
-                        "payment_method_id": str(transaction["transaction_id"]),
+                        "payment_method_id": str(sub["transaction_id"]),
                         "description": f"Auto-Renewal "
-                        f"subscription {str(sub['subscription_tier_id'])}"
+                        f"subscription {str(sub['subsciption_tier_id'])}"
                         f"\nUser id: {str(sub['user_id'])}",
                     }
                     payment = self.provider.pay(payment_data=payment_data)
