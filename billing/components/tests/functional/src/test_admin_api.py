@@ -31,7 +31,7 @@ async def test_create_sub(
     expected_answer: dict,
 ):
     token = await get_jwt_token(settings=baseconfig)
-    headers = {"Authorization": f"Bearer {token}", "content-type": "application/json"}
+    headers = {"Authorization": f"Bearer {token[0]}", "content-type": "application/json"}
     cookies = {"access_token_cookie": token[0]}
     response = await make_post_request(
         baseconfig.ADMIN_API_URL + "add/",
@@ -59,7 +59,7 @@ async def test_get_transactions(
     expected_answer: dict,
 ):
     token = await get_jwt_token(settings=baseconfig)
-    headers = {"Authorization": f"Bearer {token}", "content-type": "application/json"}
+    headers = {"Authorization": f"Bearer {token[0]}", "content-type": "application/json"}
     cookies = {"access_token_cookie": token[0]}
     response = await make_get_request(
         baseconfig.ADMIN_API_URL + "transactions/",
@@ -91,7 +91,7 @@ async def test_get_user_transactions(
     expected_answer: dict,
 ):
     token = await get_jwt_token(settings=baseconfig)
-    headers = {"Authorization": f"Bearer {token}", "content-type": "application/json"}
+    headers = {"Authorization": f"Bearer {token[0]}", "content-type": "application/json"}
     cookies = {"access_token_cookie": token[0]}
     response = await make_get_request(
         baseconfig.ADMIN_API_URL + f"transactions/{query_data['user_id']}/",
@@ -128,7 +128,7 @@ async def test_update_sub(
     expected_answer: dict,
 ):
     token = await get_jwt_token(settings=baseconfig)
-    headers = {"Authorization": f"Bearer {token}", "content-type": "application/json"}
+    headers = {"Authorization": f"Bearer {token[0]}", "content-type": "application/json"}
     cookies = {"access_token_cookie": token[0]}
     test_sub = {"title": "test_sub", "duration": 60, "cost": 999, "description": "some test sub"}
     response = await make_post_request(

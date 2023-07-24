@@ -56,8 +56,8 @@ class PostgreSQL:
             % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, subscribe_id, int(time.time()))
         )
 
-                result = await self.conn.fetch(text(query))
-            return result.all()
+        result = await self.conn.fetch(text(query))
+        return result.all()
 
 
 postgres_: Optional[PostgreSQL] = None
