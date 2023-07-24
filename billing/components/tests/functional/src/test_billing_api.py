@@ -51,13 +51,11 @@ async def test_pay(
     assert response.status == expected_answer["status"]
 
 
-
-
 @pytest.mark.parametrize(
     "query_data, expected_answer",
     [
         (
-            {"wrong_idempotence_key": str(uuid.uuid4()),},
+            {"wrong_idempotence_key": str(uuid.uuid4()), },
             {"status": HTTPStatus.FORBIDDEN},
         ),
     ],
