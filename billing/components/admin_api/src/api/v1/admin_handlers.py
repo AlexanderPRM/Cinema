@@ -2,6 +2,7 @@ from typing import Dict, List, Optional
 from uuid import UUID
 
 from core.jwt import JWTBearer
+from core.logger import logger
 from core.utils import CommonQueryParams
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
@@ -54,6 +55,7 @@ async def get_list_transactions(
     )
     if not transactions:
         return JSONResponse("No transactions")
+    logger.info(transactions)
     transaction_objs = [
         Transaction(
             user_id=transaction["user_id"],

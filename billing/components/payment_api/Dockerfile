@@ -5,7 +5,8 @@ WORKDIR /opt/payment_api
 
 RUN apt-get update && apt-get install -y \
      python3-dev  \
-     netcat-traditional
+     netcat-traditional \
+     && rm -rf /var/lib/apt/lists/*
 
 COPY payment_api/requirements.txt .
 

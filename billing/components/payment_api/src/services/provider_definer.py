@@ -19,14 +19,14 @@ class ProviderDefiner:
         transaction = (await psql.get_transaction_by_user_id(user_id))[0]
         if not transaction:
             return
-        provider_name = transaction["provider"]
+        provider_name = transaction.provider
         provider_get_func = ProviderDefiner.PROVIDERS.get(provider_name)
         provider_worker_get_func = ProviderDefiner.PROVIDERS_WORKERS.get(provider_name)
         if provider_get_func is None:
             raise ValueError(f"Unknown provider name: {provider_name}")
         provider = provider_get_func()
         provider_worker = provider_worker_get_func()
-        payment_info = provider.get_payment_info(str(transaction["transaction_id"]))
+        payment_info = provider.get_payment_info(str(transaction.transaction_id))
         return await provider_worker.update_subscription_status(transaction, payment_info, psql)
 
     @staticmethod

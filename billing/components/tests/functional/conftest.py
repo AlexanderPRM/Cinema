@@ -111,7 +111,7 @@ def make_post_request(aiohttp_client) -> web_response.Response:
         max_time=60,
     )
     async def inner(
-        url, settings, headers={"Content-Type": "application/json"}, query_data={}, cookies={}
+        url, settings, headers={"content-type": "application/json"}, query_data={}, cookies={}
     ):
         response = await aiohttp_client.post(
             url, headers=headers, data=json.dumps(query_data), cookies=cookies

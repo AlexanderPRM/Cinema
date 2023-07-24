@@ -1,154 +1,154 @@
 version: '3.5'
 services:
-#  billing_psql:
-#    image: postgres:13.0-alpine
-#    env_file:
-#      - "config.env"
-#    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -q -d ${POSTGRES_DB} -U ${POSTGRES_USER}" ]
-#      interval: 5s
-#      timeout: 5s
-#      retries: 5
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data/
-#    ports:
-#      - 5432:5432
-#    networks:
-#      - cinema
-#    restart: always
-#
-#  db_migrations:
-#    build: ../../
-#    env_file:
-#      - config.env
-#    networks:
-#      - cinema
-#    depends_on:
-#      - billing_psql
-#
-#  rabbitmq_billing:
-#    container_name: rabbitmq
-#    image: rabbitmq:3.10.6-management-alpine
-#    env_file:
-#      - config.env
-#    environment:
-#      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
-#      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
-#    networks:
-#      - cinema
-#    healthcheck:
-#      test: rabbitmq-diagnostics -q ping && rabbitmq-diagnostics check_port_connectivity
-#      interval: 10s
-#      timeout: 10s
-#      retries: 10
-#    ports:
-#      - 5672:5672
-#      - 15672:15672
-#
-#  admin_api:
-#    build:
-#      context: ../../
-#      dockerfile: admin_api/Dockerfile
-#    env_file:
-#      - config.env
-#    restart: always
-#    ports:
-#      - 3000:8000
-#    networks:
-#      - cinema
-#    depends_on:
-#      - db_migrations
-#      - billing_psql
-#
-#  scheduler:
-#    build:
-#      context: ../../
-#      dockerfile: scheduler/Dockerfile
-#    env_file:
-#      - config.env
-#    depends_on:
-#      - billing_psql
-#      - db_migrations
-#    networks:
-#      - cinema
-#    restart: always
-#
-#  billing_redis:
-#    image: redis:7.0.9
-#    restart: always
-#    env_file:
-#      - config.env
-#    depends_on:
-#      - billing_psql
-#      - db_migrations
-#    networks:
-#      - cinema
-#
-#  billing_api:
-#    build:
-#      context: ../../
-#      dockerfile: billing_api/Dockerfile
-#    env_file:
-#      - config.env
-#    restart: always
-#    ports:
-#      - 3010:8000
-#    networks:
-#      - cinema
-#    depends_on:
-#      - billing_psql
-#      - db_migrations
-#
-#  payment_api:
-#    build:
-#      context: ../../
-#      dockerfile: payment_api/Dockerfile
-#    env_file:
-#      - config.env
-#    restart: always
-#    ports:
-#      - 3020:8000
-#    networks:
-#      - cinema
-#    depends_on:
-#      - billing_psql
-#      - db_migrations
-#      - rabbitmq_billing
-#
-#  worker_auth:
-#    build:
-#      context: ../../
-#      dockerfile: worker/Dockerfile
-#    env_file:
-#      - config.env
-#    command: ["python", "src/auth_run.py"]
-#    restart: always
-#    networks:
-#     - cinema
-#    depends_on:
-#      rabbitmq_billing:
-#        condition: service_healthy
-#
-#  worker_emails:
-#    build:
-#      context: ../../
-#      dockerfile: worker/Dockerfile
-#    env_file:
-#      - config.env
-#    command: ["python", "src/email_run.py"]
-#    restart: always
-#    networks:
-#     - cinema
-#    depends_on:
-#      rabbitmq_billing:
-#        condition: service_healthy
+  billing_psql:
+    image: postgres:13.0-alpine
+    env_file:
+      - "config.env"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -q -d ${POSTGRES_DB} -U ${POSTGRES_USER}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    networks:
+      - cinema
+    restart: always
+
+  db_migrations:
+    build: ../../
+    env_file:
+      - config.env
+    networks:
+      - cinema
+    depends_on:
+      - billing_psql
+
+  rabbitmq_billing:
+    container_name: rabbitmq
+    image: rabbitmq:3.10.6-management-alpine
+    env_file:
+      - config.env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+    networks:
+      - cinema
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping && rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  admin_api:
+    build:
+      context: ../../
+      dockerfile: admin_api/Dockerfile
+    env_file:
+      - config.env
+    restart: always
+    ports:
+      - 3000:8000
+    networks:
+      - cinema
+    depends_on:
+      - db_migrations
+      - billing_psql
+
+  scheduler:
+    build:
+      context: ../../
+      dockerfile: scheduler/Dockerfile
+    env_file:
+      - config.env
+    depends_on:
+      - billing_psql
+      - db_migrations
+    networks:
+      - cinema
+    restart: always
+
+  billing_redis:
+    image: redis:7.0.9
+    restart: always
+    env_file:
+      - config.env
+    depends_on:
+      - billing_psql
+      - db_migrations
+    networks:
+      - cinema
+
+  billing_api:
+    build:
+      context: ../../
+      dockerfile: billing_api/Dockerfile
+    env_file:
+      - config.env
+    restart: always
+    ports:
+      - 3010:8000
+    networks:
+      - cinema
+    depends_on:
+      - billing_psql
+      - db_migrations
+
+  payment_api:
+    build:
+      context: ../../
+      dockerfile: payment_api/Dockerfile
+    env_file:
+      - config.env
+    restart: always
+    ports:
+      - 3020:8000
+    networks:
+      - cinema
+    depends_on:
+      - billing_psql
+      - db_migrations
+      - rabbitmq_billing
+
+  worker_auth:
+    build:
+      context: ../../
+      dockerfile: worker/Dockerfile
+    env_file:
+      - config.env
+    command: ["python", "src/auth_run.py"]
+    restart: always
+    networks:
+     - cinema
+    depends_on:
+      rabbitmq_billing:
+        condition: service_healthy
+
+  worker_emails:
+    build:
+      context: ../../
+      dockerfile: worker/Dockerfile
+    env_file:
+      - config.env
+    command: ["python", "src/email_run.py"]
+    restart: always
+    networks:
+     - cinema
+    depends_on:
+      rabbitmq_billing:
+        condition: service_healthy
 
   tests:
     build: .
-#    depends_on:
-#      - payment_api
-#      - billing_api
-#      - admin_api
+    depends_on:
+      - payment_api
+      - billing_api
+      - admin_api
     networks:
      - cinema
     env_file:
@@ -158,5 +158,5 @@ networks:
   cinema:
     external:
       name: cinema
-#volumes:
-#    postgres_data:
+volumes:
+    postgres_data:
