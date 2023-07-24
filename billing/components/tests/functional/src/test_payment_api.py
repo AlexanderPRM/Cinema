@@ -10,7 +10,7 @@ pytestmark = pytest.mark.asyncio
 @pytest.mark.parametrize(
     "expected_answer",
     [
-        ({"status": HTTPStatus.OK}, ),
+        ({"status": HTTPStatus.OK},),
     ],
 )
 async def test_get_transactions_400(
@@ -33,7 +33,7 @@ async def test_get_transactions_400(
 @pytest.mark.parametrize(
     "expected_answer",
     [
-        ({"status": HTTPStatus.FORBIDDEN}, ),
+        ({"status": HTTPStatus.FORBIDDEN},),
     ],
 )
 async def test_transaction_handler_403(
