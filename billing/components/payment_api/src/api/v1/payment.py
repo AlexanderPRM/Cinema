@@ -25,7 +25,8 @@ async def check_payment_status(
     response = await ProviderDefiner.update_payment_status(auth["user_id"], psql)
     if not response:
         return JSONResponse(
-            {"message": "Transaction doesn't exist or subscription has already been updated"}, HTTPStatus.BAD_REQUEST
+            {"message": "Transaction doesn't exist or subscription has already been updated"},
+            HTTPStatus.BAD_REQUEST,
         )
     return JSONResponse({"message": "Subscription has been updated"})
 
