@@ -51,14 +51,14 @@ class AdminService:
         for user in users:
             body = json.dumps(
                 {
-                    "user_id": str(user["user_id"]),
+                    "user_id": str(user.user_id),
                     "subscribe_id": str(id),
                     "operation": "disable auto-renewal + update sub",
                 }
             )
             # notification
             await self.broker.send_data(body)
-            users_list.append(str(user["user_id"]))
+            users_list.append(str(user.user_id))
         return users_list
 
     async def get_transactions(self, page_size, page_number):

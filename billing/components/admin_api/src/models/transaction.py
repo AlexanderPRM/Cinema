@@ -6,12 +6,14 @@ from pydantic import BaseModel
 
 
 class Transaction(BaseModel):
+    id: uuid.UUID
     user_id: uuid.UUID
     transaction_id: uuid.UUID
     value: int
+    currency: str
     provider: str
+    payment_details: dict
     idempotency_key: uuid.UUID
     operate_status: Literal["waiting", "success", "error", "canceled"]
-    payment_details: str
     created_at: datetime
     updated_at: datetime
