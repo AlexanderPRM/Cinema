@@ -13,15 +13,20 @@ class YooKassaProviderWorker(BaseProviderWorker):
         notification_object = WebhookNotification(event_json)
         payment = notification_object.object
         if notification_object.event == "payment.succeeded":
-            transaction, payment_details, subscription_tiers = await self.__create_subscription(
-                payment.id, psql
+            transaction = await psql.get_object_by_id(
+                postgres_settings.TRANSACTIONS_LOG_TABLE, payment.id
             )
-            await psql.update_transaction_status_to_success(payment.id)
-            return {
-                "user_id": str(transaction.user_id),
-                "ttl": subscription_tiers.duration,
-                "auto_renewal": payment_details.auto_renewal,
-            }
+            if transaction.operate_status == "waiting":
+                _, payment_details, subscription_tiers = await self.__update_or_create_subscription(
+                    psql, transaction
+                )
+                await psql.update_transaction_status_to_success(payment.id)
+                return {
+                    "user_id": str(transaction.user_id),
+                    "ttl": subscription_tiers.duration,
+                    "auto_renewal": payment_details.auto_renewal,
+                }
+            return None
         elif notification_object.event == "payment.canceled":
             await psql.update_transaction_status_to_canceled(payment.id)
             return None
@@ -40,22 +45,22 @@ class YooKassaProviderWorker(BaseProviderWorker):
         payment_info: PaymentResponse,
         psql: PostgreSQL,
     ):
-        if payment_info.status == "succeeded":
-            _, _, _ = await self.__create_subscription(payment_info.id, psql, transaction)
+        if payment_info.status == "succeeded" and transaction.operate_status == "waiting":
+            _, _, _ = await self.__update_or_create_subscription(psql, transaction)
             await psql.update_transaction_status_to_success(payment_info.id)
             return transaction
         return None
 
-    async def __create_subscription(self, payment_id: str, psql: PostgreSQL, transaction=None):
-        if transaction is None:
-            transaction = await psql.get_object_by_id(
-                postgres_settings.TRANSACTIONS_LOG_TABLE, payment_id
-            )
+    async def __update_or_create_subscription(self, psql: PostgreSQL, transaction):
         payment_details = transaction.payment_details
         subscription_tiers = await psql.get_object_by_id(
             postgres_settings.SUBSCRIPTIONS_TABLE, payment_details["subscribe_tier_id"]
         )
-        await psql.create_subscription(transaction, payment_details, subscription_tiers)
+        subscription = await psql.get_subscription_by_user_id(transaction.user_id)
+        if subscription:
+            await psql.update_subscription(transaction, payment_details, subscription_tiers)
+        else:
+            await psql.create_subscription(transaction, payment_details, subscription_tiers)
         return transaction, payment_details, subscription_tiers
 
 
