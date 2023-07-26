@@ -98,7 +98,7 @@ async def refund(
     postgres: PostgreSQL = Depends(get_db),
     provider: Provider = Depends(get_yookassa),
 ):
-    subscribe = await postgres.get_subscibe_by_user(auth["user_id"])
+    subscribe = await postgres.get_subsrcibe_by_user(auth["user_id"])
     now_time = time.time()
     if not subscribe or subscribe.ttl <= now_time:
         return JSONResponse(
@@ -143,11 +143,11 @@ async def unsubscribe(
     auth: dict = Depends(JWTBearer()),
     postgres: PostgreSQL = Depends(get_db),
 ):
-    subscription = await postgres.get_subscibe_by_user(auth["user_id"])
+    subscription = await postgres.get_subsrcibe_by_user(auth["user_id"])
     if not subscription:
-        raise JSONResponse(
+        return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
-            content={"message": "User doesn't have a subscription"},
+            content={"message": "ERROR", "subscribe_id": "User doesn't have a subscription"},
         )
     idx = await postgres.update_auto_renewal_subscribe_by_user(auth["user_id"])
-    return {"message": "OK", "subscribe_id": idx}
+    return UnsubscribeResponse(message="OK", subscribe_id=str(idx))

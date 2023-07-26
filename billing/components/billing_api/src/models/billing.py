@@ -38,4 +38,4 @@ class PayResponse(BaseModel):
 
 class UnsubscribeResponse(BaseModel):
     message: str
-    subscribe_id: int
+    subscribe_id: str

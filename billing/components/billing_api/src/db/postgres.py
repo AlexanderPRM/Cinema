@@ -59,7 +59,7 @@ class PostgreSQL:
                 res = await session.execute(text(sql))
             return res.one()
 
-    async def get_subscibe_by_user(self, user_id):
+    async def get_subsrcibe_by_user(self, user_id):
         async with self.asyncsession() as session:
             async with session.begin():
                 sql = "SELECT * FROM %s WHERE user_id = '%s'" % (
