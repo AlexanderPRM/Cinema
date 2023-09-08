@@ -39,25 +39,27 @@ class PostgreSQL:
             return result.all()
 
     async def disable_auto_renewal(self, subscribe_id):
-        self.conn = await self.get_connection()
-        query = (
-            "UPDATE %s SET auto_renewal = False "
-            "WHERE subscription_tier_id = '%s' AND auto_renewal = True;"
-            % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, subscribe_id)
-        )
-        await self.conn.execute(query)
+        async with self.session() as session:
+            async with session.begin():
+                query = (
+                    "UPDATE %s SET auto_renewal = False "
+                    "WHERE subscription_tier_id = '%s' AND auto_renewal = True;"
+                    % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, subscribe_id)
+                )
+                await session.execute(text(query))
 
     async def get_all_users_with_sub(self, subscribe_id):
-        self.conn = await self.get_connection()
-        query = (
-            "SELECT user_id FROM %s "
-            "WHERE subscription_tier_id = '%s' AND ttl > '%s' "
-            "AND auto_renewal = True;"
-            % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, subscribe_id, int(time.time()))
-        )
+        async with self.session() as session:
+            async with session.begin():
+                query = (
+                    "SELECT user_id FROM %s "
+                    "WHERE subscription_tier_id = '%s' AND ttl > '%s' "
+                    "AND auto_renewal = True;"
+                    % (postgres_settings.SUBSCRIPTIONS_USERS_TABLE, subscribe_id, int(time.time()))
+                )
 
-        result = await self.conn.fetch(text(query))
-        return result.all()
+                result = await session.execute(text(query))
+            return result.all()
 
 
 postgres_: Optional[PostgreSQL] = None

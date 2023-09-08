@@ -34,6 +34,17 @@ class PostgreSQL:
     @backoff.on_exception(
         backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
     )
+    async def get_subscription_by_user_id(self, user_id: str):
+        async with self.session() as session:
+            async with session.begin():
+                resp = await session.execute(
+                    text("SELECT * FROM subscriptions WHERE user_id = '%s'" % (user_id))
+                )
+            return resp.one_or_none()
+
+    @backoff.on_exception(
+        backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
+    )
     async def get_transaction_by_user_id(self, id: str):
         async with self.session() as session:
             async with session.begin():
@@ -93,6 +104,26 @@ class PostgreSQL:
                     auto_renewal=payment_details["auto_renewal"],
                     created_at=datetime.datetime.now(),
                     updated_at=datetime.datetime.now(),
+                )
+                await session.execute(text(query))
+
+    @backoff.on_exception(
+        backoff.expo, (TooManyConnectionsError, CannotConnectNowError), max_tries=5, max_time=10
+    )
+    async def update_subscription(self, transaction, payment_details, subscription_tiers):
+        async with self.session() as session:
+            async with session.begin():
+                query = """
+                    UPDATE subscriptions
+                    SET transaction_id = '{transaction_id}',
+                        subscription_tier_id = '{subscription_tier_id}',
+                        ttl = {ttl}
+                    WHERE user_id = '{user_id}'
+                """.format(
+                    transaction_id=transaction.id,
+                    subscription_tier_id=payment_details["subscribe_tier_id"],
+                    ttl=int(time.time()) + subscription_tiers.duration,
+                    user_id=transaction.user_id,
                 )
                 await session.execute(text(query))
 

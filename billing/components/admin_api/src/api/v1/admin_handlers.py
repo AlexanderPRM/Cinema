@@ -58,15 +58,17 @@ async def get_list_transactions(
     logger.info(transactions)
     transaction_objs = [
         Transaction(
-            user_id=transaction["user_id"],
-            transaction_id=transaction["transaction_id"],
-            value=transaction["value"],
-            provider=transaction["provider"],
-            idempotency_key=transaction["idempotency_key"],
-            operate_status=transaction["operate_status"],
-            payment_details=transaction["payment_details"],
-            created_at=transaction["created_at"],
-            updated_at=transaction["updated_at"],
+            id=transaction.id,
+            user_id=transaction.user_id,
+            transaction_id=transaction.transaction_id,
+            value=transaction.value,
+            currency=transaction.currency,
+            provider=transaction.provider,
+            payment_details=transaction.payment_details,
+            idempotency_key=transaction.idempotency_key,
+            operate_status=transaction.operate_status,
+            created_at=transaction.created_at,
+            updated_at=transaction.updated_at,
         )
         for transaction in transactions
     ]
@@ -95,15 +97,17 @@ async def get_user_list_transactions(
         return JSONResponse("No transactions")
     transaction_objs = [
         Transaction(
-            user_id=transaction["user_id"],
-            transaction_id=transaction["transaction_id"],
-            value=transaction["value"],
-            provider=transaction["provider"],
-            idempotency_key=transaction["idempotency_key"],
-            operate_status=transaction["operate_status"],
-            payment_details=transaction["payment_details"],
-            created_at=transaction["created_at"],
-            updated_at=transaction["updated_at"],
+            id=transaction.id,
+            user_id=transaction.user_id,
+            transaction_id=transaction.transaction_id,
+            value=transaction.value,
+            currency=transaction.currency,
+            provider=transaction.provider,
+            payment_details=transaction.payment_details,
+            idempotency_key=transaction.idempotency_key,
+            operate_status=transaction.operate_status,
+            created_at=transaction.created_at,
+            updated_at=transaction.updated_at,
         )
         for transaction in transactions
     ]
